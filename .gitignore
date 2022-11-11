@@ -1,0 +1,10 @@
+obj/*
+!obj/.gitkeep
+*.log
+*.bit
+!shared/*
+*.txt
+*.out
+*.vcd
+.mypy_cache
+.DS_Store
