@@ -4,6 +4,8 @@
 module top_level(
   input wire clk_100mhz,
   input wire btnc,
+  input wire btnl, btnr, btnu, btnd,
+  input wire [15:0] sw,
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs
 );
@@ -12,6 +14,15 @@ module top_level(
   parameter V_BITS = 9;
 
   logic sys_rst = btnc;
+
+  user_control user_control_inst(
+    .clk_in(clk_100mhz),
+    .btnl(btnl),
+    .btnr(btnr),
+    .btnu(btnu),
+    .btnd(btnd),
+    .sw(sw)
+  );
 
   // TODO: handle clock domain crossing!
   logic vga_clk = clk_100mhz;
