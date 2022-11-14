@@ -1,0 +1,1 @@
+iverilog -g2012 ./src/fixed_point_arith.sv && ./a.out | tee fixed-point.txt
