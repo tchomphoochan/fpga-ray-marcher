@@ -1,8 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "vector_arith.sv"
+
 module vector_arith_tb;
-  import vector_arith::*;
 
   logic all_passed = 1;
 

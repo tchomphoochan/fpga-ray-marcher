@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "types.sv"
+
 // this one just dispatches to other test programs
 // the real top_level is in top_level_main
 

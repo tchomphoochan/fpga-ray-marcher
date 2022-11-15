@@ -1,6 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`ifndef TYPES_SV
+`define TYPES_SV
+
 `define DISPLAY_WIDTH       640
 `define DISPLAY_HEIGHT      480
 `define H_BITS              10
@@ -15,5 +18,7 @@
 
 typedef logic signed [`NUM_ALL_DIGITS - 1:0] fp;
 typedef struct packed { fp x, y, z; } vec3;
+
+`endif
 
 `default_nettype wire

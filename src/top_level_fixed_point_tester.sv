@@ -1,6 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "types.sv"
+`include "fixed_point_arith.sv"
+
 module top_level_fixed_point_tester(
   input wire clk_100mhz,
   input wire btnc,
@@ -15,7 +18,7 @@ module top_level_fixed_point_tester(
   fp a, b, c; // assuming Q12.20
   assign a = {8'b0, sw[7:0], 16'b0}; 
   assign b = {8'b0, sw[15:8], 16'b0};
-  assign led = c[27:-16];
+  assign led = c[27:27-16+1];
 
   fixed_point_alu fixed_point_alu_inst(
     .d0_in(a),

@@ -1,13 +1,14 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "types.sv"
+
 module ray_marcher #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
+  H_BITS = `H_BITS,
+  V_BITS = `V_BITS
 ) (
-  parameter H_BITS = $clog2(DISPLAY_WIDTH);
-  parameter V_BITS = $clog2(DISPLAY_HEIGHT);
-
   input wire clk_in,
   input wire eye_vec, // TODO
   input wire [2:0] fractal_sel_in,

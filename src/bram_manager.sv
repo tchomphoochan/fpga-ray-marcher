@@ -1,6 +1,8 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
+`include "types.sv"
+
 module bram_manager #(
   parameter WIDTH = `COLOR_BITS,
   DEPTH = `DISPLAY_WIDTH*`DISPLAY_HEIGHT,

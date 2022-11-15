@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "types.sv"
+
 module vga_display(
   input wire vga_clk_in,  // assume match vga clock for now
   // should connect to bram

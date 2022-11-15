@@ -1,6 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "types.sv"
+`include "fixed_point_arith.sv"
+
 `define TEST_FP_OP_1(op, func, v1) \
   aval = v1; \
   cval = op(aval); \
@@ -45,7 +48,6 @@
   #10; \
 
 module fixed_point_arith_tb;
-  import fixed_point_arith::*;
 
   real aval, bval, cval;
   fp a, b, c;
