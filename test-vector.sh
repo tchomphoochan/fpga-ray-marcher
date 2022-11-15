@@ -1,0 +1,1 @@
+iverilog -g2012 ./src/fixed_point_arith.sv ./src/vector_arith.sv ./sim/vector_arith_tb.sv && ./a.out | tee vector.txt

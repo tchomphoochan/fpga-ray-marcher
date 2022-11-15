@@ -1,24 +1,20 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`include "./src/types.sv"
+
 module vga_display(
   input wire vga_clk_in,  // assume match vga clock for now
   // should connect to bram
   input wire [3:0] read_data_in, // 4-bit grayscale
-  output logic [ALL_BITS-1:0] read_addr_out,
+  output logic [`ADDR_BITS-1:0] read_addr_out,
   // connect to vga pins
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs
 );
 
-  parameter H_BITS = 10;
-  parameter V_BITS = 9;
-  parameter ALL_BITS = H_BITS+V_BITS;
-  parameter DISPLAY_WIDTH = 640;
-  parameter DISPLAY_HEIGHT = 480;
-
-  logic [H_BITS-1:0] hcount, hcount_mid, hcount_out;
-  logic [V_BITS-1:0] vcount, vcount_mid, vcount_out;
+  logic [`H_BITS-1:0] hcount, hcount_mid, hcount_out;
+  logic [`V_BITS-1:0] vcount, vcount_mid, vcount_out;
   logic vsync, vsync_mid, vsync_out;
   logic hsync, hsync_mid, hsync_out;
   logic blank, blank_mid, blank_out;
@@ -48,7 +44,7 @@ module vga_display(
 
   always_ff @(posedge vga_clk_in) begin
     // request read
-    read_addr_out <= vsync * DISPLAY_WIDTH + hsync;
+    read_addr_out <= vsync * `DISPLAY_WIDTH + hsync;
 
     // output read data to screen
     vga_r <= blank ? 0 : read_data_in;

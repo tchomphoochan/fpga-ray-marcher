@@ -10,8 +10,11 @@ module top_level(
   output logic vga_hs, vga_vs
 );
 
-  parameter H_BITS = 10; // TODO make these parameters universal pls
-  parameter V_BITS = 9;
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH;
+  parameter DISPLAY_HEIGHT = `DISPLAY_HEIGHT;
+  parameter H_BITS = $clog2(DISPLAY_WIDTH);
+  parameter V_BITS = $clog2(DISPLAY_HEIGHT);
+  parameter ADDR_BITS = H_BITS+V_BITS;
 
   logic sys_rst = btnc;
 
@@ -60,8 +63,8 @@ module top_level(
 
   bram_manager #(
     .WIDTH(4),
-    .DEPTH(640*480),
-    .ADDR_LEN(19)
+    .DEPTH(DISPLAY_WIDTH*DISPLAY_HEIGHT),
+    .ADDR_LEN(ADDR_BITS)
   ) bram_manager_inst(
     .clk(clk_100mhz),
     .rst(sys_rst),

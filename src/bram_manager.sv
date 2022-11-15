@@ -1,10 +1,12 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
+`include "./src/types.sv"
+
 module bram_manager #(
-  parameter WIDTH = 4,
-  DEPTH = 640*480,
-  ADDR_LEN = 19
+  parameter WIDTH = `COLOR_BITS,
+  DEPTH = `DISPLAY_WIDTH*`DISPLAY_HEIGHT,
+  ADDR_LEN = `ADDR_BITS
 ) (
   input wire clk,
   input wire rst,

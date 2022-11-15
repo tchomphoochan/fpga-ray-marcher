@@ -2,11 +2,13 @@
 `default_nettype none
 
 module user_control #(
-  parameter DISPLAY_WIDTH = 640,
-  DISPLAY_HEIGHT = 480,
-  H_BITS = 10,
-  V_BITS = 9
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
+  DISPLAY_HEIGHT = `DISPLAY_HEIGHT
 ) (
+  parameter H_BITS = $clog2(DISPLAY_WIDTH);
+  parameter V_BITS = $clog2(DISPLAY_HEIGHT);
+  parameter ADDR_BITS = H_BITS+V_BITS;
+
   input wire clk_in,
   input wire btnl, btnr, btnu, btnd,
   input wire [15:0] sw
