@@ -1,8 +1,6 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "./src/types.sv"
-
 package fixed_point_arith;
 
   // basic operations

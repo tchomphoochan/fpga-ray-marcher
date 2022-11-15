@@ -1,8 +1,6 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "./src/types.sv"
-
 package vector_arith;
   import fixed_point_arith::*;
 

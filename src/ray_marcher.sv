@@ -1,8 +1,6 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "./src/types.h"
-
 module ray_marcher #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
