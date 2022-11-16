@@ -15,7 +15,7 @@ function automatic fp sd_box_fast(input vec3 point, input fp halfExtents);
   z_abs = fp_abs(point.z);             // float z_abs = abs(point.z)
   xy_max = fp_max(x_abs, y_abs);       // float xy_max = max(x_abs, y_abs)
   xyz_max = fp_max(xy_max, z_abs);     // float xyz_max = max(xy_max, z_abs)
-  return fp_sub(side, xyz_max);        // return xyz_max - halfExtents
+  return fp_sub(halfExtents, xyz_max);        // return xyz_max - halfExtents
 endfunction
 
 `endif 

@@ -39,8 +39,8 @@ module sdf_primitives_tb;
   // all_passed = all_passed & passed; \
   // $display("%s", passed ? "PASSED" : "FAILED"); \
   // $display(""); \
-    // `TEST_SDF_PRIMITIVES(sd_box_fast, 0, 0.5, 0, 0.5, 0);
-    // `TEST_SDF_PRIMITIVES(sd_box_fast, 0, 0, 1, 0.5, 0.5);
+    `TEST_SDF_PRIMITIVES(sd_box_fast, 0, 0.5, 0, 0.5, 0);
+    `TEST_SDF_PRIMITIVES(sd_box_fast, 0, 0, 1, 0.5, 0.5);
 
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 
