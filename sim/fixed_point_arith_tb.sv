@@ -9,7 +9,7 @@
   cval = op(aval); \
   a = fp_from_real(aval); \
   c = func(a); \
-  $display("Expected: %s(%f) = %f", "op", aval, cval); \
+  $display("Expected: %s(%f) = %f", `"op`", aval, cval); \
   $display("Actual: %s(%f) = %f", `"op`", fp_to_real(a), fp_to_real(c)); \
   passed = $abs(fp_to_real(c)-cval) < 1e-4; \
   all_passed = all_passed & passed; \
