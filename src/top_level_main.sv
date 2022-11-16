@@ -54,7 +54,9 @@ module top_level_main(
 
   ray_marcher ray_marcher_inst(
     .clk_in(clk_100mhz),
-    .eye_vec(TODO),
+    .rst_in(sys_rst),
+    .pos_vec(TODO),
+    .dir_vec(TODO),
     .fractal_sel_in(TODO),
     .hcount_out(ray_marcher_hcount),
     .vcount_out(ray_marcher_vcount),

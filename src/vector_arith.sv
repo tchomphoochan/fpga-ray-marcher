@@ -60,6 +60,11 @@ function automatic vec3 vec3_normed(input vec3 a);
   // TODO
 endfunction
 
+// not synthesizable!
+function automatic string vec3_to_str(input vec3 a);
+  return $sformatf("(%.3f,%.3f,%.3f)", fp_to_real(a.x), fp_to_real(a.y), fp_to_real(a.z));
+endfunction
+
 `endif
 
 `default_nettype wire

@@ -19,6 +19,8 @@
 `define MAX_RAY_DEPTH       10
 `define MAX_RAY_DEPTH_SIZE  ($clog2(`MAX_RAY_DEPTH))
 
+`define NUM_CORES           4
+
 typedef logic signed [`NUM_ALL_DIGITS - 1:0] fp;
 typedef struct packed { fp x, y, z; } vec3;
 typedef enum logic [3:0] {
