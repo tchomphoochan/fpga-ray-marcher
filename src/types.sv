@@ -16,6 +16,8 @@
 `define NUM_ALL_DIGITS      (`NUM_WHOLE_DIGITS+`NUM_FRAC_DIGITS)
 `define SCALING_FACTOR      (2.0 ** (-`NUM_FRAC_DIGITS))
 
+`define NUM_CORES           4
+
 typedef logic signed [`NUM_ALL_DIGITS - 1:0] fp;
 typedef struct packed { fp x, y, z; } vec3;
 

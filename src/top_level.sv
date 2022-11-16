@@ -18,20 +18,7 @@ module top_level(
   output logic vga_hs, vga_vs
 );
 
-  top_level_fixed_point_tester top_level_fixed_point_tester_inst(
-    .clk_100mhz(clk_100mhz),
-    .btnc(btnc),
-    .btnl(btnl),
-    .btnr(btnr),
-    .btnu(btnu),
-    .btnd(btnd),
-    .sw(sw),
-    .led(led),
-    .led17_r(led17_r),
-    .led16_b(led16_b)
-  );
-
-  // top_level_main top_level_main_inst(
+  // top_level_fixed_point_tester top_level_fixed_point_tester_inst(
   //   .clk_100mhz(clk_100mhz),
   //   .btnc(btnc),
   //   .btnl(btnl),
@@ -39,11 +26,24 @@ module top_level(
   //   .btnu(btnu),
   //   .btnd(btnd),
   //   .sw(sw),
-  //   .vga_r(vga_r),
-  //   .vga_g(vga_g),
-  //   .vga_hs(vga_hs),
-  //   .vga_vs(vga_vs)
+  //   .led(led),
+  //   .led17_r(led17_r),
+  //   .led16_b(led16_b)
   // );
+
+  top_level_main top_level_main_inst(
+    .clk_100mhz(clk_100mhz),
+    .btnc(btnc),
+    .btnl(btnl),
+    .btnr(btnr),
+    .btnu(btnu),
+    .btnd(btnd),
+    .sw(sw),
+    .vga_r(vga_r),
+    .vga_g(vga_g),
+    .vga_hs(vga_hs),
+    .vga_vs(vga_vs)
+  );
 
 endmodule // top_level
 
