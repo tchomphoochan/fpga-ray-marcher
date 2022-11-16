@@ -1,15 +1,18 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+// `define TESTING_RAY_MARCHER
+
 `include "types.sv"
 `include "vector_arith.sv"
 
 module ray_marcher #(
-  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH, // BE CAREFUL: should NOT be powers of two!!
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
   H_BITS = `H_BITS,
   V_BITS = `V_BITS,
-  COLOR_BITS = `COLOR_BITS
+  COLOR_BITS = `COLOR_BITS,
+  NUM_CORES = `NUM_CORES
 ) (
   input wire clk_in,
   input wire rst_in,
@@ -32,17 +35,18 @@ module ray_marcher #(
   // internal state: which pixel/machine to assign next?
   logic [H_BITS-1:0] hcount;
   logic [V_BITS-1:0] vcount;
-  logic [$clog2(`NUM_CORES)-1:0] core_idx;
+  logic [$clog2(NUM_CORES)-1:0] core_idx;
 
   // instantiate cores
-  logic [`NUM_CORES-1:0] assigning_to_core;
-  logic [H_BITS-1:0] core_hcount_out [`NUM_CORES-1:0];
-  logic [V_BITS-1:0] core_vcount_out [`NUM_CORES-1:0];
-  logic [COLOR_BITS-1:0] core_color_out [`NUM_CORES-1:0];
-  logic [`NUM_CORES-1:0] core_ready_out;
+  logic [NUM_CORES-1:0] assigning_to_core;
+  logic [H_BITS-1:0] core_hcount_out [NUM_CORES-1:0];
+  logic [V_BITS-1:0] core_vcount_out [NUM_CORES-1:0];
+  logic [COLOR_BITS-1:0] core_color_out [NUM_CORES-1:0];
+  logic [NUM_CORES-1:0] core_ready_out;
+`ifndef TESTING_RAY_MARCHER
   generate
     genvar i;
-    for (i = 0; i < `NUM_CORES; ++i) begin
+    for (i = 0; i < NUM_CORES; ++i) begin
       ray_unit ray_unit_inst(
         .clk_in(clk_in),
         .rst_in(rst_in),
@@ -59,6 +63,7 @@ module ray_marcher #(
       );
     end
   endgenerate
+`endif
   logic all_cores_ready; // just for convenience
   assign all_cores_ready = &core_ready_out;
 
@@ -99,7 +104,7 @@ module ray_marcher #(
           hcount <= hcount+1;
         end
       end
-      core_idx <= (core_idx + 1) % `NUM_CORES; // cycle to the next machine all the time
+      core_idx <= (core_idx + 1) % NUM_CORES; // cycle to the next machine all the time
 
     end
   end
