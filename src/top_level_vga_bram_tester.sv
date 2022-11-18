@@ -8,7 +8,8 @@ module top_level_vga_bram_tester(
   input wire btnc,
   input wire btnu,
   output logic [3:0] vga_r, vga_g, vga_b,
-  output logic vga_hs, vga_vs
+  output logic vga_hs, vga_vs,
+  output logic [15:0] led
 );
 
   logic sys_clk;
@@ -28,12 +29,14 @@ module top_level_vga_bram_tester(
     .vga_clk_in(vga_clk),
     .read_data_in(vga_display_read_data),
     .read_addr_out(vga_display_read_addr),
-    .vga_r(vga_r),
+    // .vga_r(vga_r),
     .vga_g(vga_g),
     .vga_b(vga_b),
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
   );
+  assign vga_r = 4'b1111;
+  logic which_bram;
 
   bram_manager #(
     .WIDTH(4),
@@ -47,9 +50,24 @@ module top_level_vga_bram_tester(
     .write_enable(0),
     // .write_addr('z),
     // .write_data('z),
-    .read_data_out(vga_display_read_data)
-    // .which_bram_out('z)
+    .read_data_out(vga_display_read_data),
+    .which_bram_out(which_bram)
   );
+
+  logic [22:0] cnt;
+  logic out_led;
+  always_ff @(posedge vga_clk) begin
+    if (sys_rst) begin
+      cnt <= 0;
+      out_led <= 0;
+    end else begin
+      if (cnt == 0)
+        out_led <= !out_led;
+      cnt <= cnt+1;
+    end
+  end
+
+  assign led = {out_led, which_bram, vga_r, vga_g, vga_b, vga_hs, vga_vs};
 
 endmodule // top_level_fixed_point_tester
 

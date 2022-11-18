@@ -39,7 +39,8 @@ module top_level(
     .vga_g(vga_g),
     .vga_b(vga_b),
     .vga_hs(vga_hs),
-    .vga_vs(vga_vs)
+    .vga_vs(vga_vs),
+    .led(led)
   );
 
   // top_level_main top_level_main_inst(
