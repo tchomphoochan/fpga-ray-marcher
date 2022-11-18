@@ -15,7 +15,45 @@ module march_ray (
   vec3 scaled_dir;
   assign scaled_dir = vec3_scaled(ray_direction_in, t_in);
   assign ray_origin_out = vec3_add(ray_origin_in, scaled_dir);
-endmodule
+endmodule // march_ray
+
+module ray_generator #(
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
+  DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
+  H_BITS = `H_BITS,
+  V_BITS = `V_BITS
+) (
+  input wire [H_BITS-1:0] hcount_in,
+  input wire [V_BITS-1:0] vcount_in,
+  input vec3 cam_pos,
+  input vec3 cam_forward,
+
+  output vec3 ray_direction_out
+);
+  parameter DISPLAY_HEIGHT_INV = 1/`DISPLAY_HEIGHT;
+//   vec3 cam_ww = normalize(cam_target - cam_pos); // cam_forward
+
+//   vec3 cam_uu = normalize(cross(vec3(0,1,0), cam_ww)); // cam_right
+//   vec3 cam_vv = normalize(cross(cam_ww, cam_uu)); // cam_up
+  vec3 cam_right, cam_up;
+  assign cam_right = vec3_cross(make_vec3(fp_from_real(0), fp_from_real(1), fp_from_real(0)), cam_forward);
+  assign cam_up = vec3_cross(cam_forward, cam_right);
+// 	 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+  fp px, py;
+  assign px = fp_mul(fp_sub(/*fp_from_int*/(hcount_in << 1), DISPLAY_WIDTH), DISPLAY_HEIGHT_INV);
+  assign py = fp_mul(fp_sub(/*fp_from_int*/(vcount_in << 1), DISPLAY_HEIGHT), DISPLAY_HEIGHT_INV);
+//   float h = 1.0; // tan(fov/2.0)
+//   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww - ro);
+  vec3 scaled_right, scaled_up;
+  assign scaled_right = vec3_scaled(cam_right, px);
+  assign scaled_up = vec3_scaled(cam_up, py);
+
+  vec3 rd0, rd1, rd2;
+  assign rd0 = vec3_add(scaled_right, scaled_up);
+  assign rd1 = vec3_add(rd0, cam_forward);
+  assign rd2 = vec3_sub(rd1, cam_pos);
+  assign ray_direction_out = vec3_normed(rd2);
+endmodule // ray_generator
 
 module ray_unit #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -47,6 +85,9 @@ module ray_unit #(
   vec3 ray_direction;
   logic [$clog2(MAX_RAY_DEPTH)-1:0] ray_depth;
 
+  // Output of Ray Generator
+  vec3 next_dir_vec;
+
   // Output of SDF Query
   fp sdf_dist;
 
@@ -77,6 +118,7 @@ module ray_unit #(
             state <= RU_Busy;
           end
         end
+        // TODO: add a state to wait for the ray generator to finish
         RU_Busy: begin
           ray_origin <= next_pos_vec;
           
@@ -91,7 +133,20 @@ module ray_unit #(
     end
   end
 
-  march_ray raymarcher (
+  ray_generator #(
+    .DISPLAY_WIDTH(DISPLAY_WIDTH),
+    .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
+    .H_BITS(H_BITS),
+    .V_BITS(V_BITS)
+  ) generator (
+    .hcount_in(hcount),
+    .vcount_in(vcount),
+    .cam_pos(ray_origin),
+    .cam_forward(ray_direction),
+    .ray_direction_out(next_dir_vec)
+  );
+
+  march_ray marcher (
     .ray_origin_in(ray_origin),
     .ray_direction_in(ray_direction),
     .t_in(sdf_dist),
