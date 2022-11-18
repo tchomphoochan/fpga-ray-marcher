@@ -58,8 +58,10 @@ module ray_marcher #(
         .DISPLAY_WIDTH(DISPLAY_WIDTH),
         .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
         .H_BITS(H_BITS),
-        .V_BITS(V_BITS),
-        .CORE_IDX(i)
+        .V_BITS(V_BITS)
+`ifdef TESTING_RAY_MARCHER
+        , .CORE_IDX(i)
+`endif
       ) ray_unit_inst(
         .clk_in(clk_in),
         .rst_in(core_rst),

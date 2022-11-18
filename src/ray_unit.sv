@@ -99,6 +99,7 @@ module ray_unit #(
   // Output of Ray March
   vec3 next_pos_vec;
 
+`ifndef SYNTHESIS
   always begin
     #10;
     $display("state: %d, depth: %d", state, ray_depth);
@@ -106,6 +107,7 @@ module ray_unit #(
     $display("next pos: (%f, %f, %f)", fp_to_real(next_pos_vec.x), fp_to_real(next_pos_vec.y), fp_to_real(next_pos_vec.z));
     $display("dist: %f", fp_to_real(sdf_dist));
   end
+`endif
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
@@ -127,7 +129,7 @@ module ray_unit #(
         RU_Busy: begin
           ray_origin <= next_pos_vec;
           
-          if (sdf_dist < 0.01 || ray_depth == MAX_RAY_DEPTH) begin
+          if (fp_lt(sdf_dist, fp_from_real(0.01)) || ray_depth == MAX_RAY_DEPTH) begin
             color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : 4'd1;
             state <= RU_Ready;
           end else begin
