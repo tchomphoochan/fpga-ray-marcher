@@ -16,27 +16,27 @@ module top_level_vga_bram_tester(
   logic vga_clk;
   assign vga_clk = sys_clk;
   logic sys_rst = btnc;
-  clk_100_to_25p175_mhz_clk_wiz clk_converter(
+  `CLK_CONVERTER_TYPE clk_converter(
     .clk_in1(clk_100mhz),
     .clk_out1(sys_clk),
     .reset(sys_rst)
   );
 
-  logic [18:0] vga_display_read_addr;
+  logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [3:0] vga_display_read_data;
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
     .read_data_in(vga_display_read_data),
     .read_addr_out(vga_display_read_addr),
-    // .vga_r(vga_r),
+    .vga_r(vga_r),
     .vga_g(vga_g),
     .vga_b(vga_b),
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
   );
-  assign vga_r = 4'b1111;
   logic which_bram;
+  assign which_bram = 1;
 
   bram_manager #(
     .WIDTH(4),

@@ -19,7 +19,7 @@ module vga_display(
   logic hsync, hsync_mid, hsync_out;
   logic blank, blank_mid, blank_out;
 
-  vga_gen_640x480 vga_gen_inst(
+  `VGA_GEN_TYPE vga_gen_inst(
     .pixel_clk_in(vga_clk_in),
     .hcount_out(hcount),
     .vcount_out(vcount),

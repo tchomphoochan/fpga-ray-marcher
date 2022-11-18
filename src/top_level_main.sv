@@ -16,12 +16,11 @@ module top_level_main(
   logic vga_clk;
   assign vga_clk = sys_clk;
   logic sys_rst = btnc;
-  clk_100_to_25p175_mhz_clk_wiz clk_converter(
+  `CLK_CONVERTER_TYPE clk_converter(
     .clk_in1(clk_100mhz),
     .clk_out1(sys_clk),
     .reset(sys_rst)
   );
-
 
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH;
   parameter DISPLAY_HEIGHT = `DISPLAY_HEIGHT;
