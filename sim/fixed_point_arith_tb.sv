@@ -11,7 +11,7 @@
   c = func(a); \
   $display("Expected: %s(%f) = %f", `"op`", aval, cval); \
   $display("Actual: %s(%f) = %f", `"op`", fp_to_real(a), fp_to_real(c)); \
-  passed = $abs(fp_to_real(c)-cval) < 1e-4; \
+  passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
   $display(""); \
@@ -26,7 +26,7 @@
   c = func(a, b); \
   $display("Expected: %f %s %f = %f", aval, `"op`", bval, cval); \
   $display("Actual: %s(%f, %f) = %f", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c)); \
-  passed = $abs(fp_to_real(c)-cval) < 1e-4; \
+  passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
   $display(""); \
@@ -41,7 +41,7 @@
   c = func(a, b); \
   $display("Expected: %s(%f, %f) = %f", `"op`", aval, bval, cval); \
   $display("Actual: %s(%f, %f) = %f", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c)); \
-  passed = $abs(fp_to_real(c)-cval) < 1e-4; \
+  passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
   $display(""); \
@@ -49,7 +49,7 @@
 
 module fixed_point_arith_tb;
 
-  real aval, bval, cval;
+  real aval, bval, cval, tolerance;
   fp a, b, c;
 
   logic all_passed = 1;
@@ -60,6 +60,7 @@ module fixed_point_arith_tb;
     $dumpvars(0, fixed_point_arith_tb);
     $display("Starting Sim");
 
+    tolerance = 1e-4;
     `TEST_FP_OP_1(-, fp_neg, 3.14159);
     `TEST_FP_OP_1($abs, fp_abs, 3.14159);
     `TEST_FP_OP_1($abs, fp_abs, -3.14159);
@@ -76,6 +77,13 @@ module fixed_point_arith_tb;
     `TEST_FP_OP_2(*, fp_mul, 69.696969, -3.111111);
     `TEST_FP_FUNC_2($min, fp_min, 69.696969, -3.111111);
     `TEST_FP_FUNC_2($max, fp_max, 69.696969, -3.111111);
+
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.5);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.6);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.7);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.8);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.9);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 1.0);
 
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 

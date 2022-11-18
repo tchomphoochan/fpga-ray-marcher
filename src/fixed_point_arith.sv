@@ -23,6 +23,25 @@ function automatic fp fp_mul(input fp a, input fp b);
   return $signed(result >> `NUM_FRAC_DIGITS);
 endfunction
 // not so basic operations
+// should not synthesize this
+function automatic fp fp_inv_sqrt(input fp a);
+  fp half = fp_from_real(0.5);
+  fp threehalfs = fp_from_real(1.5);
+  fp sqrttwo = fp_from_real($sqrt(2.0));
+  fp slope = fp_from_real(2*($sqrt(2.0) - 1));
+  fp x = fp_sub(sqrttwo,
+                fp_mul(slope,
+                       fp_sub(a, half))); // first approximation, good for a in [0.5,1]
+  x = fp_mul(x,
+             fp_sub(threehalfs,
+                    fp_mul(fp_mul(half, a),
+                           fp_mul(x, x))));
+  x = fp_mul(x,
+             fp_sub(threehalfs,
+                    fp_mul(fp_mul(half, a),
+                           fp_mul(x, x))));
+  return x;
+endfunction
 function automatic fp fp_mod(input fp a, input fp b);
   // TODO
   return a;
