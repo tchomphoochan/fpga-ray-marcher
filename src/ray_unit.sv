@@ -49,16 +49,15 @@ module ray_generator #(
   assign py = fp_mul(fp_sub(vcount_fp, DISPLAY_HEIGHT), fp_from_real(DISPLAY_HEIGHT_INV));
 // calculate ray direction
 //   float h = 1.0; // tan(fov/2.0)
-//   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww - ro);
+//   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww);
   vec3 scaled_right, scaled_up;
   assign scaled_right = vec3_scaled(cam_right, px);
   assign scaled_up = vec3_scaled(cam_up, py);
 
-  vec3 rd0, rd1, rd2;
+  vec3 rd0, rd1;
   assign rd0 = vec3_add(scaled_right, scaled_up);
   assign rd1 = vec3_add(rd0, cam_forward);
-  assign rd2 = vec3_sub(rd1, cam_pos);
-  assign ray_direction_out = vec3_normed(rd2);
+  assign ray_direction_out = vec3_normed(rd1);
 endmodule // ray_generator
 
 module ray_unit #(
