@@ -37,7 +37,7 @@ module top_level_main(
     .sw(sw)
   ); // isn't really connected to anything right now
 
-  logic [18:0] vga_display_read_addr;
+  logic [`ADDR_BITS:0] vga_display_read_addr;
   logic [3:0] vga_display_read_data;
 
   vga_display vga_display_inst(
