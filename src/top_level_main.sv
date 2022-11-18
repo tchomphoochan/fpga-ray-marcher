@@ -12,6 +12,15 @@ module top_level_main(
   output logic vga_hs, vga_vs
 );
 
+  // just run everything on the same clock for now
+  logic sys_clk;
+  logic vga_clk;
+  assign vga_clk = sys_clk;
+  clk_100_to_25p175_mhz_clk_wiz clk_converter(
+    .clk_in1(clk_100mhz),
+    .clk_out1(sys_clk)
+  );
+
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH;
   parameter DISPLAY_HEIGHT = `DISPLAY_HEIGHT;
   parameter H_BITS = $clog2(DISPLAY_WIDTH);
@@ -21,16 +30,13 @@ module top_level_main(
   logic sys_rst = btnc;
 
   user_control user_control_inst(
-    .clk_in(clk_100mhz),
+    .clk_in(sys_clk),
     .btnl(btnl),
     .btnr(btnr),
     .btnu(btnu),
     .btnd(btnd),
     .sw(sw)
-  );
-
-  // TODO: handle clock domain crossing!
-  logic vga_clk = clk_100mhz;
+  ); // isn't really connected to anything right now
 
   logic [18:0] vga_display_read_addr;
   logic [3:0] vga_display_read_data;
@@ -52,12 +58,21 @@ module top_level_main(
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;
 
+  // default values for testing
+  vec3 pos_vec_def, dir_vec_def;
+  assign pos_vec_def.x = fp_from_real(0);
+  assign pos_vec_def.y = fp_from_real(0);
+  assign pos_vec_def.z = fp_from_real(-3);
+  assign dir_vec_def.x = fp_from_real(0);
+  assign dir_vec_def.y = fp_from_real(0);
+  assign dir_vec_def.z = fp_from_real(1);
+
   ray_marcher ray_marcher_inst(
-    .clk_in(clk_100mhz),
+    .clk_in(sys_clk),
     .rst_in(sys_rst),
-    // .pos_vec_in(TODO),
-    // .dir_vec_in(TODO),
-    // .fractal_sel_in(TODO),
+    .pos_vec_in(pos_vec_def),
+    .dir_vec_in(dir_vec_def),
+    .fractal_sel_in(fractal_sel_def),
     .hcount_out(ray_marcher_hcount),
     .vcount_out(ray_marcher_vcount),
     .color_out(ray_marcher_color),
@@ -70,7 +85,7 @@ module top_level_main(
     .DEPTH(DISPLAY_WIDTH*DISPLAY_HEIGHT),
     .ADDR_LEN(ADDR_BITS)
   ) bram_manager_inst(
-    .clk(clk_100mhz),
+    .clk(sys_clk),
     .rst(sys_rst),
     .swap_buffers(ray_marcher_new_frame),
     .read_addr(vga_display_read_addr),

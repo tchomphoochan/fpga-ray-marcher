@@ -45,6 +45,9 @@ module top_level(
     .vga_vs(vga_vs)
   );
 
+  assign led17_r = 0;
+  assign led16_b = 0;
+
 endmodule // top_level
 
 `default_nettype wire
