@@ -55,7 +55,7 @@ module ray_unit #(
 
   always begin
     #10;
-    $display("state: %d, depth: %d", state, ray_depth);
+    $display("state: %s, depth: %d", state.name(), ray_depth);
     $display("ray: (%f, %f, %f) -> (%f, %f, %f)", fp_to_real(ray_origin.x), fp_to_real(ray_origin.y), fp_to_real(ray_origin.z), fp_to_real(ray_direction.x), fp_to_real(ray_direction.y), fp_to_real(ray_direction.z));
     $display("next pos: (%f, %f, %f)", fp_to_real(next_pos_vec.x), fp_to_real(next_pos_vec.y), fp_to_real(next_pos_vec.z));
     $display("dist: %f", fp_to_real(sdf_dist));
