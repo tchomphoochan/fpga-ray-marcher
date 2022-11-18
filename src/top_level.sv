@@ -31,21 +31,32 @@ module top_level(
   //   .led16_b(led16_b)
   // );
 
-  top_level_main top_level_main_inst(
+  top_level_vga_bram_tester top_level_vga_bram_tester_inst(
     .clk_100mhz(clk_100mhz),
     .btnc(btnc),
-    .btnl(btnl),
-    .btnr(btnr),
     .btnu(btnu),
-    .btnd(btnd),
-    .sw(sw),
     .vga_r(vga_r),
     .vga_g(vga_g),
+    .vga_b(vga_b),
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
   );
-  assign led17_r = 1;
-  assign led16_b = 1;
+
+  // top_level_main top_level_main_inst(
+  //   .clk_100mhz(clk_100mhz),
+  //   .btnc(btnc),
+  //   .btnl(btnl),
+  //   .btnr(btnr),
+  //   .btnu(btnu),
+  //   .btnd(btnd),
+  //   .sw(sw),
+  //   .vga_r(vga_r),
+  //   .vga_g(vga_g),
+  //   .vga_b(vga_b),
+  //   .vga_hs(vga_hs),
+  //   .vga_vs(vga_vs)
+  // );
+
 
 endmodule // top_level
 

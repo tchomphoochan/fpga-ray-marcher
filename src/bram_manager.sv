@@ -2,6 +2,7 @@
 `timescale 1ns / 1ps
 
 `include "types.sv"
+`include "iverilog_hack.svh"
 
 module bram_manager #(
   parameter WIDTH = `COLOR_BITS,
@@ -44,7 +45,8 @@ module bram_manager #(
   // BRAM has delay of 2 cycles
   xilinx_true_dual_port_read_first_1_clock_ram #(
     .RAM_WIDTH(WIDTH),
-    .RAM_DEPTH(DEPTH)
+    .RAM_DEPTH(DEPTH),
+    .INIT_FILE(`FPATH(pop_cat.mem))
   ) bram0(
     .addra(write_addr),
     .addrb(read_addr),
@@ -64,7 +66,8 @@ module bram_manager #(
   );
   xilinx_true_dual_port_read_first_1_clock_ram #(
     .RAM_WIDTH(WIDTH),
-    .RAM_DEPTH(DEPTH)
+    .RAM_DEPTH(DEPTH),
+    .INIT_FILE(`FPATH(pleading_face.mem))
   ) bram1(
     .addra(write_addr),
     .addrb(read_addr),

@@ -23,7 +23,9 @@ if __name__ == "__main__":
         # Take input image
         # modified: don't divide each color channel's value by 16
         image_out = image_in.copy()
-        image_out = image_out.resize((640,480))
+        W = 640
+        H = 480
+        image_out = image_out.resize((W,H))
 
         # Palettize the image
         image_out = image_out.convert(mode='P', palette=1, colors=num_colors_out, dither=True)
@@ -48,8 +50,8 @@ if __name__ == "__main__":
         # Save the image itself
         image_raw = image_out.convert(mode='L', dither=True)
         with open(f'image.mem', 'w') as f:
-            for y in range(h):
-                for x in range(w):
+            for y in range(H):
+                for x in range(W):
                     # f.write(f'{image_raw.getpixel((x,y)):02x}\n')
                     f.write(f'{(image_raw.getpixel((x,y))//16):01x}\n')
         print('Output image saved at image.mem')

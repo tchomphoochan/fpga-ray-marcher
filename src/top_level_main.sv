@@ -12,22 +12,22 @@ module top_level_main(
   output logic vga_hs, vga_vs
 );
 
-  // just run everything on the same clock for now
   logic sys_clk;
   logic vga_clk;
   assign vga_clk = sys_clk;
+  logic sys_rst = btnc;
   clk_100_to_25p175_mhz_clk_wiz clk_converter(
     .clk_in1(clk_100mhz),
-    .clk_out1(sys_clk)
+    .clk_out1(sys_clk),
+    .reset(sys_rst)
   );
+
 
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH;
   parameter DISPLAY_HEIGHT = `DISPLAY_HEIGHT;
   parameter H_BITS = $clog2(DISPLAY_WIDTH);
   parameter V_BITS = $clog2(DISPLAY_HEIGHT);
   parameter ADDR_BITS = H_BITS+V_BITS;
-
-  logic sys_rst = btnc;
 
   user_control user_control_inst(
     .clk_in(sys_clk),
