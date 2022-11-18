@@ -4,10 +4,9 @@
 `include "types.sv"
 `include "fixed_point_arith.sv"
 
-// function automatic fp fract(input real a);
-//   return a - $floor(a);
-// endfunction
-
+function automatic real fract(input real a);
+  return a-$floor(a);
+endfunction
 
 `define TEST_FP_OP_1(op, func, v1) \
   aval = v1; \
@@ -96,10 +95,10 @@ module fixed_point_arith_tb;
     `TEST_FP_OP_1($floor, fp_floor, 1.6);
     `TEST_FP_OP_1($floor, fp_floor, -2.4);
 
-    // `TEST_FP_OP_1(fract, fp_fract, 0.5);
-    // `TEST_FP_OP_1(fract, fp_fract, -0.6);
-    // `TEST_FP_OP_1(fract, fp_fract, 1.6);
-    // `TEST_FP_OP_1(fract, fp_fract, -2.4);
+    `TEST_FP_OP_1(fract, fp_fract, 0.5);
+    `TEST_FP_OP_1(fract, fp_fract, -0.6);
+    `TEST_FP_OP_1(fract, fp_fract, 1.6);
+    `TEST_FP_OP_1(fract, fp_fract, -2.4);
 
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 
