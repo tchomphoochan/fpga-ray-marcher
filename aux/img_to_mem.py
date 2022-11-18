@@ -23,6 +23,7 @@ if __name__ == "__main__":
         # Take input image
         # modified: don't divide each color channel's value by 16
         image_out = image_in.copy()
+        image_out = image_out.resize((640,480))
 
         # Palettize the image
         image_out = image_out.convert(mode='P', palette=1, colors=num_colors_out, dither=True)
