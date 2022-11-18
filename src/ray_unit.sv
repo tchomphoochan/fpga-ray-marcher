@@ -33,15 +33,18 @@ module ray_generator #(
   parameter DISPLAY_HEIGHT_INV = 1/`DISPLAY_HEIGHT;
 //   vec3 cam_ww = normalize(cam_target - cam_pos); // cam_forward
 
+// get normalized camera vectors
 //   vec3 cam_uu = normalize(cross(vec3(0,1,0), cam_ww)); // cam_right
 //   vec3 cam_vv = normalize(cross(cam_ww, cam_uu)); // cam_up
   vec3 cam_right, cam_up;
   assign cam_right = vec3_cross(make_vec3(fp_from_real(0), fp_from_real(1), fp_from_real(0)), cam_forward);
   assign cam_up = vec3_cross(cam_forward, cam_right);
+// map y to about 0..1
 // 	 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
   fp px, py;
   assign px = fp_mul(fp_sub(/*fp_from_int*/(hcount_in << 1), DISPLAY_WIDTH), DISPLAY_HEIGHT_INV);
   assign py = fp_mul(fp_sub(/*fp_from_int*/(vcount_in << 1), DISPLAY_HEIGHT), DISPLAY_HEIGHT_INV);
+// calculate ray direction
 //   float h = 1.0; // tan(fov/2.0)
 //   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww - ro);
   vec3 scaled_right, scaled_up;
