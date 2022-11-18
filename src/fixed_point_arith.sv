@@ -70,6 +70,12 @@ function automatic fp fp_mod(input fp a, input fp b);
   // TODO
   return a;
 endfunction
+function automatic fp fp_floor(input fp a);
+  return (a >> `NUM_FRAC_DIGITS) << `NUM_FRAC_DIGITS;
+endfunction
+function automatic fp fp_fract(input fp a);
+  return fp_sub(a, fp_floor(a));
+endfunction
 
 // not synthesizable!
 function automatic real fp_to_real(input fp a);

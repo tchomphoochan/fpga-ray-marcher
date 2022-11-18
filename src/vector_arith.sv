@@ -65,6 +65,16 @@ function automatic vec3 vec3_normed(input vec3 a);
   fp factor = fp_inv_sqrt(sum);
   return vec3_scaled(a, factor);
 endfunction
+function automatic vec3 vec3_fract(input vec3 a);
+  vec3_fract.x = fp_fract(a.x);
+  vec3_fract.y = fp_fract(a.y);
+  vec3_fract.z = fp_fract(a.z);
+endfunction
+function automatic vec3 vec3_abs(input vec3 a);
+  vec3_abs.x = fp_abs(a.x);
+  vec3_abs.y = fp_abs(a.y);
+  vec3_abs.z = fp_abs(a.z);
+endfunction
 
 // not synthesizable!
 function automatic vec3 vec3_from_reals(input real a, input real b, input real c);

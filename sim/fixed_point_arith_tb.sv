@@ -4,13 +4,18 @@
 `include "types.sv"
 `include "fixed_point_arith.sv"
 
+// function automatic fp fract(input real a);
+//   return a - $floor(a);
+// endfunction
+
+
 `define TEST_FP_OP_1(op, func, v1) \
   aval = v1; \
   cval = op(aval); \
   a = fp_from_real(aval); \
   c = func(a); \
   $display("Expected: %s(%f) = %f", `"op`", aval, cval); \
-  $display("Actual: %s(%f) = %f  (32'h%h)", `"op`", fp_to_real(a), fp_to_real(c), c); \
+  $display("Actual: %s(%f) = %f  (32'h%h)", `"func`", fp_to_real(a), fp_to_real(c), c); \
   passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
@@ -85,6 +90,16 @@ module fixed_point_arith_tb;
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.8);
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.9);
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 1.0);
+
+    `TEST_FP_OP_1($floor, fp_floor, 0.5);
+    `TEST_FP_OP_1($floor, fp_floor, -0.6);
+    `TEST_FP_OP_1($floor, fp_floor, 1.6);
+    `TEST_FP_OP_1($floor, fp_floor, -2.4);
+
+    // `TEST_FP_OP_1(fract, fp_fract, 0.5);
+    // `TEST_FP_OP_1(fract, fp_fract, -0.6);
+    // `TEST_FP_OP_1(fract, fp_fract, 1.6);
+    // `TEST_FP_OP_1(fract, fp_fract, -2.4);
 
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 
