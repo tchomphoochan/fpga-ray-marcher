@@ -22,7 +22,8 @@ module fixed_point_alu(
       3'b001: res_out = fp_mul(d1_in, d0_in);
       3'b110: res_out = fp_min(d1_in, d0_in);
       3'b011: res_out = fp_max(d1_in, d0_in);
-      default: res_out = fp_from_real(0);
+      3'b010: res_out = fp_inv_sqrt(d0_in);
+      default: res_out = 0;
     endcase
   end
 

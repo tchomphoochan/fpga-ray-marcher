@@ -60,12 +60,12 @@ module top_level_main(
 
   // default values for testing
   vec3 pos_vec_def, dir_vec_def;
-  assign pos_vec_def.x = fp_from_real(0);
-  assign pos_vec_def.y = fp_from_real(0);
-  assign pos_vec_def.z = fp_from_real(-3);
-  assign dir_vec_def.x = fp_from_real(0);
-  assign dir_vec_def.y = fp_from_real(0);
-  assign dir_vec_def.z = fp_from_real(1);
+  assign pos_vec_def.x = `FP_ZERO;
+  assign pos_vec_def.y = `FP_ZERO;
+  assign pos_vec_def.z = fp_neg(`FP_THREE);
+  assign dir_vec_def.x = `FP_ZERO;
+  assign dir_vec_def.y = `FP_ZERO;
+  assign dir_vec_def.z = `FP_ONE;
 
   ray_marcher ray_marcher_inst(
     .clk_in(sys_clk),

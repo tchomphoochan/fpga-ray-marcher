@@ -10,7 +10,7 @@
   a = fp_from_real(aval); \
   c = func(a); \
   $display("Expected: %s(%f) = %f", `"op`", aval, cval); \
-  $display("Actual: %s(%f) = %f", `"op`", fp_to_real(a), fp_to_real(c)); \
+  $display("Actual: %s(%f) = %f  (32'h%h)", `"op`", fp_to_real(a), fp_to_real(c), c); \
   passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
@@ -25,7 +25,7 @@
   b = fp_from_real(bval); \
   c = func(a, b); \
   $display("Expected: %f %s %f = %f", aval, `"op`", bval, cval); \
-  $display("Actual: %s(%f, %f) = %f", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c)); \
+  $display("Actual: %s(%f, %f) = %f  (32'h%h)", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c), c); \
   passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \
@@ -40,7 +40,7 @@
   b = fp_from_real(bval); \
   c = func(a, b); \
   $display("Expected: %s(%f, %f) = %f", `"op`", aval, bval, cval); \
-  $display("Actual: %s(%f, %f) = %f", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c)); \
+  $display("Actual: %s(%f, %f) = %f  (32'h%h)", `"func`", fp_to_real(a), fp_to_real(b), fp_to_real(c), c); \
   passed = $abs(fp_to_real(c)-cval) < tolerance; \
   all_passed = all_passed & passed; \
   $display("%s", passed ? "PASSED" : "FAILED"); \

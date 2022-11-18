@@ -44,9 +44,8 @@ module top_level(
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
   );
-
-  assign led17_r = 0;
-  assign led16_b = 0;
+  assign led17_r = 1;
+  assign led16_b = 1;
 
 endmodule // top_level
 

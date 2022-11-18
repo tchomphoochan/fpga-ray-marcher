@@ -37,7 +37,7 @@ module ray_generator #(
 //   vec3 cam_uu = normalize(cross(vec3(0,1,0), cam_ww)); // cam_right
 //   vec3 cam_vv = normalize(cross(cam_ww, cam_uu)); // cam_up
   vec3 cam_right, cam_up;
-  assign cam_right = vec3_cross(make_vec3(fp_from_real(0), fp_from_real(1), fp_from_real(0)), cam_forward);
+  assign cam_right = vec3_cross(make_vec3(`FP_ZERO, `FP_ONE, `FP_ZERO), cam_forward);
   assign cam_up = vec3_cross(cam_forward, cam_right);
 // map y to about 0..1
 // 	 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
@@ -45,8 +45,8 @@ module ray_generator #(
   assign hcount_fp = {hcount_in << 1, `NUM_FRAC_DIGITS'b0};
   assign vcount_fp = {hcount_in << 1, `NUM_FRAC_DIGITS'b0};
   fp px, py;
-  assign px = fp_mul(fp_sub(hcount_fp, DISPLAY_WIDTH), fp_from_real(DISPLAY_HEIGHT_INV));
-  assign py = fp_mul(fp_sub(vcount_fp, DISPLAY_HEIGHT), fp_from_real(DISPLAY_HEIGHT_INV));
+  assign px = fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
+  assign py = fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
 // calculate ray direction
 //   float h = 1.0; // tan(fov/2.0)
 //   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww);
@@ -129,7 +129,7 @@ module ray_unit #(
         RU_Busy: begin
           ray_origin <= next_pos_vec;
           
-          if (fp_lt(sdf_dist, fp_from_real(0.01)) || ray_depth == MAX_RAY_DEPTH) begin
+          if (fp_lt(sdf_dist, `FP_HUNDREDTH) || ray_depth == MAX_RAY_DEPTH) begin
             color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : 4'd1;
             state <= RU_Ready;
           end else begin

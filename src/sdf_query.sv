@@ -9,7 +9,7 @@ module sdf_query_cube (
   input vec3 point_in,
   output fp sdf_out
 );
-  assign sdf_out = sd_box_fast(point_in, fp_from_real(0.5));
+  assign sdf_out = sd_box_fast(point_in, `FP_HALF);
 endmodule // sdf_query_cube
 
 module sdf_query_sponge (
