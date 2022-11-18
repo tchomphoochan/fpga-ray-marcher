@@ -39,7 +39,11 @@ function automatic vec3 vec3_max(input vec3 a, input vec3 b);
   vec3_max.z = fp_max(a.z, b.z);
 endfunction
 function automatic fp vec3_dot(input vec3 a, input vec3 b);
-  // TODO
+  fp x2 = fp_mul(a.x, b.x);
+  fp y2 = fp_mul(a.y, b.y);
+  fp z2 = fp_mul(a.z, b.z);
+  fp sum = fp_add(x2, fp_add(y2, z2));
+  return sum;
 endfunction
 function automatic vec3 vec3_cross(input vec3 a, input vec3 b);
   vec3_cross.x = fp_sub(fp_mul(a.y, b.z), fp_mul(a.z, b.y));
@@ -57,12 +61,17 @@ function automatic vec3 vec3_modded(input vec3 a, fp s);
   vec3_modded.z = fp_mod(a.z, s);
 endfunction
 function automatic vec3 vec3_normed(input vec3 a);
-  // TODO
+  fp sum = vec3_dot(a, a);
+  fp factor = fp_inv_sqrt(sum);
+  return vec3_scaled(a, factor);
 endfunction
 
 // not synthesizable!
+function automatic vec3 vec3_from_reals(input real a, input real b, input real c);
+  return make_vec3(fp_from_real(a), fp_from_real(b), fp_from_real(c));
+endfunction
 function automatic string vec3_to_str(input vec3 a);
-  return $sformatf("(%.3f,%.3f,%.3f)", fp_to_real(a.x), fp_to_real(a.y), fp_to_real(a.z));
+  return $sformatf("(%f,%f,%f)", fp_to_real(a.x), fp_to_real(a.y), fp_to_real(a.z));
 endfunction
 
 `endif

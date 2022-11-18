@@ -62,6 +62,7 @@ module fixed_point_arith_tb;
 
     tolerance = 1e-4;
     `TEST_FP_OP_1(-, fp_neg, 3.14159);
+    `TEST_FP_OP_1(-, fp_neg, -3.14159);
     `TEST_FP_OP_1($abs, fp_abs, 3.14159);
     `TEST_FP_OP_1($abs, fp_abs, -3.14159);
     `TEST_FP_OP_2(+, fp_add, 3.242, 958.21434);
