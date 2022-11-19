@@ -130,7 +130,7 @@ module ray_unit #(
           ray_origin <= next_pos_vec;
           
           if (fp_lt(sdf_dist, `FP_HUNDREDTH) || ray_depth == MAX_RAY_DEPTH) begin
-            color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : 4'd1;
+            color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : 4'hF;
             state <= RU_Ready;
           end else begin
             ray_depth <= ray_depth + 1;
