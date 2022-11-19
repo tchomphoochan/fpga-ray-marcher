@@ -8,6 +8,7 @@ module top_level_main(
   input wire btnc,
   input wire btnl, btnr, btnu, btnd,
   input wire [15:0] sw,
+  output logic [15:0] led,
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs
 );

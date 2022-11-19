@@ -31,10 +31,26 @@ module top_level(
   //   .led16_b(led16_b)
   // );
 
-  top_level_vga_bram_tester top_level_vga_bram_tester_inst(
+  // top_level_vga_bram_tester top_level_vga_bram_tester_inst(
+  //   .clk_100mhz(clk_100mhz),
+  //   .btnc(btnc),
+  //   .btnu(btnu),
+  //   .vga_r(vga_r),
+  //   .vga_g(vga_g),
+  //   .vga_b(vga_b),
+  //   .vga_hs(vga_hs),
+  //   .vga_vs(vga_vs),
+  //   .led(led)
+  // );
+
+  top_level_main top_level_main_inst(
     .clk_100mhz(clk_100mhz),
     .btnc(btnc),
+    .btnl(btnl),
+    .btnr(btnr),
     .btnu(btnu),
+    .btnd(btnd),
+    .sw(sw),
     .vga_r(vga_r),
     .vga_g(vga_g),
     .vga_b(vga_b),
@@ -42,21 +58,6 @@ module top_level(
     .vga_vs(vga_vs),
     .led(led)
   );
-
-  // top_level_main top_level_main_inst(
-  //   .clk_100mhz(clk_100mhz),
-  //   .btnc(btnc),
-  //   .btnl(btnl),
-  //   .btnr(btnr),
-  //   .btnu(btnu),
-  //   .btnd(btnd),
-  //   .sw(sw),
-  //   .vga_r(vga_r),
-  //   .vga_g(vga_g),
-  //   .vga_b(vga_b),
-  //   .vga_hs(vga_hs),
-  //   .vga_vs(vga_vs)
-  // );
 
 
 endmodule // top_level
