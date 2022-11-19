@@ -49,12 +49,12 @@ function automatic fp fp_from_real(input real a);
   return {whole, frac_bits};
 endfunction
 
-function automatic int fp_count_leading_zeros(input fp a);
-  for (int i = 0; i < `NUM_ALL_DIGITS; i++) begin
+function automatic [$clog2(`NUM_WHOLE_DIGITS):0] fp_count_leading_zeros(input fp a);
+  for (int i = 0; i < `NUM_WHOLE_DIGITS; i++) begin
     if (a[`NUM_ALL_DIGITS-1-i] == 1)
       return i;
   end
-  return `NUM_ALL_DIGITS;
+  return `NUM_WHOLE_DIGITS;
 endfunction
 
 // not so basic operations
@@ -66,10 +66,9 @@ endfunction
 `else
 function automatic fp fp_inv_sqrt(input fp _a);
   // 0.5 should have `NUM_WHOLE_DIGITS leading zeros
-  int cnt = fp_count_leading_zeros(_a);
-  logic must_shift = cnt < `NUM_WHOLE_DIGITS;
-  int diff = `NUM_WHOLE_DIGITS - cnt;
-  fp a = must_shift ? (_a >> diff) : _a; // if has less than that (i.e. number is too large), must shift
+  logic [$clog2(`NUM_WHOLE_DIGITS):0] cnt = fp_count_leading_zeros(_a);
+  logic [$clog2(`NUM_WHOLE_DIGITS):0] diff = `NUM_WHOLE_DIGITS - cnt;
+  fp a = _a >> diff; // if has less than that (i.e. number is too large), must shift
   // work with that number
   fp slope = fp_mul(`FP_TWO, fp_sub(`FP_SQRT_TWO, `FP_ONE));
   fp x = fp_sub(`FP_SQRT_TWO,
@@ -84,10 +83,8 @@ function automatic fp fp_inv_sqrt(input fp _a);
                     fp_mul(fp_mul(`FP_HALF, a),
                            fp_mul(x, x)))); // one newton iteration
   // must shift answer properly
-  if (must_shift) begin
-    x = x >> (diff >> 1);
-    x = (diff & 1) ? fp_mul(x, `FP_INV_SQRT_TWO) : x;
-  end
+  x = x >> (diff >> 1);
+  x = (diff & 1) ? fp_mul(x, `FP_INV_SQRT_TWO) : x;
   return x;
 endfunction
 `endif
