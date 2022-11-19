@@ -43,9 +43,22 @@ module ray_generator_folded #(
   vec3 scaled_up;
 
   // stage 5: add then norm
-  vec3 rd0, rd1;
-  assign rd0 = vec3_add(scaled_right, scaled_up);
-  assign rd1 = vec3_add(rd0, cam_forward);
+  vec3 _rd0, _rd1, rd1;
+  assign _rd0 = vec3_add(scaled_right, scaled_up);
+  assign _rd1 = vec3_add(_rd0, cam_forward);
+
+  logic fisf_valid_in, fisf_valid_out, fisf_ready_out;
+  fp fisf_res_out;
+
+  fp_inv_sqrt_folded fisf(
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .a_in(vec3_dot(rd1, rd1)),
+    .valid_in(fisf_valid),
+    .res_out(fisf_res_out),
+    .valid_out(fisf_valid_out),
+    .ready_out(fisf_ready_out)
+  );
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
@@ -75,14 +88,25 @@ module ray_generator_folded #(
       // stage 3: px, py
       px <= fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
       py <= fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+      stage <= 4;
     end else if (stage == 4) begin
       // stage 4: scaled
       scaled_right <= vec3_scaled(cam_right, px);
       scaled_up <= vec3_scaled(cam_up, py);
-    end else if (stage == 5) begin
-      ray_direction_out <= vec3_normed(rd1);
-      valid_out <= 1;
-      ready_out <= 1;
+      stage <= 5;
+    end else if (stage == 5 && fisf_ready_out) begin
+      // stage 5: add then norm
+      rd1 <= _rd1;
+      fisf_valid_in <= 1;
+      stage <= 6;
+    end else if (stage == 6) begin
+      fisf_valid_in <= 0;
+      if (fisf_valid_out) begin
+          ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
+          valid_out <= 1;
+          ready_out <= 1;
+          stage <= 0;
+      end
     end
   end
 
