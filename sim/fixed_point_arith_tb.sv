@@ -89,6 +89,10 @@ module fixed_point_arith_tb;
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.8);
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 0.9);
     `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 1.0);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 3.7);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 5.8);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 1.5);
+    `TEST_FP_OP_1(1/$sqrt, fp_inv_sqrt, 6.9);
 
     `TEST_FP_OP_1($floor, fp_floor, 0.5);
     `TEST_FP_OP_1($floor, fp_floor, -0.6);

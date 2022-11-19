@@ -90,6 +90,20 @@ module vector_arith_tb;
     all_passed = all_passed & passed;
     $display("%s\n", passed ? "PASSED" : "FAILED");
 
+    // vector normalization works (another one)
+    ax = 2.5; ay = 0.91; az = 1.8;
+    dv = $sqrt(ax*ax + ay*ay + az*az);
+    cx = ax/dv; cy = ay/dv; cz = az/dv;
+    a = vec3_from_reals(ax, ay, az);
+    c = vec3_normed(a);
+    $display("Expected: norm(a) = (%f,%f,%f)", cx,cy,cz);
+    $display("Actual: norm(a) = %s", vec3_to_str(c));
+    passed = $abs(cx - fp_to_real(c.x)) < tolerance
+            && $abs(cy - fp_to_real(c.y)) < tolerance
+            && $abs(cz - fp_to_real(c.z)) < tolerance;
+    all_passed = all_passed & passed;
+    $display("%s\n", passed ? "PASSED" : "FAILED");
+
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
     $display("Finishing Sim");
     $finish;

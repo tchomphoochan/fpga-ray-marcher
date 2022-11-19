@@ -95,7 +95,7 @@
 `define NUM_ALL_DIGITS      (`NUM_WHOLE_DIGITS+`NUM_FRAC_DIGITS)
 `define SCALING_FACTOR      (2.0 ** (-`NUM_FRAC_DIGITS))
 
-`define MAX_RAY_DEPTH       10
+`define MAX_RAY_DEPTH       20
 `define MAX_RAY_DEPTH_SIZE  ($clog2(`MAX_RAY_DEPTH))
 
 `define NUM_CORES           2
