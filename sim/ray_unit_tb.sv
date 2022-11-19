@@ -3,9 +3,10 @@
 
 module ray_unit_tb;
 
-  parameter H_BITS = 4;
-  parameter V_BITS = 3;
-  parameter NUM_CORES = 4;
+  parameter DISPLAY_WIDTH = 400;
+  parameter DISPLAY_HEIGHT = 300;
+  parameter H_BITS = 9;
+  parameter V_BITS = 9;
 
   logic clk_in;
   logic rst_in;
@@ -22,8 +23,8 @@ module ray_unit_tb;
   logic ready_out;
 
   ray_unit #(
-    .DISPLAY_WIDTH(5),
-    .DISPLAY_HEIGHT(3),
+    .DISPLAY_WIDTH(DISPLAY_WIDTH),
+    .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
     .H_BITS(H_BITS),
     .V_BITS(V_BITS)
   ) uut(
@@ -63,6 +64,8 @@ module ray_unit_tb;
     ray_origin_in = make_vec3(fp_from_real(0), fp_from_real(0), fp_from_real(-2));
     ray_direction_in = make_vec3(fp_from_real(0), fp_from_real(0), fp_from_real(1));
     fractal_sel_in = 0;
+    hcount_in = 150;
+    vcount_in = 150;
     #10;
 
     // reset machine

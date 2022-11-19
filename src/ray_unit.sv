@@ -42,8 +42,8 @@ module ray_generator #(
 // map y to about 0..1
 // 	 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
   fp hcount_fp, vcount_fp;
-  assign hcount_fp = {hcount_in << 1, `NUM_FRAC_DIGITS'b0};
-  assign vcount_fp = {hcount_in << 1, `NUM_FRAC_DIGITS'b0};
+  assign hcount_fp = (hcount_in << 1) << `NUM_FRAC_DIGITS;
+  assign vcount_fp = (vcount_in << 1) << `NUM_FRAC_DIGITS;
   fp px, py;
   assign px = fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
   assign py = fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
@@ -87,11 +87,10 @@ module ray_unit #(
   logic [H_BITS-1:0] hcount;
   logic [V_BITS-1:0] vcount;
   vec3 ray_origin;
-  vec3 ray_direction;
   logic [$clog2(MAX_RAY_DEPTH)-1:0] ray_depth;
 
-  // Output of Ray Generator
-  vec3 next_dir_vec;
+  // Ray Generator Input, Output
+  vec3 eye_direction, ray_direction;
 
   // Output of SDF Query
   fp sdf_dist;
@@ -104,6 +103,7 @@ module ray_unit #(
     #10;
     $display("state: %d, depth: %d", state, ray_depth);
     $display("ray: (%f, %f, %f) -> (%f, %f, %f)", fp_to_real(ray_origin.x), fp_to_real(ray_origin.y), fp_to_real(ray_origin.z), fp_to_real(ray_direction.x), fp_to_real(ray_direction.y), fp_to_real(ray_direction.z));
+    $display("eye_dir: (%f, %f, %f), hcount: %d, vcount: %d", fp_to_real(eye_direction.x), fp_to_real(eye_direction.y), fp_to_real(eye_direction.z), hcount, vcount);
     $display("next pos: (%f, %f, %f)", fp_to_real(next_pos_vec.x), fp_to_real(next_pos_vec.y), fp_to_real(next_pos_vec.z));
     $display("dist: %f", fp_to_real(sdf_dist));
   end
@@ -120,12 +120,14 @@ module ray_unit #(
             hcount <= hcount_in;
             vcount <= vcount_in;
             ray_origin <= ray_origin_in;
-            ray_direction <= ray_direction_in;
+            eye_direction <= ray_direction_in;
             ray_depth <= 0;
-            state <= RU_Busy;
+            state <= RU_TakingInput;
           end
         end
-        // TODO: add a state to wait for the ray generator to finish
+        RU_TakingInput: begin
+          state <= RU_Busy;
+        end
         RU_Busy: begin
           ray_origin <= next_pos_vec;
           
@@ -151,8 +153,8 @@ module ray_unit #(
     .hcount_in(hcount),
     .vcount_in(vcount),
     .cam_pos(ray_origin),
-    .cam_forward(ray_direction),
-    .ray_direction_out(next_dir_vec)
+    .cam_forward(eye_direction),
+    .ray_direction_out(ray_direction)
   );
 
   march_ray marcher (

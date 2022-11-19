@@ -104,7 +104,8 @@ typedef logic signed [`NUM_ALL_DIGITS - 1:0] fp;
 typedef struct packed { fp x, y, z; } vec3;
 typedef enum logic [3:0] {
     RU_Ready                = 4'd0,
-    RU_Busy                 = 4'd1
+    RU_TakingInput          = 4'd1,
+    RU_Busy                 = 4'd2
 } RayUnitState;
 
 // constants in Q12.20 format
