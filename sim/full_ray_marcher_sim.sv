@@ -8,7 +8,7 @@ module full_ray_marcher_sim;
   // for testing
   vec3 pos_vec_def, dir_vec_def;
   assign pos_vec_def.x = `FP_ZERO;
-  assign pos_vec_def.y = `FP_ZERO;
+  assign pos_vec_def.y = `FP_ONE;
   assign pos_vec_def.z = fp_neg(`FP_THREE_HALFS);
   assign dir_vec_def.x = `FP_ZERO;
   assign dir_vec_def.y = `FP_ZERO;
@@ -71,6 +71,7 @@ module full_ray_marcher_sim;
     $display("Simulating until finish rendering this frame");
     wait(new_frame_out);
     $display("Finishing Sim");
+    $display("Took %f nanoseconds", $time);
     $finish;
   end
 endmodule // ray_marcher_tb
