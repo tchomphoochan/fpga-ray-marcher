@@ -47,9 +47,9 @@ module vga_display(
     read_addr_out <= (vcount >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hcount >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
-    vga_r <= blank ? 0 : read_data_in;
-    vga_g <= blank ? 0 : read_data_in;
-    vga_b <= blank ? 0 : read_data_in;
+    vga_r <= blank_out ? 0 : 4'b1111;
+    vga_g <= blank_out ? 0 : 4'b1111;
+    vga_b <= blank_out ? 0 : 4'b1111;
     vga_hs <= ~hsync_out;
     vga_vs <= ~vsync_out;
   end

@@ -35,39 +35,25 @@ module top_level_vga_bram_tester(
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
   );
-  logic which_bram;
+  // logic which_bram;
 
-  bram_manager #(
-    .WIDTH(4),
-    .DEPTH(`DISPLAY_WIDTH*`DISPLAY_HEIGHT),
-    .ADDR_LEN(`ADDR_BITS)
-  ) bram_manager_inst(
-    .clk(sys_clk),
-    .rst(sys_rst),
-    .swap_buffers(btnu),
-    .read_addr(vga_display_read_addr),
-    .write_enable(0),
-    .write_addr(0),
-    .write_data(0),
-    .read_data_out(vga_display_read_data),
-    .which_bram_out(which_bram)
-  );
+  // bram_manager #(
+  //   .WIDTH(4),
+  //   .DEPTH(`DISPLAY_WIDTH*`DISPLAY_HEIGHT),
+  //   .ADDR_LEN(`ADDR_BITS)
+  // ) bram_manager_inst(
+  //   .clk(sys_clk),
+  //   .rst(sys_rst),
+  //   .swap_buffers(btnu),
+  //   .read_addr(vga_display_read_addr),
+  //   .write_enable(0),
+  //   .write_addr(0),
+  //   .write_data(0),
+  //   .read_data_out(vga_display_read_data),
+  //   .which_bram_out(which_bram)
+  // );
 
-  logic [22:0] cnt;
-  logic out_led;
-  always_ff @(posedge vga_clk) begin
-    if (sys_rst) begin
-      cnt <= 0;
-      out_led <= 0;
-    end else begin
-      if (cnt == 0)
-        out_led <= !out_led;
-      cnt <= cnt+1;
-    end
-  end
-
-  assign led = {out_led, which_bram, vga_r, vga_g, vga_b, vga_hs, vga_vs};
-  // assign led = vga_display_read_addr;
+  assign led = {1'b0, 1'b0, vga_r, vga_g, vga_b, vga_hs, vga_vs};
 
 endmodule // top_level_fixed_point_tester
 
