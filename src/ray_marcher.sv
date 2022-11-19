@@ -93,11 +93,15 @@ module ray_marcher #(
 
       if (vcount == DISPLAY_HEIGHT) begin
         // no more pixels to be assigned
+`ifdef TESTING_RAY_MARCHER
         $display("No more pixels to be assigned. At machine %d.", core_idx);
+`endif
         if (all_cores_ready) begin
           $display("CMD NEW FRAME");
+`ifdef TESTING_RAY_MARCHER
           $display("Taking in new inputs: pos_vec_in=%s, dir_vec_in=%s, fractal_sel_in=%d",
             vec3_to_str(pos_vec_in), vec3_to_str(dir_vec_in), fractal_sel_in);
+`endif
           // every machine is done
           // end frame by getting new input
           current_pos_vec <= pos_vec_in;
@@ -111,18 +115,24 @@ module ray_marcher #(
         assigning <= 0;
         // otherwise just wait
       end else if (hcount == DISPLAY_WIDTH) begin
+`ifdef TESTING_RAY_MARCHER
         $display("hcount = %d, vcount = %d: row exhausted.", hcount, vcount);
+`endif
         // exhausted current row, go onto the next
         // nothing to do here really
         vcount <= vcount+1;
         hcount <= 0;
         assigning <= 0;
       end else begin
+`ifdef TESTING_RAY_MARCHER
         $write("hcount = %d, vcount = %d, ", hcount, vcount);
+`endif
         new_frame_out <= 0; // started computing new frame, so set back to zero
         // pixel ready to assign
         if (core_ready_out[core_idx]) begin
+`ifdef TESTING_RAY_MARCHER
           $display("core %d free - assigning on next cycle", core_idx);
+`endif
           // assign to machine
           assigning <= 1;
           assign_to <= core_idx;
@@ -132,7 +142,9 @@ module ray_marcher #(
           hcount <= hcount+1;
         end else begin
           assigning <= 0;
+`ifdef TESTING_RAY_MARCHER
           $display("core %d busy", core_idx);
+`endif
         end
       end
       core_idx <= (core_idx + 1) % NUM_CORES; // cycle to the next machine all the time
@@ -147,8 +159,10 @@ module ray_marcher #(
     end else begin
       if (core_ready_out[core_idx]) begin
         $display("CMD SAVE %d %d %d",core_hcount_out[core_idx],core_vcount_out[core_idx],core_color_out[core_idx]);
+`ifdef TESTING_RAY_MARCHER
         $display("Dummy core %1d data available (Saved to memory: hcount=%d, vcount=%d, color=%d)",
           core_idx, core_hcount_out[core_idx], core_vcount_out[core_idx], core_color_out[core_idx]);
+`endif
         // copy data into bram
         hcount_out <= core_hcount_out[core_idx];
         vcount_out <= core_vcount_out[core_idx];

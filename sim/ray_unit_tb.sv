@@ -1,6 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
+`define TESTING_RAY_UNIT
+
 module ray_unit_tb;
 
   parameter DISPLAY_WIDTH = 400;
@@ -47,11 +49,6 @@ module ray_unit_tb;
   always begin
     #5;
     clk_in = !clk_in;
-  end
-
-  always begin
-    #10;
-    $display("=============================== CYCLE %5d =============", $time);
   end
 
   initial begin

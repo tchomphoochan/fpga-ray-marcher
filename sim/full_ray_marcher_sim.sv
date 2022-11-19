@@ -56,11 +56,6 @@ module full_ray_marcher_sim;
     clk_in = !clk_in;
   end
 
-  always begin
-    #10;
-    $display("=============================== CYCLE %5d =============", $time);
-  end
-
   initial begin
     $dumpfile("full_ray_marcher_sim.vcd");
     $dumpvars(0, full_ray_marcher_sim);

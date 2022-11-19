@@ -51,6 +51,12 @@ endfunction
 
 // not so basic operations
 // should not synthesize this
+`define USE_FAKE_INV_SQRT
+`ifdef USE_FAKE_INV_SQRT
+function automatic fp fp_inv_sqrt(input fp a);
+  return fp_from_real(1/$sqrt(fp_to_real(a)));
+endfunction
+`else
 function automatic fp fp_inv_sqrt(input fp a);
   fp slope = fp_mul(`FP_TWO, fp_sub(`FP_SQRT_TWO, `FP_ONE));
   fp x = fp_sub(`FP_SQRT_TWO,
@@ -66,6 +72,8 @@ function automatic fp fp_inv_sqrt(input fp a);
                            fp_mul(x, x))));
   return x;
 endfunction
+`endif
+
 function automatic fp fp_mod(input fp a, input fp b);
   // TODO
   return a;

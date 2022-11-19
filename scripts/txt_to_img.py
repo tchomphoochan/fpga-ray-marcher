@@ -18,7 +18,8 @@ def main(argv):
   pixels = [[0 for _ in range(W)] for _ in range(H)]
   for line in raw_lines:
     elems = line.split()
-    assert elems[0] == "CMD"
+    if elems[0] != "CMD":
+      continue
     if elems[1] == "SAVE":
       if elems[2] != "x":
         h, v, color = map(int, (elems[2], elems[3], elems[4]))

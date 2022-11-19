@@ -98,7 +98,7 @@ module ray_unit #(
   // Output of Ray March
   vec3 next_pos_vec;
 
-`ifndef SYNTHESIS
+`ifdef TESTING_RAY_UNIT
   always begin
     #10;
     $display("state: %d, depth: %d", state, ray_depth);
