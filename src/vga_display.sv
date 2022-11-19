@@ -44,14 +44,14 @@ module vga_display(
 
   always_ff @(posedge vga_clk_in) begin
     // request read
-    read_addr_out <= (vsync >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hsync >> `DISPLAY_SHIFT_SIZE);
+    read_addr_out <= (vcount >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hcount >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
     vga_r <= blank ? 0 : read_data_in;
     vga_g <= blank ? 0 : read_data_in;
     vga_b <= blank ? 0 : read_data_in;
-    vga_hs <= hsync_out;
-    vga_vs <= vsync_out;
+    vga_hs <= ~hsync_out;
+    vga_vs <= ~vsync_out;
   end
 
 endmodule // vga_display

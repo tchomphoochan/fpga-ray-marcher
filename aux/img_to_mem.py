@@ -23,8 +23,8 @@ if __name__ == "__main__":
         # Take input image
         # modified: don't divide each color channel's value by 16
         image_out = image_in.copy()
-        W = 800
-        H = 600
+        W = 400
+        H = 300
         image_out = image_out.resize((W,H))
 
         # Palettize the image

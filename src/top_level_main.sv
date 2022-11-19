@@ -22,12 +22,6 @@ module top_level_main(
     .reset(sys_rst)
   );
 
-  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH;
-  parameter DISPLAY_HEIGHT = `DISPLAY_HEIGHT;
-  parameter H_BITS = $clog2(DISPLAY_WIDTH);
-  parameter V_BITS = $clog2(DISPLAY_HEIGHT);
-  parameter ADDR_BITS = H_BITS+V_BITS;
-
   user_control user_control_inst(
     .clk_in(sys_clk),
     .btnl(btnl),
@@ -37,7 +31,7 @@ module top_level_main(
     .sw(sw)
   ); // isn't really connected to anything right now
 
-  logic [`ADDR_BITS:0] vga_display_read_addr;
+  logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [3:0] vga_display_read_data;
 
   vga_display vga_display_inst(
@@ -51,8 +45,10 @@ module top_level_main(
     .vga_vs(vga_vs)
   );
 
-  logic [H_BITS-1:0] ray_marcher_hcount;
-  logic [V_BITS-1:0] ray_marcher_vcount;
+  logic [`H_BITS-1:0] ray_marcher_hcount;
+  logic [`V_BITS-1:0] ray_marcher_vcount;
+  logic [`ADDR_BITS-1:0] ray_marcher_addr;
+  assign ray_marcher_addr = ray_marcher_vcount * `DISPLAY_WIDTH + ray_marcher_hcount;
   logic [3:0] ray_marcher_color;
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;
@@ -81,8 +77,8 @@ module top_level_main(
 
   bram_manager #(
     .WIDTH(4),
-    .DEPTH(DISPLAY_WIDTH*DISPLAY_HEIGHT),
-    .ADDR_LEN(ADDR_BITS)
+    .DEPTH(`DISPLAY_WIDTH*`DISPLAY_HEIGHT),
+    .ADDR_LEN(`ADDR_BITS)
   ) bram_manager_inst(
     .clk(sys_clk),
     .rst(sys_rst),

@@ -36,7 +36,6 @@ module top_level_vga_bram_tester(
     .vga_vs(vga_vs)
   );
   logic which_bram;
-  assign which_bram = 1;
 
   bram_manager #(
     .WIDTH(4),
@@ -48,8 +47,8 @@ module top_level_vga_bram_tester(
     .swap_buffers(btnu),
     .read_addr(vga_display_read_addr),
     .write_enable(0),
-    // .write_addr('z),
-    // .write_data('z),
+    .write_addr(0),
+    .write_data(0),
     .read_data_out(vga_display_read_data),
     .which_bram_out(which_bram)
   );
@@ -68,6 +67,7 @@ module top_level_vga_bram_tester(
   end
 
   assign led = {out_led, which_bram, vga_r, vga_g, vga_b, vga_hs, vga_vs};
+  // assign led = vga_display_read_addr;
 
 endmodule // top_level_fixed_point_tester
 
