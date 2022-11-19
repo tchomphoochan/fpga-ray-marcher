@@ -10,6 +10,48 @@
 `define RAY_UNIT_TYPE ray_unit_dummy
 `endif
 
+module ray_generator #(
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
+  DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
+  H_BITS = `H_BITS,
+  V_BITS = `V_BITS
+) (
+  input wire [H_BITS-1:0] hcount_in,
+  input wire [V_BITS-1:0] vcount_in,
+  input vec3 cam_pos,
+  input vec3 cam_forward,
+
+  output vec3 ray_direction_out
+);
+//   vec3 cam_ww = normalize(cam_target - cam_pos); // cam_forward
+
+// get normalized camera vectors
+//   vec3 cam_uu = normalize(cross(vec3(0,1,0), cam_ww)); // cam_right
+//   vec3 cam_vv = normalize(cross(cam_ww, cam_uu)); // cam_up
+  vec3 cam_right, cam_up;
+  assign cam_right = vec3_cross(make_vec3(`FP_ZERO, `FP_ONE, `FP_ZERO), cam_forward);
+  assign cam_up = vec3_cross(cam_forward, cam_right);
+// map y to about 0..1
+// 	 vec2 p = (2.0 * fragCoord - iResolution.xy) / iResolution.y;
+  fp hcount_fp, vcount_fp;
+  assign hcount_fp = (hcount_in << 1) << `NUM_FRAC_DIGITS;
+  assign vcount_fp = (vcount_in << 1) << `NUM_FRAC_DIGITS;
+  fp px, py;
+  assign px = fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
+  assign py = fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+// calculate ray direction
+//   float h = 1.0; // tan(fov/2.0)
+//   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww);
+  vec3 scaled_right, scaled_up;
+  assign scaled_right = vec3_scaled(cam_right, px);
+  assign scaled_up = vec3_scaled(cam_up, py);
+
+  vec3 rd0, rd1;
+  assign rd0 = vec3_add(scaled_right, scaled_up);
+  assign rd1 = vec3_add(rd0, cam_forward);
+  assign ray_direction_out = vec3_normed(rd1);
+endmodule // ray_generator
+
 module ray_marcher #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH, // BE CAREFUL: should NOT be powers of two!!
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
@@ -41,6 +83,9 @@ module ray_marcher #(
   logic [V_BITS-1:0] vcount, assign_vcount;
   logic [$clog2(NUM_CORES)-1:0] core_idx, assign_to;
 
+  // normalized direction for the current pixel
+  vec3 ray_dir, assign_ray_dir;
+
   // instantiate cores
   // MODIFY THESE VARIABLES FOR TESTING
   logic assigning;
@@ -66,7 +111,7 @@ module ray_marcher #(
         .clk_in(clk_in),
         .rst_in(core_rst),
         .ray_origin_in(current_pos_vec),
-        .ray_direction_in(current_dir_vec),
+        .ray_direction_in(assign_ray_dir),
         .fractal_sel_in(current_fractal),
         .hcount_in(assign_hcount),
         .vcount_in(assign_vcount),
@@ -80,6 +125,20 @@ module ray_marcher #(
   endgenerate
   logic all_cores_ready; // just for convenience
   assign all_cores_ready = &core_ready_out;
+
+  // instantiate ray generator
+  ray_generator #(
+    .DISPLAY_WIDTH(DISPLAY_WIDTH),
+    .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
+    .H_BITS(H_BITS),
+    .V_BITS(V_BITS)
+  ) generator (
+    .hcount_in(hcount),
+    .vcount_in(vcount),
+    .cam_pos(current_pos_vec),
+    .cam_forward(current_dir_vec),
+    .ray_direction_out(ray_dir)
+  );
 
   // assign work
   always_ff @(posedge clk_in) begin
@@ -138,6 +197,7 @@ module ray_marcher #(
           assign_to <= core_idx;
           assign_hcount <= hcount;
           assign_vcount <= vcount;
+          assign_ray_dir <= ray_dir;
           // increment to the next pixel
           hcount <= hcount+1;
         end else begin
