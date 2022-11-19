@@ -19,7 +19,7 @@
 
 module vga_gen_800x600(
   input wire pixel_clk_in,
-  output logic [9:0] hcount_out,    // pixel number on current line
+  output logic [10:0] hcount_out,    // pixel number on current line
   output logic [9:0] vcount_out,    // line number
   output logic vsync_out, hsync_out,
   output logic blank_out);

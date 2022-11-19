@@ -10,7 +10,7 @@ module vga_display(
   output logic [`ADDR_BITS-1:0] read_addr_out,
   // connect to vga pins
   output logic [3:0] vga_r, vga_g, vga_b,
-  output logic vga_hs, vga_vs
+  output logic vga_hs, vga_vs, vga_blank
 );
 
   logic [`VGA_H_BITS-1:0] hcount, hcount_mid, hcount_out;
@@ -47,11 +47,12 @@ module vga_display(
     read_addr_out <= (vcount >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hcount >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
-    vga_r <= blank_out ? 0 : 4'b1111;
-    vga_g <= blank_out ? 0 : 4'b1111;
-    vga_b <= blank_out ? 0 : 4'b1111;
-    vga_hs <= ~hsync_out;
-    vga_vs <= ~vsync_out;
+    vga_r <= read_data_in;
+    vga_g <= read_data_in;
+    vga_b <= read_data_in;
+    vga_hs <= hsync_out;
+    vga_vs <= vsync_out;
+    vga_blank <= blank_out;
   end
 
 endmodule // vga_display
