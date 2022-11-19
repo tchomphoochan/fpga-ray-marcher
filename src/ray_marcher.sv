@@ -95,6 +95,7 @@ module ray_marcher #(
         // no more pixels to be assigned
         $display("No more pixels to be assigned. At machine %d.", core_idx);
         if (all_cores_ready) begin
+          $display("CMD NEW FRAME");
           $display("Taking in new inputs: pos_vec_in=%s, dir_vec_in=%s, fractal_sel_in=%d",
             vec3_to_str(pos_vec_in), vec3_to_str(dir_vec_in), fractal_sel_in);
           // every machine is done
@@ -145,6 +146,7 @@ module ray_marcher #(
       // nothing to do
     end else begin
       if (core_ready_out[core_idx]) begin
+        $display("CMD SAVE %d %d %d",core_hcount_out[core_idx],core_vcount_out[core_idx],core_color_out[core_idx]);
         $display("Dummy core %1d data available (Saved to memory: hcount=%d, vcount=%d, color=%d)",
           core_idx, core_hcount_out[core_idx], core_vcount_out[core_idx], core_color_out[core_idx]);
         // copy data into bram

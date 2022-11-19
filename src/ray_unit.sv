@@ -131,6 +131,8 @@ module ray_unit #(
           
           if (fp_lt(sdf_dist, `FP_HUNDREDTH) || ray_depth == MAX_RAY_DEPTH) begin
             color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : 4'hF;
+            hcount_out <= hcount;
+            vcount_out <= vcount;
             state <= RU_Ready;
           end else begin
             ray_depth <= ray_depth + 1;

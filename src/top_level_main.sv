@@ -58,7 +58,7 @@ module top_level_main(
   vec3 pos_vec_def, dir_vec_def;
   assign pos_vec_def.x = `FP_ZERO;
   assign pos_vec_def.y = `FP_ZERO;
-  assign pos_vec_def.z = fp_neg(`FP_THREE);
+  assign pos_vec_def.z = fp_neg(`FP_THREE_HALFS);
   assign dir_vec_def.x = `FP_ZERO;
   assign dir_vec_def.y = `FP_ZERO;
   assign dir_vec_def.z = `FP_ONE;
