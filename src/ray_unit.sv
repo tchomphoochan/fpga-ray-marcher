@@ -30,7 +30,6 @@ module ray_generator #(
 
   output vec3 ray_direction_out
 );
-  parameter DISPLAY_HEIGHT_INV = 1.0/$itor(`DISPLAY_HEIGHT);
 //   vec3 cam_ww = normalize(cam_target - cam_pos); // cam_forward
 
 // get normalized camera vectors
