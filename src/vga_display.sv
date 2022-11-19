@@ -13,8 +13,8 @@ module vga_display(
   output logic vga_hs, vga_vs
 );
 
-  logic [`H_BITS-1:0] hcount, hcount_mid, hcount_out;
-  logic [`V_BITS-1:0] vcount, vcount_mid, vcount_out;
+  logic [`VGA_H_BITS-1:0] hcount, hcount_mid, hcount_out;
+  logic [`VGA_V_BITS-1:0] vcount, vcount_mid, vcount_out;
   logic vsync, vsync_mid, vsync_out;
   logic hsync, hsync_mid, hsync_out;
   logic blank, blank_mid, blank_out;
@@ -44,7 +44,7 @@ module vga_display(
 
   always_ff @(posedge vga_clk_in) begin
     // request read
-    read_addr_out <= vsync * `DISPLAY_WIDTH + hsync;
+    read_addr_out <= (vsync >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hsync >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
     vga_r <= blank ? 0 : read_data_in;
