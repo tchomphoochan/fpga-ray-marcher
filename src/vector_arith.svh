@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`ifndef VECTOR_ARITH_SV
-`define VECTOR_ARITH_SV
+`ifndef VECTOR_ARITH_SVH
+`define VECTOR_ARITH_SVH
 
-`include "fixed_point_arith.sv"
-`include "types.sv"
+`include "fixed_point_arith.svh"
+`include "types.svh"
 
 function automatic vec3 make_vec3(input fp x, input fp y, input fp z);
   make_vec3.x = x;

@@ -3,6 +3,9 @@
 
 `define TESTING_RAY_UNIT
 
+`include "fixed_point_arith.svh"
+`include "hsl2rgb.svh"
+
 module ray_unit_tb;
 
   parameter DISPLAY_WIDTH = 400;
@@ -18,6 +21,8 @@ module ray_unit_tb;
   logic [2:0] fractal_sel_in;
   logic [H_BITS-1:0] hcount_in;
   logic [V_BITS-1:0] vcount_in;
+  fp hcount_fp_in;
+  fp vcount_fp_in;
   // rendered output
   logic [H_BITS-1:0] hcount_out;
   logic [V_BITS-1:0] vcount_out;
@@ -68,7 +73,9 @@ module ray_unit_tb;
     ray_direction_in = make_vec3(fp_from_real(0), fp_from_real(0), fp_from_real(1));
     fractal_sel_in = 0;
     hcount_in = 150;
+    hcount_fp_in = fp_mul(fp_sub(hcount_in, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
     vcount_in = 140;
+    vcount_fp_in = fp_mul(fp_sub(vcount_in, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
     #10;
 
     // reset machine

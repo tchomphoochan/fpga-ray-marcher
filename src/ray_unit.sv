@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
+`include "vector_arith.svh"
 
 module march_ray (
   input vec3 ray_origin_in,
@@ -30,6 +30,8 @@ module ray_unit #(
   input wire [2:0] fractal_sel_in,
   input wire [H_BITS-1:0] hcount_in,
   input wire [V_BITS-1:0] vcount_in,
+  input fp hcount_fp_in,
+  input fp vcount_fp_in,
   input wire valid_in,
 
   // rendered output
@@ -43,6 +45,7 @@ module ray_unit #(
   logic [H_BITS-1:0] hcount;
   logic [V_BITS-1:0] vcount;
   logic [2:0] current_fractal;
+  fp hcount_fp, vcount_fp;
   vec3 ray_origin, ray_direction;
   logic [$clog2(MAX_RAY_DEPTH)-1:0] ray_depth;
 
@@ -81,6 +84,8 @@ module ray_unit #(
           if (valid_in) begin
             hcount <= hcount_in;
             vcount <= vcount_in;
+            hcount_fp <= hcount_fp_in;
+            vcount_fp <= vcount_fp_in;
             ray_origin <= ray_origin_in;
             current_fractal <= fractal_sel_in;
             ray_depth <= 0;
@@ -123,6 +128,8 @@ module ray_unit #(
     .valid_in(gen_valid_in),
     .hcount_in(hcount),
     .vcount_in(vcount),
+    .hcount_fp_in(hcount_fp),
+    .vcount_fp_in(vcount_fp),
     .cam_forward_in(cam_forward_in),
     .ray_direction_out(ray_direction_out),
     .valid_out(gen_valid_out),

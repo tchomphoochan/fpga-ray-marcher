@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
 
 module fixed_point_alu(
   input fp d0_in,

@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`ifndef FIXED_POINT_ARITH_SV
-`define FIXED_POINT_ARITH_SV
+`ifndef FIXED_POINT_ARITH_SVH
+`define FIXED_POINT_ARITH_SVH
 
-`include "types.sv"
+`include "types.svh"
 
 // basic operations
 function automatic fp fp_neg(input fp a);
@@ -18,8 +18,8 @@ function automatic fp fp_sub(input fp a, input fp b);
 endfunction
 function automatic fp fp_mul(input fp a, input fp b);
   // TODO probably stress test signed multiplication carefully
-  logic [2*`NUM_ALL_DIGITS-1:0] result;
-  result = a*b;
+  logic signed [2*`NUM_ALL_DIGITS-1:0] result;
+  result = $signed(a)*$signed(b);
   return $signed(result >> `NUM_FRAC_DIGITS);
 endfunction
 

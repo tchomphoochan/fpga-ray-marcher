@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "vector_arith.svh"
 
 module ray_unit_dummy #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -18,6 +18,8 @@ module ray_unit_dummy #(
   input wire [2:0] fractal_sel_in,
   input wire [H_BITS-1:0] hcount_in,
   input wire [V_BITS-1:0] vcount_in,
+  input fp hcount_fp_in,
+  input fp vcount_fp_in,
   input wire valid_in,
 
   // rendered output

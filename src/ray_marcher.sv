@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "vector_arith.svh"
 
 `ifndef TESTING_RAY_MARCHER
 `define RAY_UNIT_TYPE ray_unit
@@ -14,12 +14,13 @@
 // `define USE_CHECKERBOARD_RENDERING
 
 module ray_marcher #(
-  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH, // BE CAREFUL: should NOT be powers of two!!
+  parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
   H_BITS = `H_BITS,
   V_BITS = `V_BITS,
   COLOR_BITS = `COLOR_BITS,
   NUM_CORES = `NUM_CORES
+  // TODO parameterize FP stuff so we can test
 ) (
   input wire clk_in,
   input wire rst_in,
@@ -47,6 +48,7 @@ module ray_marcher #(
   // internal state: which pixel/machine to assign next?
   logic [H_BITS-1:0] hcount, assign_hcount;
   logic [V_BITS-1:0] vcount, assign_vcount;
+  fp hcount_fp, vcount_fp, assign_hcount_fp, assign_vcount_fp;
   logic [$clog2(NUM_CORES):0] core_idx, assign_to;
 
   // instantiate cores
@@ -77,7 +79,9 @@ module ray_marcher #(
         .ray_direction_in(current_dir_vec),
         .fractal_sel_in(current_fractal),
         .hcount_in(assign_hcount),
+        .hcount_fp_in(assign_hcount_fp),
         .vcount_in(assign_vcount),
+        .vcount_fp_in(assign_vcount_fp),
         .valid_in(assign_to == i && assigning),
         .hcount_out(core_hcount_out[i]),
         .vcount_out(core_vcount_out[i]),
@@ -93,7 +97,9 @@ module ray_marcher #(
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
       hcount <= 0;
+      hcount_fp <= `FP_HCOUNT_FP_START;
       vcount <= DISPLAY_HEIGHT;
+      vcount_fp <= `FP_VCOUNT_FP_END;
       new_frame_out <= 0;
       assigning <= 0;
       core_idx <= 0;
@@ -120,7 +126,9 @@ module ray_marcher #(
           current_fractal <= fractal_sel_in;
           // start the frame
           hcount <= 0;
+          hcount_fp <= `FP_HCOUNT_FP_START;
           vcount <= 0;
+          vcount_fp <= `FP_VCOUNT_FP_START;
           new_frame_out <= 1; // (TODO: beware: don't end when copying the last pixel!)
           
 `ifdef USE_CHECKERBOARD_RENDERING
@@ -137,14 +145,16 @@ module ray_marcher #(
         // exhausted current row, go onto the next
         // nothing to do here really
         vcount <= vcount+1;
+        vcount_fp <= fp_add(vcount_fp, `FP_VCOUNT_FP_INCREMENT);
         hcount <= 0;
+        hcount_fp <= `FP_HCOUNT_FP_START;
         assigning <= 0;
 `ifdef USE_CHECKERBOARD_RENDERING
         checker_bit <= ~checker_bit;
 `endif
       end else begin
 `ifdef TESTING_RAY_MARCHER
-        $write("hcount = %d, vcount = %d, ", hcount, vcount);
+        $write("hcount = %d, vcount = %d", hcount, vcount);
 `endif
         new_frame_out <= 0; // started computing new frame, so set back to zero
         // pixel ready to assign
@@ -161,9 +171,12 @@ module ray_marcher #(
 `endif
           assign_to <= core_idx;
           assign_hcount <= hcount;
+          assign_hcount_fp <= hcount_fp;
           assign_vcount <= vcount;
+          assign_vcount_fp <= vcount_fp;
           // increment to the next pixel
           hcount <= hcount+1;
+          hcount_fp <= fp_add(hcount_fp, `FP_HCOUNT_FP_INCREMENT);
         end else begin
           assigning <= 0;
 `ifdef TESTING_RAY_MARCHER

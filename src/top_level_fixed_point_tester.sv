@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
 
 module top_level_fixed_point_tester(
   input wire clk_100mhz,

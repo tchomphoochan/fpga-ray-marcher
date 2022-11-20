@@ -1,7 +1,7 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
-`include "types.sv"
+`include "types.svh"
 `include "iverilog_hack.svh"
 
 module bram_manager #(

@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "vector_arith.sv"
+`include "vector_arith.svh"
 
 module ray_generator #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -14,6 +14,8 @@ module ray_generator #(
   input logic valid_in,
   input logic [H_BITS-1:0] hcount_in,
   input logic [V_BITS-1:0] vcount_in,
+  input fp hcount_fp_in,
+  input fp vcount_fp_in,
   input vec3 cam_forward_in,
   output logic valid_out,
   output logic ready_out,
@@ -37,8 +39,10 @@ module ray_generator #(
   assign hcount_fp = (hcount_in << 1) << `NUM_FRAC_DIGITS;
   assign vcount_fp = (vcount_in << 1) << `NUM_FRAC_DIGITS;
   fp px, py;
-  assign px = fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
-  assign py = fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+  // assign px = fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
+  // assign py = fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+  assign px = hcount_fp_in;
+  assign py = vcount_fp_in;
 // calculate ray direction
 //   float h = 1.0; // tan(fov/2.0)
 //   vec3 rd = normalize(p.x * h * cam_uu + p.y * h * cam_vv + cam_ww);

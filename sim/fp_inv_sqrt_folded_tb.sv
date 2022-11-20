@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
 
 `define TEST_FP_OP_1(op, func, v1) \
   wait(ready_out); \
