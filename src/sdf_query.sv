@@ -13,6 +13,13 @@ module sdf_query_cube (
   assign sdf_out = sd_box_fast(point_in, `FP_HALF);
 endmodule // sdf_query_cube
 
+module sdf_query_cube_infinite (
+  input vec3 point_in,
+  output fp sdf_out
+);
+  assign sdf_out = sd_box_fast(vec3_sub(vec3_fract(vec3_add(point_in, make_vec3(`FP_HALF, `FP_HALF, `FP_HALF))), make_vec3(`FP_HALF, `FP_HALF, `FP_HALF)), `FP_QUARTER);
+endmodule // sdf_cube_infinite
+
 module sdf_query_sponge (
   input vec3 point_in,
   output fp sdf_out
