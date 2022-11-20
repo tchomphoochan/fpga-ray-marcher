@@ -85,7 +85,7 @@ module ray_generator_folded #(
     end else if (stage == 3) begin
       // stage 3: px, py
       px <= fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
-      py <= fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+      py <= fp_mul(fp_sub(`FP_DISPLAY_HEIGHT, vcount_fp), `FP_INV_DISPLAY_HEIGHT); // inverted y axis
       stage <= 4;
     end else if (stage == 4) begin
       // stage 4: scaled
