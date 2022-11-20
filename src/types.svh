@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`ifndef TYPES_SV
-`define TYPES_SV
+`ifndef TYPES_SVH
+`define TYPES_SVH
 
 // for rendering
 `define DISPLAY_WIDTH                   400

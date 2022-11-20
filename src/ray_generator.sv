@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "vector_arith.sv"
+`include "vector_arith.svh"
 
 module ray_generator #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,

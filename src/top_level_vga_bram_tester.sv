@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
+`include "types.svh"
 
 module top_level_vga_bram_tester(
   input wire clk_100mhz,

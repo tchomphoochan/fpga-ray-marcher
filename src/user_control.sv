@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
+`include "types.svh"
 
 module user_control #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,

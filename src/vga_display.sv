@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
+`include "types.svh"
+`include "hsl2rgb.svh"
 
 module vga_display(
   input wire vga_clk_in,  // assume match vga clock for now

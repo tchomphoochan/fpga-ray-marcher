@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "vector_arith.svh"
 
 module ray_unit_dummy #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,

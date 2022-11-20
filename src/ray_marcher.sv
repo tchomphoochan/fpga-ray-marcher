@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "vector_arith.svh"
 
 `ifndef TESTING_RAY_MARCHER
 `define RAY_UNIT_TYPE ray_unit

@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
-`include "vector_arith.sv"
-`include "sdf_primitives.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
+`include "vector_arith.svh"
+`include "sdf_primitives.svh"
 
 module sdf_query_cube (
   input vec3 point_in,

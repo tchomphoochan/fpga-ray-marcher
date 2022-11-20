@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
-`include "vector_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
+`include "vector_arith.svh"
 
 module march_ray (
   input vec3 ray_origin_in,

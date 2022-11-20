@@ -1,6 +1,9 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
+`ifndef HSL2RGB_SVH
+`define HSL2RGB_SVH
+
 /*
 uint32_t hsl2rgb(uint8_t h, uint8_t s, uint8_t l) {
     uint8_t  r, g, b, lo, c, x, m;
@@ -53,5 +56,7 @@ function automatic [7:0][2:0] hsl2rgb(input [7:0] h, input [7:0] s, input [7:0] 
     b = (Hh[9:8] == 3) ? c : (Hh[9:8] == 4) ? c : x;
     return {r+m, g+m, b+m};
 endfunction
+
+`endif
 
 `default_nettype wire

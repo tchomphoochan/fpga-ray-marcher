@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
-`include "vector_arith.sv"
-`include "sdf_primitives.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
+`include "vector_arith.svh"
+`include "sdf_primitives.svh"
 
 `define TEST_SDF_PRIMITIVES(func, x1, y1, z1, halfExtents1, distance1) \
   vec = make_vec3(fp_from_real(x1), fp_from_real(y1), fp_from_real(z1)); \
@@ -36,7 +36,7 @@ module sdf_primitives_tb;
 
     $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 
-    $display("Finishing Si1m");
+    $display("Finishing Sim");
     $finish;
   end
 endmodule // sdf_primitives_tb

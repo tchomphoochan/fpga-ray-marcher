@@ -1,10 +1,10 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`ifndef FIXED_POINT_ARITH_SV
-`define FIXED_POINT_ARITH_SV
+`ifndef FIXED_POINT_ARITH_SVH
+`define FIXED_POINT_ARITH_SVH
 
-`include "types.sv"
+`include "types.svh"
 
 // basic operations
 function automatic fp fp_neg(input fp a);

@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 `default_nettype none
 
-`ifndef SF_PRIMITIVES_SV
-`define SF_PRIMITIVES_SV
+`ifndef SDF_PRIMITIVES_SVH
+`define SDF_PRIMITIVES_SVH
 
-`include "types.sv"
-`include "fixed_point_arith.sv"
+`include "types.svh"
+`include "fixed_point_arith.svh"
 
 function automatic fp sd_box_fast(input vec3 point, input fp halfExtents);
   fp x_abs, y_abs, z_abs, xy_max, xyz_max;

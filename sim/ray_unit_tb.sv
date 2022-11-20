@@ -3,6 +3,8 @@
 
 `define TESTING_RAY_UNIT
 
+`include "hsl2rgb.svh"
+
 module ray_unit_tb;
 
   parameter DISPLAY_WIDTH = 400;
