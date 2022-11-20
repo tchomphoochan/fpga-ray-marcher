@@ -132,7 +132,7 @@ module ray_unit #(
     .ray_origin_out(next_pos_vec)
   );
 
-  sdf_query_cube sdf_query (
+  sdf_query_cube_infinite sdf_query (
     .point_in(ray_origin),
     .sdf_out(sdf_dist)
   );
