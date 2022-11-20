@@ -19,6 +19,7 @@ module ray_generator #(
   output logic ready_out,
   output vec3 ray_direction_out
 );
+  vec3 ray_direction;
   assign ready_out = 1;
   assign valid_out = valid_in;
 
@@ -48,7 +49,11 @@ module ray_generator #(
   vec3 rd0, rd1;
   assign rd0 = vec3_add(scaled_right, scaled_up);
   assign rd1 = vec3_add(rd0, cam_forward_in);
-  assign ray_direction_out = vec3_normed(rd1);
+  assign ray_direction = vec3_normed(rd1);
+
+  assign ray_direction_out.x = ray_direction.x;
+  assign ray_direction_out.y = fp_neg(ray_direction.y);
+  assign ray_direction_out.z = ray_direction.z;
 
 endmodule // ray_generator
 
