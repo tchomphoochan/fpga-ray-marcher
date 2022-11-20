@@ -58,6 +58,44 @@ module ray_generator_folded #(
     .ready_out(fisf_ready_out)
   );
 
+  fp mult1_a, mult1_b, mult1_res;
+  fp mult2_a, mult2_b, mult2_res;
+  fp mult3_a, mult3_b, mult3_res;
+  assign mult1_res = fp_mul(mult1_a, mult1_b);
+  assign mult2_res = fp_mul(mult2_a, mult2_b);
+  assign mult3_res = fp_mul(mult3_a, mult3_b);
+
+  always_comb begin
+    mult1_a = 0;
+    mult1_b = 0;
+    mult2_a = 0;
+    mult2_b = 0;
+    mult3_a = 0;
+    mult3_b = 0;
+    if (stage == 3) begin
+      mult1_a = fp_sub(hcount_fp, `FP_DISPLAY_WIDTH);
+      mult1_b = `FP_INV_DISPLAY_HEIGHT;
+      mult2_a = fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT);
+      mult2_b = `FP_INV_DISPLAY_HEIGHT;
+    end else if (stage == 4) begin
+      // scaled_right <= vec3_scaled(cam_right, px);
+      mult1_a = cam_right.x;
+      mult1_b = px;
+      mult2_a = cam_right.y;
+      mult2_b = px;
+      mult3_a = cam_right.z;
+      mult3_b = px;
+    end else if (stage == 6) begin
+      // ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
+      mult1_a = rd1.x;
+      mult1_b = fisf_res_out;
+      mult2_a = rd1.y;
+      mult2_b = fisf_res_out;
+      mult3_a = rd1.z;
+      mult3_b = fisf_res_out;
+    end
+  end
+
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
       stage <= 0;
@@ -84,12 +122,17 @@ module ray_generator_folded #(
       stage <= 3;
     end else if (stage == 3) begin
       // stage 3: px, py
-      px <= fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
-      py <= fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+      // px <= fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
+      // py <= fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
+      px <= mult1_res;
+      py <= mult2_res;
       stage <= 4;
     end else if (stage == 4) begin
       // stage 4: scaled
-      scaled_right <= vec3_scaled(cam_right, px);
+      // scaled_right <= vec3_scaled(cam_right, px);
+      scaled_right.x <= mult1_res;
+      scaled_right.y <= mult2_res;
+      scaled_right.z <= mult2_res;
       scaled_up <= vec3_scaled(cam_up, py);
       stage <= 5;
     end else if (stage == 5 && fisf_ready_out) begin
@@ -100,7 +143,10 @@ module ray_generator_folded #(
     end else if (stage == 6) begin
       fisf_valid_in <= 0;
       if (fisf_valid_out) begin
-          ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
+          // ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
+          ray_direction_out.x <= mult1_res;
+          ray_direction_out.y <= mult2_res;
+          ray_direction_out.z <= mult3_res;
           valid_out <= 1;
           ready_out <= 1;
           stage <= 0;
