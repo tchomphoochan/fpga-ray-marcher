@@ -46,9 +46,15 @@ module ray_unit_tb;
 
   logic all_passed = 1;
 
+  logic [2:0][7:0] hsl_out;
+  
+  assign hsl_out = hsl2rgb(color_out << 4, color_out << 4, color_out << 4);
+
   always begin
     #5;
     clk_in = !clk_in;
+    $display("color_out: %b", color_out);
+    $display("hsl_out (hsl): %b %b %b", hsl_out[0], hsl_out[1], hsl_out[2]);
   end
 
   initial begin

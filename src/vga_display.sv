@@ -28,6 +28,13 @@ module vga_display(
     .blank_out(blank)
   );
 
+  logic[27:0] hue_counter;
+  always_ff @(posedge vga_clk_in) begin
+    hue_counter <= hue_counter + 1;
+  end
+  logic [2:0][7:0] hsl;
+  assign hsl = hsl2rgb(hue_counter >> 20, 8'd165, read_data_in << 4);
+
   always_ff @(posedge vga_clk_in) begin
     // pipeline for 2 cycle delay due to memory
     hcount_mid <= hcount;
@@ -47,9 +54,9 @@ module vga_display(
     read_addr_out <= (vcount >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH + (hcount >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
-    vga_r <= blank_out ? 0 : read_data_in; // the board is very strict here for some stupid reason
-    vga_g <= blank_out ? 0 : read_data_in;
-    vga_b <= blank_out ? 0 : read_data_in;
+    vga_r <= blank_out ? 0 : (hsl[0] >> 4); // the board is very strict here for some stupid reason
+    vga_g <= blank_out ? 0 : (hsl[1] >> 4);
+    vga_b <= blank_out ? 0 : (hsl[2] >> 4);
     vga_hs <= ~hsync_out; // idk why these need to be flipped but iswtg i would never forget this again
     vga_vs <= ~vsync_out; // hours wasted here: 9
   end
