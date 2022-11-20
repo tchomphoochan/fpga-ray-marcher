@@ -62,7 +62,7 @@ module ray_unit_tb;
     ray_direction_in = make_vec3(fp_from_real(0), fp_from_real(0), fp_from_real(1));
     fractal_sel_in = 0;
     hcount_in = 150;
-    vcount_in = 150;
+    vcount_in = 140;
     #10;
 
     // reset machine

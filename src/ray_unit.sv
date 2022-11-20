@@ -95,8 +95,8 @@ module ray_unit #(
         RU_Busy: begin
           ray_origin <= next_pos_vec;
           
-          if (fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) || ray_depth == MAX_RAY_DEPTH) begin
-            color_out <= ray_depth == MAX_RAY_DEPTH ? 4'd0 : (4'hF - (ray_depth >> 1));
+          if (fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) || fp_gt(sdf_dist, `FP_FIVE) || ray_depth == MAX_RAY_DEPTH) begin
+            color_out <= fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) ? (4'hF - (ray_depth >> 1)) : 4'd0;
             hcount_out <= hcount;
             vcount_out <= vcount;
             state <= RU_Ready;
