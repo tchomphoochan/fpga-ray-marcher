@@ -113,6 +113,7 @@ typedef enum logic [3:0] {
 `define FP_ONE 32'h00100000
 `define FP_TWO 32'h00200000
 `define FP_THREE 32'h00300000
+`define FP_FIVE 32'h00500000
 `define FP_THREE_HALFS 32'h00180000
 `define FP_HALF 32'h00080000
 `define FP_QUARTER 32'h00040000
