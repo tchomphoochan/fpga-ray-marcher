@@ -7,4 +7,4 @@ ln -s ../data ./data
 mkdir ./src
 cd ..
 cp test-*.sh for-lab-bc
-python3 combiner.py
+python3 scripts/combiner.py
