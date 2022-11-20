@@ -112,16 +112,18 @@ module ray_generator_folded #(
       valid_out <= 0;
       ready_out <= 1;
       fisf_valid_in <= 0;
-    end else if (stage == 0 && valid_in) begin
+    end else if (stage == 0) begin
       // stage 0: input
       valid_out <= 0;
-      ready_out <= 0;
-      hcount <= hcount_in;
-      vcount <= vcount_in;
-      cam_forward <= cam_forward_in;
-      hcount_fp <= (hcount_in << 1) << `NUM_FRAC_DIGITS;
-      vcount_fp <= (vcount_in << 1) << `NUM_FRAC_DIGITS;
-      stage <= 1;
+      if (valid_in) begin
+        ready_out <= 0;
+        hcount <= hcount_in;
+        vcount <= vcount_in;
+        cam_forward <= cam_forward_in;
+        hcount_fp <= (hcount_in << 1) << `NUM_FRAC_DIGITS;
+        vcount_fp <= (vcount_in << 1) << `NUM_FRAC_DIGITS;
+        stage <= 1;
+      end
     end else if (stage == 1) begin
       // stage 1: cam right
       // cam_right <= vec3_cross(make_vec3(`FP_ZERO, `FP_ONE, `FP_ZERO), cam_forward);

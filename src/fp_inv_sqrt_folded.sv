@@ -77,12 +77,14 @@ module fp_inv_sqrt_folded(
       stage <= 0;
       valid_out <= 0;
       ready_out <= 1;
-    end else if (stage == 0 && valid_in) begin
+    end else if (stage == 0) begin
       valid_out <= 0;
-      ready_out <= 0;
-      // step 0: receive input
-      original <= a_in;
-      stage <= 1;
+      if (valid_in) begin
+        ready_out <= 0;
+        // step 0: receive input
+        original <= a_in;
+        stage <= 1;
+      end
     end else if (stage == 1) begin
       // step 1: count leading zero and shift
       diff <= _diff;
