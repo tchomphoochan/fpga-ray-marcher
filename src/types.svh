@@ -20,7 +20,10 @@
 
 
 // for rendering
-`define USE_400x300
+`ifndef OVERRIDE_SIZE
+    `define USE_400x300
+`endif
+
 `ifdef USE_400x300
     `define DISPLAY_WIDTH                   400
     `define DISPLAY_HEIGHT                  300
@@ -43,6 +46,54 @@
     `define FP_VCOUNT_FP_START              (32'hfff00000 >> (20 - `NUM_FRAC_DIGITS))
     `define FP_VCOUNT_FP_END                (32'h00100000 >> (20 - `NUM_FRAC_DIGITS))
     `define FP_VCOUNT_FP_INCREMENT          (32'h00001b4e >> (20 - `NUM_FRAC_DIGITS))
+`endif
+
+`ifdef USE_200x150
+    `define DISPLAY_WIDTH                   200
+    `define DISPLAY_HEIGHT                  150
+    `define H_BITS                          8
+    `define V_BITS                          8
+    `define DISPLAY_SHIFT_SIZE              2
+
+    // should not use these in actual synthesis
+    `define FP_DISPLAY_WIDTH                (32'h19000000 >> 1 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_INV_DISPLAY_WIDTH            (32'h00000a3d << 1 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_DISPLAY_HEIGHT               (32'h12c00000 >> 1 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_INV_DISPLAY_HEIGHT           (32'h00000da7 << 1 >> (20 - `NUM_FRAC_DIGITS))
+
+    // goes from -width/height to width/height. increment by 2/height (same scale as vertical).
+    `define FP_HCOUNT_FP_START              (32'hffeaaaaa >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_HCOUNT_FP_END                (32'h00155555 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_HCOUNT_FP_INCREMENT          (32'h00001b4e << 1 >> (20 - `NUM_FRAC_DIGITS))
+
+    // goes from -1 to 1. increment by 2/height.
+    `define FP_VCOUNT_FP_START              (32'hfff00000 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_VCOUNT_FP_END                (32'h00100000 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_VCOUNT_FP_INCREMENT          (32'h00001b4e << 1 >> (20 - `NUM_FRAC_DIGITS))
+`endif
+
+`ifdef USE_100x75
+    `define DISPLAY_WIDTH                   100
+    `define DISPLAY_HEIGHT                  75
+    `define H_BITS                          7
+    `define V_BITS                          7
+    `define DISPLAY_SHIFT_SIZE              3
+
+    // should not use these in actual synthesis
+    `define FP_DISPLAY_WIDTH                (32'h19000000 >> 2 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_INV_DISPLAY_WIDTH            (32'h00000a3d << 2 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_DISPLAY_HEIGHT               (32'h12c00000 >> 2 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_INV_DISPLAY_HEIGHT           (32'h00000da7 << 2 >> (20 - `NUM_FRAC_DIGITS))
+
+    // goes from -width/height to width/height. increment by 2/height (same scale as vertical).
+    `define FP_HCOUNT_FP_START              (32'hffeaaaaa >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_HCOUNT_FP_END                (32'h00155555 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_HCOUNT_FP_INCREMENT          (32'h00001b4e << 2 >> (20 - `NUM_FRAC_DIGITS))
+
+    // goes from -1 to 1. increment by 2/height.
+    `define FP_VCOUNT_FP_START              (32'hfff00000 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_VCOUNT_FP_END                (32'h00100000 >> (20 - `NUM_FRAC_DIGITS))
+    `define FP_VCOUNT_FP_INCREMENT          (32'h00001b4e << 2 >> (20 - `NUM_FRAC_DIGITS))
 `endif
 
 // actual vga output
