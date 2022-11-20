@@ -30,49 +30,46 @@ module sdf_query_sponge (
 endmodule // sdf_query_sponge
 
 /*
-    // Infinite Menger Sponge
-    FixedPoint32 map(in Vec3Fixed q)
-    {
-        // Layer one. The ".05" on the end varies the hole size.
-        Vec3Fixed p = abs(mod((q.scaleByConst(new FixedPoint32(1.0 / 3.0))), new FixedPoint32(1.0)).scaleByConst(3.0) - (new Vec3Fixed(1.0, 1.0, 1.0).scaleByConst(new FixedPoint32(1.5))));
-        FixedPoint32 d = min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - new FixedPoint32(1.0) + new FixedPoint32(0.05);
-        
-        // Layer two.
-        p = abs(mod(q, new FixedPoint32(1.0)) - new Vec3Fixed(0.5, 0.5, 0.5));
-        d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - new FixedPoint32(1.0 / 3.0) + new FixedPoint32(0.05));
+    // Infinite Menger Sponge Base-2
+    // Layer one. The ".05" on the end varies the hole size.
+    vec3 p = abs(fract(q/2.)*2. - 1.);
+    float d = min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - .5 + .05;
+    
+    // Layer two.
+    p =  abs(fract(q) - .5);
+ 	  d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - 1./3. + .05);
+   
+    // Layer three. 3D space is divided by two, instead of three, to give some variance.
+    p =  abs(fract(q*2.)/2. - .25);
+ 	  d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - .5/3. - .015); 
 
-        // Layer three. 3D space is divided by two, instead of three, to give some variance.
-        p = abs(mod(q.scaleByConst(new FixedPoint32(2.0)), new FixedPoint32(1.0)).scaleByConst(new FixedPoint32(0.5)) - new Vec3Fixed(0.25, 0.25, 0.25));
-        d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - new FixedPoint32(0.5 / 3.0) - new FixedPoint32(0.015));
-
-        // Layer four. The little holes, for fine detailing.
-        p = abs(mod(q.scaleByConst(new FixedPoint32(3.0 / 0.5)), new FixedPoint32(1.0)).scaleByConst(new FixedPoint32(0.5 / 3.0)) - new Vec3Fixed(0.5 / 6.0, 0.5 / 6.0, 0.5 / 6.0));
-        return max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - new FixedPoint32(1.0 / 18.0) - new FixedPoint32(0.015));
-    }
+    // Layer four. The little holes, for fine detailing.
+    p =  abs(fract(q*8.)/8. - 1./16.);
+ 	  return max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - 1./20.);
 */
 
 module sdf_query_sponge_inf (
   input vec3 point_in,
   output fp sdf_out
 );
-  // vec3 p;
-  // fp d;
+  vec3 p1, p2, p3, p4;
+  fp d1, d2, d3;
   
-  // // Layer one. The ".05" on the end varies the hole size.
-  // assign p = vec3_abs(vec3_fract((point_in * `FP_1_3)) * `FP_3 - make_vec3(`FP_1_5, `FP_1_5, `FP_1_5));
-  // assign d = min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - `FP_1 + `FP_0_05;
+  // Layer one. The ".05" on the end varies the hole size.
+  assign p1 = vec3_abs(vec3_sub(vec3_sl(vec3_fract(vec3_sr(point_in, 1)), 1), make_vec3(`FP_ONE, `FP_ONE, `FP_ONE)));
+  assign d1 = fp_add(fp_min(fp_max(p1.x, p1.y), fp_min(fp_max(p1.y, p1.z), fp_max(p1.x, p1.z))), `FP_MAGIC_NUMBER_A);
 
-  // // Layer two.
-  // assign p = vec3_abs(vec3_fract(point_in) - make_vec3(`FP_0_5, `FP_0_5, `FP_0_5));
-  // assign d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - `FP_1_3 + `FP_0_05);
+  // Layer two.
+  assign p2 = vec3_abs(vec3_sub(vec3_fract(point_in), make_vec3(`FP_HALF, `FP_HALF, `FP_HALF)));
+  assign d2 = fp_max(d1, fp_add(fp_min(fp_max(p2.x, p2.y), fp_min(fp_max(p2.y, p2.z), fp_max(p2.x, p2.z))), `FP_MAGIC_NUMBER_B));
 
-  // // Layer three. 3D space is divided by two, instead of three, to give some variance.
-  // assign p = vec3_abs(vec3_fract(point_in * `FP_2) * `FP_0_5 - make_vec3(`FP_0_25, `FP_0_25, `FP_0_25));
-  // assign d = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - `FP_0_5_3 - `FP_0_015);
+  // Layer three. 3D space is divided by two, instead of three, to give some variance.
+  assign p3 = vec3_abs(vec3_sub(vec3_sr(vec3_fract(vec3_sl(point_in, 1)), 1), make_vec3(`FP_QUARTER, `FP_QUARTER, `FP_QUARTER)));
+  assign d3 = fp_max(d2, fp_add(fp_min(fp_max(p3.x, p3.y), fp_min(fp_max(p3.y, p3.z), fp_max(p3.x, p3.z))), `FP_MAGIC_NUMBER_C));
 
-  // // Layer four. The little holes, for fine detailing.
-  // assign p = vec3_abs(vec3_fract(point_in * `FP_3_0_5) * `FP_0_5_3 - make_vec3(`FP_0_5_6, `FP_0_5_6, `FP_0_5_6));
-  // assign sdf_out = max(d, min(max(p.x, p.y), min(max(p.y, p.z), max(p.x, p.z))) - `FP_1_18 - `FP_0_015);
+  // Layer four. The little holes, for fine detailing.
+  assign p4 = vec3_abs(vec3_sub(vec3_sr(vec3_fract(vec3_sl(point_in, 3)), 3), make_vec3(`FP_ONE_SIXTEENTHS, `FP_ONE_SIXTEENTHS, `FP_ONE_SIXTEENTHS)));
+  assign sdf_out = fp_max(d3, fp_add(fp_min(fp_max(p4.x, p4.y), fp_min(fp_max(p4.y, p4.z), fp_max(p4.x, p4.z))), `FP_MAGIC_NUMBER_D));
 endmodule // sdf_query_sponge_inf
 
 `default_nettype wire

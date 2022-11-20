@@ -118,7 +118,11 @@ typedef enum logic [3:0] {
 `define FP_HALF             32'h00080000
 `define FP_QUARTER          32'h00040000
 `define FP_THIRD            32'h00055555
-`define FP_THIRD            32'h00055555
+`define FP_ONE_SIXTEENTHS   32'h00010000
+`define FP_MAGIC_NUMBER_A   32'hfff8cccc
+`define FP_MAGIC_NUMBER_B   32'hfffb7777
+`define FP_MAGIC_NUMBER_C   32'hfffd17e4
+`define FP_MAGIC_NUMBER_D   32'hffff3333
 `define FP_SQRT_TWO         32'h0016a09e
 `define FP_INV_SQRT_TWO     32'h000b504f
 `define FP_TENTH            32'h00019999
