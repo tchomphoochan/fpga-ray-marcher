@@ -23,14 +23,43 @@ module top_level_main(
     .reset(sys_rst)
   );
 
+  logic up, down, left, right;
+  debouncer dbncr(
+    .clk_in(sys_clk),
+    .rst_in(sys_rst),
+    .dirty_in(btnr),
+    .clean_out(right)
+  );
+  debouncer dbncl(
+    .clk_in(sys_clk),
+    .rst_in(sys_rst),
+    .dirty_in(btnl),
+    .clean_out(left)
+  );
+  debouncer dbncu(
+    .clk_in(sys_clk),
+    .rst_in(sys_rst),
+    .dirty_in(btnu),
+    .clean_out(up)
+  );
+  debouncer dbncd(
+    .clk_in(sys_clk),
+    .rst_in(sys_rst),
+    .dirty_in(btnd),
+    .clean_out(down)
+  );
+
+  vec3 pos_vec;
   user_control user_control_inst(
     .clk_in(sys_clk),
-    .btnl(btnl),
-    .btnr(btnr),
-    .btnu(btnu),
-    .btnd(btnd),
-    .sw(sw)
-  ); // isn't really connected to anything right now
+    .rst_in(sys_rst),
+    .btnl(left),
+    .btnr(right),
+    .btnu(up),
+    .btnd(down),
+    .sw(sw),
+    .pos_out(pos_vec)
+  );
 
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [3:0] vga_display_read_data;
@@ -58,9 +87,9 @@ module top_level_main(
 
   // default values for testing
   vec3 pos_vec_def, dir_vec_def;
-  assign pos_vec_def.x = `FP_ZERO;
-  assign pos_vec_def.y = `FP_ONE;
-  assign pos_vec_def.z = fp_neg(`FP_THREE_HALFS);
+  // assign pos_vec_def.x = `FP_ZERO;
+  // assign pos_vec_def.y = `FP_ONE;
+  // assign pos_vec_def.z = fp_neg(`FP_THREE_HALFS);
   assign dir_vec_def.x = `FP_ZERO;
   assign dir_vec_def.y = `FP_ZERO;
   assign dir_vec_def.z = `FP_ONE;
@@ -68,7 +97,7 @@ module top_level_main(
   ray_marcher ray_marcher_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
-    .pos_vec_in(pos_vec_def),
+    .pos_vec_in(pos_vec),
     .dir_vec_in(dir_vec_def),
     .fractal_sel_in(fractal_sel_def),
     .hcount_out(ray_marcher_hcount),
