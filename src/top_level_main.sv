@@ -53,6 +53,8 @@ module top_level_main(
   logic [3:0] ray_marcher_color;
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;
+  logic [31:0] fps;
+  assign led = fps[15:0];
 
   // default values for testing
   vec3 pos_vec_def, dir_vec_def;
@@ -90,6 +92,13 @@ module top_level_main(
     .write_data(ray_marcher_color),
     .read_data_out(vga_display_read_data),
     .which_bram_out(out)
+  );
+
+  fps_counter fps_counter_inst(
+    .clk_in(sys_clk),
+    .rst_in(sys_rst),
+    .new_frame_in(ray_marcher_new_frame),
+    .fps_out(fps)
   );
 
 endmodule // top_level_main
