@@ -4,9 +4,6 @@
 `ifndef TYPES_SV
 `define TYPES_SV
 
-// for performance
-`define USE_CHECKERBOARD_RENDERING
-
 // for rendering
 `define DISPLAY_WIDTH                   400
 `define DISPLAY_HEIGHT                  300
