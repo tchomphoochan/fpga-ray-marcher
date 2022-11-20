@@ -41,9 +41,6 @@ module ray_marcher #(
   logic [V_BITS-1:0] vcount, assign_vcount;
   logic [$clog2(NUM_CORES)-1:0] core_idx, assign_to;
 
-  // normalized direction for the current pixel
-  vec3 ray_dir, assign_ray_dir;
-
   // instantiate cores
   // MODIFY THESE VARIABLES FOR TESTING
   logic assigning;
@@ -69,7 +66,7 @@ module ray_marcher #(
         .clk_in(clk_in),
         .rst_in(core_rst),
         .ray_origin_in(current_pos_vec),
-        .ray_direction_in(assign_ray_dir),
+        .ray_direction_in(current_dir_vec),
         .fractal_sel_in(current_fractal),
         .hcount_in(assign_hcount),
         .vcount_in(assign_vcount),
@@ -83,20 +80,6 @@ module ray_marcher #(
   endgenerate
   logic all_cores_ready; // just for convenience
   assign all_cores_ready = &core_ready_out;
-
-  // instantiate ray generator
-  ray_generator #(
-    .DISPLAY_WIDTH(DISPLAY_WIDTH),
-    .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
-    .H_BITS(H_BITS),
-    .V_BITS(V_BITS)
-  ) generator (
-    .hcount_in(hcount),
-    .vcount_in(vcount),
-    .cam_pos(current_pos_vec),
-    .cam_forward(current_dir_vec),
-    .ray_direction_out(ray_dir)
-  );
 
   // assign work
   always_ff @(posedge clk_in) begin
@@ -155,7 +138,6 @@ module ray_marcher #(
           assign_to <= core_idx;
           assign_hcount <= hcount;
           assign_vcount <= vcount;
-          assign_ray_dir <= ray_dir;
           // increment to the next pixel
           hcount <= hcount+1;
         end else begin
