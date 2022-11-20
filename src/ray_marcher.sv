@@ -39,7 +39,7 @@ module ray_marcher #(
   // internal state: which pixel/machine to assign next?
   logic [H_BITS-1:0] hcount, assign_hcount;
   logic [V_BITS-1:0] vcount, assign_vcount;
-  logic [$clog2(NUM_CORES)-1:0] core_idx, assign_to;
+  logic [$clog2(NUM_CORES):0] core_idx, assign_to;
 
   // instantiate cores
   // MODIFY THESE VARIABLES FOR TESTING
@@ -110,7 +110,7 @@ module ray_marcher #(
           // start the frame
           hcount <= 0;
           vcount <= 0;
-          new_frame_out <= 1; // (beware: don't end when copying the last pixel!)
+          new_frame_out <= 1; // (TODO: beware: don't end when copying the last pixel!)
         end
         assigning <= 0;
         // otherwise just wait
@@ -147,7 +147,7 @@ module ray_marcher #(
 `endif
         end
       end
-      core_idx <= (core_idx + 1) % NUM_CORES; // cycle to the next machine all the time
+      core_idx <= core_idx+1 == NUM_CORES ? 0 : core_idx+1; // cycle to the next machine all the time
 
     end
   end
