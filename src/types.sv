@@ -109,23 +109,23 @@ typedef enum logic [3:0] {
 } RayUnitState;
 
 // constants in Q12.20 format
-`define FP_ZERO 32'h00000000
-`define FP_ONE 32'h00100000
-`define FP_TWO 32'h00200000
-`define FP_THREE 32'h00300000
-`define FP_FIVE 32'h00500000
-`define FP_THREE_HALFS 32'h00180000
-`define FP_HALF 32'h00080000
-`define FP_QUARTER 32'h00040000
-`define FP_THIRD 32'h00055555
-`define FP_THIRD 32'h00055555
-`define FP_SQRT_TWO 32'h0016a09e
-`define FP_INV_SQRT_TWO 32'h000b504f
-`define FP_TENTH 32'h00019999
-`define FP_HUNDREDTH 32'h000028f5
+`define FP_ZERO             32'h00000000
+`define FP_ONE              32'h00100000
+`define FP_TWO              32'h00200000
+`define FP_THREE            32'h00300000
+`define FP_FIVE             32'h00500000
+`define FP_THREE_HALFS      32'h00180000
+`define FP_HALF             32'h00080000
+`define FP_QUARTER          32'h00040000
+`define FP_THIRD            32'h00055555
+`define FP_THIRD            32'h00055555
+`define FP_SQRT_TWO         32'h0016a09e
+`define FP_INV_SQRT_TWO     32'h000b504f
+`define FP_TENTH            32'h00019999
+`define FP_HUNDREDTH        32'h000028f5
 
 // 2 * (sqrt(2) - 1)
-`define FP_INTERP_SLOPE 32'h000d413c
+`define FP_INTERP_SLOPE     32'h000d413c
 
 
 `endif
