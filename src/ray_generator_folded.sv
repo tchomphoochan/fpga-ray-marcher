@@ -53,7 +53,7 @@ module ray_generator_folded #(
     .clk_in(clk_in),
     .rst_in(rst_in),
     .a_in(vec3_dot(rd1, rd1)),
-    .valid_in(fisf_valid),
+    .valid_in(fisf_valid_in),
     .res_out(fisf_res_out),
     .valid_out(fisf_valid_out),
     .ready_out(fisf_ready_out)

@@ -73,6 +73,7 @@ module ray_unit #(
     if (rst_in) begin
       ray_depth <= 0;
       state <= RU_Ready;
+      gen_valid_in <= 0;
     end else begin
       case (state)
         RU_Ready: begin
