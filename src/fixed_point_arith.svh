@@ -18,8 +18,8 @@ function automatic fp fp_sub(input fp a, input fp b);
 endfunction
 function automatic fp fp_mul(input fp a, input fp b);
   // TODO probably stress test signed multiplication carefully
-  logic [2*`NUM_ALL_DIGITS-1:0] result;
-  result = a*b;
+  logic signed [2*`NUM_ALL_DIGITS-1:0] result;
+  result = $signed(a)*$signed(b);
   return $signed(result >> `NUM_FRAC_DIGITS);
 endfunction
 
