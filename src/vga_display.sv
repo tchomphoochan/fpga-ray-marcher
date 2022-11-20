@@ -7,6 +7,7 @@ module vga_display(
   input wire vga_clk_in,  // assume match vga clock for now
   // should connect to bram
   input wire [3:0] read_data_in, // 4-bit grayscale
+  input wire toggle_hue, input wire toggle_color,
   output logic [`ADDR_BITS-1:0] read_addr_out,
   // connect to vga pins
   output logic [3:0] vga_r, vga_g, vga_b,
@@ -30,10 +31,10 @@ module vga_display(
 
   logic[27:0] hue_counter;
   always_ff @(posedge vga_clk_in) begin
-    hue_counter <= hue_counter + 1;
+    hue_counter <= hue_counter + toggle_hue;
   end
   logic [2:0][7:0] hsl;
-  assign hsl = hsl2rgb(hue_counter >> 20, 8'd165, read_data_in << 4);
+  assign hsl = hsl2rgb(hue_counter >> 20, toggle_color ? 8'd165 : 0, read_data_in << 4);
 
   always_ff @(posedge vga_clk_in) begin
     // pipeline for 2 cycle delay due to memory

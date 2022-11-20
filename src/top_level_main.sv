@@ -50,6 +50,8 @@ module top_level_main(
   );
 
   vec3 pos_vec;
+  logic [2:0] fractal_sel;
+  logic toggle_hue, toggle_color;
   user_control user_control_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
@@ -58,7 +60,10 @@ module top_level_main(
     .btnu(up),
     .btnd(down),
     .sw(sw),
-    .pos_out(pos_vec)
+    .pos_out(pos_vec),
+    .fractal_sel_out(fractal_sel),
+    .toggle_hue_out(toggle_hue),
+    .toggle_color_out(toggle_color)
   );
 
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
@@ -68,6 +73,8 @@ module top_level_main(
     .vga_clk_in(vga_clk),
     .read_data_in(vga_display_read_data),
     .read_addr_out(vga_display_read_addr),
+    .toggle_hue(toggle_hue),
+    .toggle_color(toggle_color),
     .vga_r(vga_r),
     .vga_g(vga_g),
     .vga_b(vga_b),
@@ -86,10 +93,7 @@ module top_level_main(
   assign led = fps[15:0];
 
   // default values for testing
-  vec3 pos_vec_def, dir_vec_def;
-  // assign pos_vec_def.x = `FP_ZERO;
-  // assign pos_vec_def.y = `FP_ONE;
-  // assign pos_vec_def.z = fp_neg(`FP_THREE_HALFS);
+  vec3 dir_vec_def;
   assign dir_vec_def.x = `FP_ZERO;
   assign dir_vec_def.y = `FP_ZERO;
   assign dir_vec_def.z = `FP_ONE;
@@ -99,7 +103,7 @@ module top_level_main(
     .rst_in(sys_rst),
     .pos_vec_in(pos_vec),
     .dir_vec_in(dir_vec_def),
-    .fractal_sel_in(fractal_sel_def),
+    .fractal_sel_in(fractal_sel),
     .hcount_out(ray_marcher_hcount),
     .vcount_out(ray_marcher_vcount),
     .color_out(ray_marcher_color),

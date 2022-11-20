@@ -14,18 +14,23 @@ module user_control #(
   input wire rst_in,
   input wire btnl, btnr, btnu, btnd,
   input wire [15:0] sw,
-  output vec3 pos_out
+  output vec3 pos_out,
+  output logic [2:0] fractal_sel_out,
+  output logic toggle_hue_out,
+  output logic toggle_color_out
 );
   localparam MODE_TRANS_XY = 0;
   localparam MODE_TRANS_XZ = 1;
   localparam MODE_ROTATE = 2;
 
-  logic [2:0] fractal_sel;
   logic [1:0] control_mode;
   logic [2:0] move_speed;
-  assign fractal_sel = sw[15:13];
   assign control_mode = sw[1:0];
   assign move_speed = sw[3:2];
+
+  assign fractal_sel = sw[15:13];
+  assign toggle_hue_out = sw[4];
+  assign toggle_color_out = sw[5];
 
   logic [4:0] cycle_counter;
 

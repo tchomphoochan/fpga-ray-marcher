@@ -42,6 +42,7 @@ module ray_unit #(
   RayUnitState state = RU_Ready;
   logic [H_BITS-1:0] hcount;
   logic [V_BITS-1:0] vcount;
+  logic [2:0] current_fractal;
   vec3 ray_origin, ray_direction;
   logic [$clog2(MAX_RAY_DEPTH)-1:0] ray_depth;
 
@@ -50,7 +51,9 @@ module ray_unit #(
   vec3 cam_forward_in, ray_direction_out;
 
   // Output of SDF Query
+  fp sdf_queries [3];
   fp sdf_dist;
+  assign sdf_dist = sdf_queries[current_fractal];
 
   // Output of Ray March
   vec3 next_pos_vec;
@@ -79,6 +82,7 @@ module ray_unit #(
             hcount <= hcount_in;
             vcount <= vcount_in;
             ray_origin <= ray_origin_in;
+            current_fractal <= fractal_sel_in;
             ray_depth <= 0;
             cam_forward_in <= ray_direction_in;
             gen_valid_in <= 1;
@@ -132,9 +136,19 @@ module ray_unit #(
     .ray_origin_out(next_pos_vec)
   );
 
-  sdf_query_sponge_inf sdf_query (
+  sdf_query_sponge_inf sdf_menger (
     .point_in(ray_origin),
-    .sdf_out(sdf_dist)
+    .sdf_out(sdf_queries[0])
+  );
+
+  sdf_query_cube_infinite sdf_cubes (
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[1])
+  );
+
+  sdf_query_cube sdf_cube (
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[2])
   );
 
   assign ready_out = (state == RU_Ready);
