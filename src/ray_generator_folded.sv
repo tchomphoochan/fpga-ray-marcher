@@ -14,6 +14,8 @@ module ray_generator_folded #(
   input logic valid_in,
   input logic [H_BITS-1:0] hcount_in,
   input logic [V_BITS-1:0] vcount_in,
+  input fp hcount_fp_in,
+  input fp vcount_fp_in,
   input vec3 cam_forward_in,
   output logic valid_out,
   output logic ready_out,
@@ -82,11 +84,11 @@ module ray_generator_folded #(
       mult2_b = cam_forward.z;
       mult3_a = cam_forward.x;
       mult3_b = cam_forward.x;
-    end else if (stage == 3) begin
-      mult1_a = fp_sub(hcount_fp, `FP_DISPLAY_WIDTH);
-      mult1_b = `FP_INV_DISPLAY_HEIGHT;
-      mult2_a = fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT);
-      mult2_b = `FP_INV_DISPLAY_HEIGHT;
+    // end else if (stage == 3) begin
+    //   mult1_a = fp_sub(hcount_fp, `FP_DISPLAY_WIDTH);
+    //   mult1_b = `FP_INV_DISPLAY_HEIGHT;
+    //   mult2_a = fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT);
+    //   mult2_b = `FP_INV_DISPLAY_HEIGHT;
     end else if (stage == 4) begin
       // scaled_right <= vec3_scaled(cam_right, px);
       mult1_a = cam_right.x;
@@ -122,6 +124,8 @@ module ray_generator_folded #(
         cam_forward <= cam_forward_in;
         hcount_fp <= (hcount_in << 1) << `NUM_FRAC_DIGITS;
         vcount_fp <= (vcount_in << 1) << `NUM_FRAC_DIGITS;
+        px <= hcount_fp_in;
+        py <= vcount_fp_in;
         stage <= 1;
       end
     end else if (stage == 1) begin
@@ -143,7 +147,7 @@ module ray_generator_folded #(
       cam_up.y <= fp_add(mult2_res, mult3_res);
       cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO, put this into another stage?
       // stage <= 2;
-      stage <= 3;
+      stage <= 4;
     end else if (stage == 2) begin
       // stage 2: cam up
       // cam_up <= vec3_cross(cam_forward, cam_right);
@@ -152,9 +156,9 @@ module ray_generator_folded #(
       // stage 3: px, py
       // px <= fp_mul(fp_sub(hcount_fp, `FP_DISPLAY_WIDTH), `FP_INV_DISPLAY_HEIGHT);
       // py <= fp_mul(fp_sub(vcount_fp, `FP_DISPLAY_HEIGHT), `FP_INV_DISPLAY_HEIGHT);
-      px <= mult1_res;
-      py <= mult2_res;
-      stage <= 4;
+      // px <= mult1_res;
+      // py <= mult2_res;
+      // stage <= 4;
     end else if (stage == 4) begin
       // stage 4: scaled
       // scaled_right <= vec3_scaled(cam_right, px);

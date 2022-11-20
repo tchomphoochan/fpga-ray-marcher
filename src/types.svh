@@ -5,16 +5,29 @@
 `define TYPES_SVH
 
 // for rendering
-`define DISPLAY_WIDTH                   400
-`define DISPLAY_HEIGHT                  300
-`define H_BITS                          9
-`define V_BITS                          9
-`define DISPLAY_SHIFT_SIZE              1
-// for 400x300
-`define FP_DISPLAY_WIDTH                32'h19000000
-`define FP_INV_DISPLAY_WIDTH            32'h00000a3d
-`define FP_DISPLAY_HEIGHT               32'h12c00000
-`define FP_INV_DISPLAY_HEIGHT           32'h00000da7
+`define USE_400x300
+`ifdef USE_400x300
+    `define DISPLAY_WIDTH                   400
+    `define DISPLAY_HEIGHT                  300
+    `define H_BITS                          9
+    `define V_BITS                          9
+    `define DISPLAY_SHIFT_SIZE              1
+
+    `define FP_DISPLAY_WIDTH                32'h19000000
+    `define FP_INV_DISPLAY_WIDTH            32'h00000a3d
+    `define FP_DISPLAY_HEIGHT               32'h12c00000
+    `define FP_INV_DISPLAY_HEIGHT           32'h00000da7
+
+    // goes from -width/height to width/height. increment by 2/height (same scale as vertical).
+    `define FP_HCOUNT_FP_START              32'hffeaaaaa
+    `define FP_HCOUNT_FP_END                32'h00155555
+    `define FP_HCOUNT_FP_INCREMENT          32'h00001b4e
+
+    // goes from -1 to 1. increment by 2/height.
+    `define FP_VCOUNT_FP_START              32'hfff00000
+    `define FP_VCOUNT_FP_END                32'h00100000
+    `define FP_VCOUNT_FP_INCREMENT          32'h00001b4e
+`endif
 
 // actual vga output
 `define USE_VGA_800x600

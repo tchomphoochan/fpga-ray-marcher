@@ -14,6 +14,8 @@ module ray_generator #(
   input logic valid_in,
   input logic [H_BITS-1:0] hcount_in,
   input logic [V_BITS-1:0] vcount_in,
+  input fp hcount_fp_in,
+  input fp vcount_fp_in,
   input vec3 cam_forward_in,
   output logic valid_out,
   output logic ready_out,
