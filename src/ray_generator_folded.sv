@@ -145,7 +145,7 @@ module ray_generator_folded #(
       if (fisf_valid_out) begin
           // ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
           ray_direction_out.x <= mult1_res;
-          ray_direction_out.y <= mult2_res;
+          ray_direction_out.y <= -mult2_res;
           ray_direction_out.z <= mult3_res;
           valid_out <= 1;
           ready_out <= 1;
