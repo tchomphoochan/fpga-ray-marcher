@@ -5,6 +5,7 @@
 `include "fixed_point_arith.sv"
 `include "vector_arith.sv"
 `include "sdf_query.sv"
+`include "ray_generator_folded.sv"
 
 module march_ray (
   input vec3 ray_origin_in,
@@ -46,6 +47,10 @@ module ray_unit #(
   vec3 ray_origin, ray_direction;
   logic [$clog2(MAX_RAY_DEPTH)-1:0] ray_depth;
 
+  // Input, Output of Ray Generator
+  logic gen_valid_in, gen_valid_out, gen_ready_out;
+  vec3 cam_forward_in, ray_direction_out;
+
   // Output of SDF Query
   fp sdf_dist;
 
@@ -57,9 +62,10 @@ module ray_unit #(
     #10;
     $display("state: %d, depth: %d", state, ray_depth);
     $display("ray: (%f, %f, %f) -> (%f, %f, %f)", fp_to_real(ray_origin.x), fp_to_real(ray_origin.y), fp_to_real(ray_origin.z), fp_to_real(ray_direction.x), fp_to_real(ray_direction.y), fp_to_real(ray_direction.z));
-    $display("eye_dir: (%f, %f, %f), hcount: %d, vcount: %d", fp_to_real(eye_direction.x), fp_to_real(eye_direction.y), fp_to_real(eye_direction.z), hcount, vcount);
+    $display("eye_dir: (%f, %f, %f), hcount: %d, vcount: %d", fp_to_real(cam_forward_in.x), fp_to_real(cam_forward_in.y), fp_to_real(cam_forward_in.z), hcount, vcount);
     $display("next pos: (%f, %f, %f)", fp_to_real(next_pos_vec.x), fp_to_real(next_pos_vec.y), fp_to_real(next_pos_vec.z));
     $display("dist: %f", fp_to_real(sdf_dist));
+    $display("gen_valid_in: %d, gen_valid_out: %d, gen_ready_out: %d", gen_valid_in, gen_valid_out, gen_ready_out);
   end
 `endif
 
@@ -74,8 +80,16 @@ module ray_unit #(
             hcount <= hcount_in;
             vcount <= vcount_in;
             ray_origin <= ray_origin_in;
-            ray_direction <= ray_direction_in;
             ray_depth <= 0;
+            cam_forward_in <= ray_direction_in;
+            gen_valid_in <= 1;
+            state <= RU_Setup;
+          end
+        end
+        RU_Setup: begin
+          gen_valid_in <= 0;
+          if (gen_valid_out) begin
+            ray_direction <= ray_direction_out;
             state <= RU_Busy;
           end
         end
@@ -94,6 +108,23 @@ module ray_unit #(
       endcase
     end
   end
+
+  ray_generator_folded #(
+    .DISPLAY_WIDTH(DISPLAY_WIDTH),
+    .DISPLAY_HEIGHT(DISPLAY_HEIGHT),
+    .H_BITS(H_BITS),
+    .V_BITS(V_BITS)
+  ) ray_gen (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .valid_in(gen_valid_in),
+    .hcount_in(hcount),
+    .vcount_in(vcount),
+    .cam_forward_in(cam_forward_in),
+    .ray_direction_out(ray_direction_out),
+    .valid_out(gen_valid_out),
+    .ready_out(gen_ready_out)
+  );
 
   march_ray marcher (
     .ray_origin_in(ray_origin),

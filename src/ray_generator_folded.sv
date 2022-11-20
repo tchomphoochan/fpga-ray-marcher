@@ -2,6 +2,7 @@
 `default_nettype none
 
 `include "vector_arith.sv"
+`include "fp_inv_sqrt_folded.sv"
 
 module ray_generator_folded #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -14,7 +15,6 @@ module ray_generator_folded #(
   input logic valid_in,
   input logic [H_BITS-1:0] hcount_in,
   input logic [V_BITS-1:0] vcount_in,
-  input vec3 cam_pos_in,
   input vec3 cam_forward_in,
   output logic valid_out,
   output logic ready_out,
@@ -27,7 +27,6 @@ module ray_generator_folded #(
   logic [H_BITS-1:0] hcount;
   logic [V_BITS-1:0] vcount;
   fp hcount_fp, vcount_fp;
-  vec3 cam_pos;
   vec3 cam_forward;
 
   // stage 1: cam right
@@ -65,13 +64,13 @@ module ray_generator_folded #(
       stage <= 0;
       valid_out <= 0;
       ready_out <= 1;
+      fisf_valid_in <= 0;
     end else if (stage == 0 && valid_in) begin
       // stage 0: input
       valid_out <= 0;
       ready_out <= 0;
       hcount <= hcount_in;
       vcount <= vcount_in;
-      cam_pos <= cam_pos_in;
       cam_forward <= cam_forward_in;
       hcount_fp <= (hcount_in << 1) << `NUM_FRAC_DIGITS;
       vcount_fp <= (vcount_in << 1) << `NUM_FRAC_DIGITS;
