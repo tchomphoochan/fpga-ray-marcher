@@ -28,7 +28,7 @@ module user_control #(
   assign control_mode = sw[1:0];
   assign move_speed = sw[3:2];
 
-  assign fractal_sel = sw[15:13];
+  assign fractal_sel_out = sw[15:13];
   assign toggle_hue_out = sw[4];
   assign toggle_color_out = sw[5];
 
