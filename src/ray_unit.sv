@@ -4,8 +4,6 @@
 `include "types.sv"
 `include "fixed_point_arith.sv"
 `include "vector_arith.sv"
-`include "sdf_query.sv"
-`include "ray_generator_folded.sv"
 
 module march_ray (
   input vec3 ray_origin_in,

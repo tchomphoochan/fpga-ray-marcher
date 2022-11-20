@@ -2,7 +2,6 @@
 `default_nettype none
 
 `include "vector_arith.sv"
-`include "fp_inv_sqrt_folded.sv"
 
 module ray_generator_folded #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,

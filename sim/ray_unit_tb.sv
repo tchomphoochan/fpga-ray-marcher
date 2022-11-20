@@ -76,7 +76,8 @@ module ray_unit_tb;
     #10;
     // first cycle starts here
 
-    #100000;
+    wait(ready_out);
+    #100;
 
     // $display("%s", all_passed ? "ALL PASSED": "SOME FAILED");
 
