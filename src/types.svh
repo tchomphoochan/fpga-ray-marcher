@@ -28,6 +28,7 @@
     `define V_BITS                          9
     `define DISPLAY_SHIFT_SIZE              1
 
+    // should not use these in actual synthesis
     `define FP_DISPLAY_WIDTH                (32'h19000000 >> (20 - `NUM_FRAC_DIGITS))
     `define FP_INV_DISPLAY_WIDTH            (32'h00000a3d >> (20 - `NUM_FRAC_DIGITS))
     `define FP_DISPLAY_HEIGHT               (32'h12c00000 >> (20 - `NUM_FRAC_DIGITS))
