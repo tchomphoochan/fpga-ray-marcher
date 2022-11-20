@@ -21,7 +21,7 @@ def main(argv):
     if elems[0] != "CMD":
       continue
     if elems[1] == "SAVE":
-      if elems[2] != "x":
+      if elems[2].lower() != "x":
         h, v, color = map(int, (elems[2], elems[3], elems[4]))
         pixels[v][h] = color*16
     elif elems[1] == "NEW":

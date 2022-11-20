@@ -124,7 +124,9 @@ typedef enum logic [3:0] {
 `define FP_TENTH 32'h00019999
 `define FP_HUNDREDTH 32'h000028f5
 
-// assuming 640x480
+// 2 * (sqrt(2) - 1)
+`define FP_INTERP_SLOPE 32'h000d413c
+
 
 `endif
 

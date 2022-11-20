@@ -20,8 +20,11 @@ module fp_inv_sqrt_folded(
   logic [2:0] newton_iter; // 0,1
   logic [2:0] newton_iter_step; // 0,1,2
 
+  fp mult1_a, mult1_b, mult1_res;
+  assign mult1_res = fp_mul(mult1_a, mult1_b);
+
   // constant
-  fp slope = fp_mul(`FP_TWO, fp_sub(`FP_SQRT_TWO, `FP_ONE));
+  fp slope = `FP_INTERP_SLOPE;
 
   // step 0: receive input
   fp original;
@@ -37,6 +40,37 @@ module fp_inv_sqrt_folded(
   assign x_shifted = x >> (diff >> 1);
 
   assign res_out = x;
+
+  always_comb begin
+    mult1_a = 0;
+    mult1_b = 0;
+    if (stage == 2) begin
+      // x <= fp_sub(`FP_SQRT_TWO,
+      //             fp_mul(slope,
+      //                    fp_sub(original, `FP_HALF)));
+      mult1_a = slope;
+      mult1_b = fp_sub(original, `FP_HALF);
+    end else if (stage == 3) begin
+      if (newton_iter_step == 0) begin
+        // x_mult <= fp_mul(x,x);
+        mult1_a = x;
+        mult1_b = x;
+      end else if (newton_iter_step == 1) begin
+        // x_mult <= fp_mul(original>>1, x_mult);
+        mult1_a = original>>1;
+        mult1_b = x_mult;
+      end else if (newton_iter_step == 2) begin
+        // x <= fp_mul(x, fp_sub(`FP_THREE_HALFS, x_mult));
+        mult1_a = x;
+        mult1_b = fp_sub(`FP_THREE_HALFS, x_mult);
+      end
+    end else if (stage == 4) begin
+      // x <= (diff & 1) ? fp_mul(x_shifted, `FP_INV_SQRT_TWO) : x_shifted;
+      mult1_a = x_shifted;
+      mult1_b = `FP_INV_SQRT_TWO;
+    end
+
+  end
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
@@ -56,22 +90,26 @@ module fp_inv_sqrt_folded(
       stage <= 2;
     end else if (stage == 2) begin
       // step 2: first approximation
-      x <= fp_sub(`FP_SQRT_TWO,
-                  fp_mul(slope,
-                         fp_sub(original, `FP_HALF)));
+      // x <= fp_sub(`FP_SQRT_TWO,
+      //             fp_mul(slope,
+      //                    fp_sub(original, `FP_HALF)));
+      x <= fp_sub(`FP_SQRT_TWO, mult1_res);
       stage <= 3;
       newton_iter <= 0;
       newton_iter_step <= 0;
     end else if (stage == 3) begin
       // step 3: newton
       if (newton_iter_step == 0) begin
-        x_mult <= fp_mul(x,x);
+        // x_mult <= fp_mul(x,x);
+        x_mult <= mult1_res;
         newton_iter_step <= 1;
       end else if (newton_iter_step == 1) begin
-        x_mult <= fp_mul(original>>1, x_mult);
+        // x_mult <= fp_mul(original>>1, x_mult);
+        x_mult <= mult1_res;
         newton_iter_step <= 2;
       end else if (newton_iter_step == 2) begin
-        x <= fp_mul(x, fp_sub(`FP_THREE_HALFS, x_mult));
+        // x <= fp_mul(x, fp_sub(`FP_THREE_HALFS, x_mult));
+        x <= mult1_res;
         newton_iter_step <= 0;
         newton_iter <= newton_iter + 1;
         if (newton_iter+1 == MAX_NEWTON_ITER)begin
@@ -80,7 +118,8 @@ module fp_inv_sqrt_folded(
       end
     end else if (stage == 4) begin
       // step 4: shift answer, output
-      x <= (diff & 1) ? fp_mul(x_shifted, `FP_INV_SQRT_TWO) : x_shifted;
+      // x <= (diff & 1) ? fp_mul(x_shifted, `FP_INV_SQRT_TWO) : x_shifted;
+      x <= (diff & 1) ? mult1_res : x_shifted;
       valid_out <= 1;
       ready_out <= 1;
       stage <= 0;
