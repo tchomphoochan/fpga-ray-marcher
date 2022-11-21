@@ -19,7 +19,8 @@ module user_control #(
   output logic [2:0] fractal_sel_out,
   output logic toggle_hue_out,
   output logic toggle_color_out,
-  output logic toggle_checker_out
+  output logic toggle_checker_out,
+  output logic toggle_dither_out
 );
   localparam CLK_PERIOD_NS = 20;
   localparam DELTA_TIME_MS = 1;
@@ -43,6 +44,7 @@ module user_control #(
   assign toggle_hue_out = sw[4];
   assign toggle_color_out = sw[5];
   assign toggle_checker_out = sw[12];
+  assign toggle_dither_out = sw[11];
 
   logic [COUNTER_WIDTH+2:0] cycle_counter;
   

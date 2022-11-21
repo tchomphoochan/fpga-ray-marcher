@@ -32,6 +32,7 @@ module ray_unit #(
   input wire [V_BITS-1:0] vcount_in,
   input fp hcount_fp_in,
   input fp vcount_fp_in,
+  input wire toggle_dither_in,
   input wire valid_in,
 
   // rendered output
@@ -122,7 +123,7 @@ module ray_unit #(
           ray_origin <= next_pos_vec;
           
           if (fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) || fp_gt(sdf_dist, `FP_FIVE) || ray_depth == MAX_RAY_DEPTH) begin
-            color_out <= fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) ? (4'hF - (ray_depth >> 1)) : 4'd0;
+            color_out <= fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) ? (4'hF - ((ray_depth >> 1) & { 3'hF, ~toggle_dither_in | (ray_depth[0] & (hcount[0] ^ vcount[0]))})) : 4'd0;
             hcount_out <= hcount;
             vcount_out <= vcount;
             state <= RU_Ready;
@@ -179,13 +180,13 @@ module ray_unit #(
     .sdf_out(sdf_queries[2])
   );
 
-  // latency: 4 cycle
-  sdf_query_sponge sdf_menger_bounded (
-    .clk_in(clk_in),
-    .rst_in(rst_in),
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[3])
-  );
+  // latency: 6 cycle
+  // sdf_query_sponge sdf_menger_bounded (
+  //   .clk_in(clk_in),
+  //   .rst_in(rst_in),
+  //   .point_in(ray_origin),
+  //   .sdf_out(sdf_queries[3])
+  // );
 
   march_ray marcher (
     .ray_origin_in(ray_origin),

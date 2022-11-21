@@ -25,6 +25,7 @@ module ray_marcher #(
   input vec3 pos_vec_in,
   input vec3 dir_vec_in,
   input wire toggle_checker_in,
+  input wire toggle_dither_in,
   input wire [2:0] fractal_sel_in,
   // rendered output
   output logic [H_BITS-1:0] hcount_out,
@@ -81,6 +82,7 @@ module ray_marcher #(
         .hcount_fp_in(assign_hcount_fp),
         .vcount_in(assign_vcount),
         .vcount_fp_in(assign_vcount_fp),
+        .toggle_dither_in(toggle_dither_in),
         .valid_in(assign_to == i && assigning),
         .hcount_out(core_hcount_out[i]),
         .vcount_out(core_vcount_out[i]),
