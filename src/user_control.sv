@@ -18,7 +18,8 @@ module user_control #(
   output vec3 dir_out,
   output logic [2:0] fractal_sel_out,
   output logic toggle_hue_out,
-  output logic toggle_color_out
+  output logic toggle_color_out,
+  output logic toggle_checker_out
 );
   localparam CLK_PERIOD_NS = 20;
   localparam DELTA_TIME_MS = 1;
@@ -41,6 +42,7 @@ module user_control #(
   assign fractal_sel_out = sw[15:13];
   assign toggle_hue_out = sw[4];
   assign toggle_color_out = sw[5];
+  assign toggle_checker_out = sw[12];
 
   logic [COUNTER_WIDTH+2:0] cycle_counter;
   
@@ -69,7 +71,7 @@ module user_control #(
           MODE_WALK: begin
             pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.x;
             pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.z;
-            
+
             if(btnl || btnr) begin
               fp m00 = `FP_COS_HUNDREDTH;
               fp m01 = btnl ? fp_neg(`FP_SIN_HUNDREDTH) : `FP_SIN_HUNDREDTH;

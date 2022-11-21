@@ -51,7 +51,7 @@ module top_level_main(
 
   vec3 pos_vec, dir_vec;
   logic [2:0] fractal_sel;
-  logic toggle_hue, toggle_color;
+  logic toggle_hue, toggle_color, toggle_checker;
   user_control user_control_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
@@ -64,7 +64,8 @@ module top_level_main(
     .dir_out(dir_vec),
     .fractal_sel_out(fractal_sel),
     .toggle_hue_out(toggle_hue),
-    .toggle_color_out(toggle_color)
+    .toggle_color_out(toggle_color),
+    .toggle_checker_out(toggle_checker)
   );
 
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
@@ -98,6 +99,7 @@ module top_level_main(
     .rst_in(sys_rst),
     .pos_vec_in(pos_vec),
     .dir_vec_in(dir_vec),
+    .toggle_checker_in(toggle_checker),
     .fractal_sel_in(fractal_sel),
     .hcount_out(ray_marcher_hcount),
     .vcount_out(ray_marcher_vcount),

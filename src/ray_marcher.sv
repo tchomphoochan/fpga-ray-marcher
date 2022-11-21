@@ -6,12 +6,10 @@
 
 `ifndef TESTING_RAY_MARCHER
 `define RAY_UNIT_TYPE ray_unit
+`define USE_CHECKERBOARD_RENDERING
 `else
 `define RAY_UNIT_TYPE ray_unit_dummy
 `endif
-
-// 2x performance boost
-// `define USE_CHECKERBOARD_RENDERING
 
 module ray_marcher #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -26,6 +24,7 @@ module ray_marcher #(
   input wire rst_in,
   input vec3 pos_vec_in,
   input vec3 dir_vec_in,
+  input wire toggle_checker_in,
   input wire [2:0] fractal_sel_in,
   // rendered output
   output logic [H_BITS-1:0] hcount_out,
@@ -165,7 +164,7 @@ module ray_marcher #(
           // assign to machine
 `ifdef USE_CHECKERBOARD_RENDERING
           checker_bit <= ~checker_bit;
-          assigning <= checker_bit;
+          assigning <= checker_bit | ~toggle_checker_in;
 `else
           assigning <= 1;
 `endif
