@@ -60,7 +60,7 @@ module ray_unit #(
   logic [5:0] sdf_wait_max, sdf_wait;
   always_comb begin
     case (current_fractal)
-      0: sdf_wait_max = 1;
+      0: sdf_wait_max = 4;
       1: sdf_wait_max = 1;
       2: sdf_wait_max = 1;
       default: sdf_wait_max = 1;
@@ -154,7 +154,7 @@ module ray_unit #(
     .ready_out(gen_ready_out)
   );
 
-  // latency: 1 cycle
+  // latency: 4 cycle
   sdf_query_sponge_inf sdf_menger (
     .clk_in(clk_in),
     .rst_in(rst_in),
