@@ -40,6 +40,31 @@ function automatic fp fp_abs(input fp a);
   return a < 0 ? fp_neg(a) : a;
 endfunction
 
+function automatic fp fp_mul_half(input fp a);
+  return a >> 1;
+endfunction
+function automatic fp fp_mul_2(input fp a);
+  return a << 1;
+endfunction
+function automatic fp fp_mul_3(input fp a);
+  return fp_add(a << 1, a);
+endfunction
+function automatic fp fp_mul_4(input fp a);
+  return a << 2;
+endfunction
+function automatic fp fp_mul_5(input fp a);
+  return fp_add(a << 2, a);
+endfunction
+function automatic fp fp_mul_6(input fp a);
+  return fp_add(a << 2, a << 1);
+endfunction
+function automatic fp fp_mul_7(input fp a);
+  return fp_sub(a << 3, a);
+endfunction
+function automatic fp fp_mul_8(input fp a);
+  return a << 3;
+endfunction
+
 // conversion
 // not synthesizable!
 function automatic fp fp_from_real(input real a);

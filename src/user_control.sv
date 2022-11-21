@@ -2,6 +2,8 @@
 `default_nettype none
 
 `include "types.svh"
+`include "fixed_point_arith.svh"
+`include "vector_arith.svh"
 
 module user_control #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
@@ -47,6 +49,9 @@ module user_control #(
   assign toggle_dither_out = sw[11];
 
   logic [COUNTER_WIDTH+2:0] cycle_counter;
+
+  parameter eps_bits = 7;
+  parameter fp_epsilon = (`FP_ONE >> eps_bits);
   
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
@@ -63,16 +68,16 @@ module user_control #(
 
         case(control_mode) 
           MODE_TRANS_XY: begin
-            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, `FP_HUNDREDTH) : (btnr && !btnl) ? fp_add(pos_out.x, `FP_HUNDREDTH) : pos_out.x;
-            pos_out.y <= (btnd && !btnu) ? fp_sub(pos_out.y, `FP_HUNDREDTH) : (btnu && !btnd) ? fp_add(pos_out.y, `FP_HUNDREDTH) : pos_out.y;
+            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_epsilon) : (btnr && !btnl) ? fp_add(pos_out.x, fp_epsilon) : pos_out.x;
+            pos_out.y <= (btnd && !btnu) ? fp_sub(pos_out.y, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.y, fp_epsilon) : pos_out.y;
           end
           MODE_TRANS_XZ: begin
-            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, `FP_HUNDREDTH) : (btnr && !btnl) ? fp_add(pos_out.x, `FP_HUNDREDTH) : pos_out.x;
-            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, `FP_HUNDREDTH) : (btnu && !btnd) ? fp_add(pos_out.z, `FP_HUNDREDTH) : pos_out.z;
+            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_epsilon) : (btnr && !btnl) ? fp_add(pos_out.x, fp_epsilon) : pos_out.x;
+            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.z, fp_epsilon) : pos_out.z;
           end
           MODE_WALK: begin
-            pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.x;
-            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.z;
+            pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, (dir.x >> eps_bits)) : (btnu && !btnd) ? fp_add(pos_out.x, (dir.x >> eps_bits)) : pos_out.x;
+            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, (dir.z >> eps_bits)) : (btnu && !btnd) ? fp_add(pos_out.z, (dir.z >> eps_bits)) : pos_out.z;
 
             if(btnl || btnr) begin
               fp m00 = `FP_COS_HUNDREDTH;
