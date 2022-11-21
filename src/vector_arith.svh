@@ -55,6 +55,21 @@ function automatic vec3 vec3_scaled(input vec3 a, fp s);
   vec3_scaled.y = fp_mul(a.y, s);
   vec3_scaled.z = fp_mul(a.z, s);
 endfunction
+function automatic vec3 vec3_scaled_half(input vec3 a);
+  vec3_scaled_half.x = fp_mul_half(a.x);
+  vec3_scaled_half.y = fp_mul_half(a.y);
+  vec3_scaled_half.z = fp_mul_half(a.z);
+endfunction
+function automatic vec3 vec3_scaled_2(input vec3 a);
+  vec3_scaled_2.x = fp_mul_2(a.x);
+  vec3_scaled_2.y = fp_mul_2(a.y);
+  vec3_scaled_2.z = fp_mul_2(a.z);
+endfunction
+function automatic vec3 vec3_scaled_3(input vec3 a);
+  vec3_scaled_3.x = fp_mul_3(a.x);
+  vec3_scaled_3.y = fp_mul_3(a.y);
+  vec3_scaled_3.z = fp_mul_3(a.z);
+endfunction
 function automatic vec3 vec3_modded(input vec3 a, fp s);
   vec3_modded.x = fp_mod(a.x, s);
   vec3_modded.y = fp_mod(a.y, s);

@@ -112,7 +112,7 @@ module sdf_query_sponge #(
       begin : sdf_query_sponge_loop
         vec3 a, r;
         assign a = vec3_sub(vec3_sl(vec3_fract(vec3_sr(vec3_scaled(point_in, scales[i - 1]), 1)), 1), hhh);
-        assign r = vec3_abs(vec3_sub(hhh, vec3_scaled(vec3_abs(a), `FP_THREE)));
+        assign r = vec3_abs(vec3_sub(hhh, vec3_scaled_3(vec3_abs(a))));
         always_ff @(posedge clk_in) begin
           distances[i] <= fp_max(i == 1 ? bounds : distances[i - 1], fp_mul(
             fp_sub(fp_min(fp_max(r.x, r.y), fp_min(fp_max(r.y, r.z), fp_max(r.x, r.z))), `FP_ONE),
