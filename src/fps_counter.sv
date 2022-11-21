@@ -3,7 +3,7 @@
 
 module fps_counter #(
   parameter WIDTH = 32,
-  ONE_SECOND_CYCLES = 'd4_000_000,
+  ONE_SECOND_CYCLES = 'd40_000_000,
   WAIT_SECONDS = 'd5
 ) (
   input wire clk_in,
