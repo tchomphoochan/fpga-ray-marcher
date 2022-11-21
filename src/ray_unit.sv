@@ -63,7 +63,7 @@ module ray_unit #(
       0: sdf_wait_max = 4;
       1: sdf_wait_max = 1;
       2: sdf_wait_max = 1;
-      3: sdf_wait_max = 4;
+      3: sdf_wait_max = 6;
       default: sdf_wait_max = 1;
     endcase
   end
