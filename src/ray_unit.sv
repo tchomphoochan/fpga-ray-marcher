@@ -54,7 +54,7 @@ module ray_unit #(
   vec3 cam_forward_in, ray_direction_out;
 
   // Output of SDF Query
-  fp sdf_queries [3];
+  fp sdf_queries [4];
   fp sdf_dist;
   assign sdf_dist = sdf_queries[current_fractal];
   logic [5:0] sdf_wait_max, sdf_wait;
@@ -63,6 +63,7 @@ module ray_unit #(
       0: sdf_wait_max = 4;
       1: sdf_wait_max = 1;
       2: sdf_wait_max = 1;
+      3: sdf_wait_max = 4;
       default: sdf_wait_max = 1;
     endcase
   end
@@ -176,6 +177,14 @@ module ray_unit #(
     .rst_in(rst_in),
     .point_in(ray_origin),
     .sdf_out(sdf_queries[2])
+  );
+
+  // latency: 4 cycle
+  sdf_query_sponge sdf_menger_bounded (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[3])
   );
 
   march_ray marcher (

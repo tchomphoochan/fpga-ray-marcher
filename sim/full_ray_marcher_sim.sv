@@ -19,6 +19,7 @@ module full_ray_marcher_sim;
   vec3 pos_vec_in;
   vec3 dir_vec_in;
   logic [2:0] fractal_sel_in;
+  logic toggle_checker_in;
 
   // rendered output
   logic [`H_BITS-1:0] hcount_out;
@@ -27,9 +28,10 @@ module full_ray_marcher_sim;
   logic valid_out;
   logic new_frame_out;
 
+  assign toggle_checker_in = 0;
   assign pos_vec_in = pos_vec_def;
   assign dir_vec_in = dir_vec_def;
-  assign fractal_sel_in = 0;
+  assign fractal_sel_in = 3;
 
   ray_marcher #(
     .DISPLAY_WIDTH(`DISPLAY_WIDTH),
@@ -48,7 +50,8 @@ module full_ray_marcher_sim;
     .vcount_out(vcount_out),
     .color_out(color_out),
     .valid_out(valid_out),
-    .new_frame_out(new_frame_out)
+    .new_frame_out(new_frame_out),
+    .toggle_checker_in(toggle_checker_in)
   );
 
   always begin

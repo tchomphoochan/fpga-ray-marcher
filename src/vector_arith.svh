@@ -75,6 +75,11 @@ function automatic vec3 vec3_abs(input vec3 a);
   vec3_abs.y = fp_abs(a.y);
   vec3_abs.z = fp_abs(a.z);
 endfunction
+function automatic vec3 vec3_floor(input vec3 a);
+  vec3_floor.x = fp_floor(a.x);
+  vec3_floor.y = fp_floor(a.y);
+  vec3_floor.z = fp_floor(a.z);
+endfunction
 function automatic vec3 vec3_sr(input vec3 a, input integer b);
   vec3_sr.x = a.x >> b;
   vec3_sr.y = a.y >> b;
