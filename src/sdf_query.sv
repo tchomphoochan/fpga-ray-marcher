@@ -7,20 +7,29 @@
 `include "sdf_primitives.svh"
 
 module sdf_query_cube (
+  input logic clk_in, rst_in,
   input vec3 point_in,
   output fp sdf_out
 );
-  assign sdf_out = sd_box_fast(point_in, `FP_HALF);
+  always_ff @(posedge clk_in) begin
+    sdf_out <= sd_box_fast(point_in, `FP_HALF);
+  end
 endmodule // sdf_query_cube
 
 module sdf_query_cube_infinite (
+  input logic clk_in, rst_in,
   input vec3 point_in,
   output fp sdf_out
 );
-  assign sdf_out = sd_box_fast(vec3_sub(vec3_fract(vec3_add(point_in, make_vec3(`FP_HALF, `FP_HALF, `FP_HALF))), make_vec3(`FP_HALF, `FP_HALF, `FP_HALF)), `FP_QUARTER);
+  vec3 hhh;
+  assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
+  always_ff @(posedge clk_in) begin
+    sdf_out <= sd_box_fast(vec3_sub(vec3_fract(vec3_add(point_in, hhh)), hhh), `FP_QUARTER);
+  end
 endmodule // sdf_cube_infinite
 
 module sdf_query_sponge (
+  input logic clk_in, rst_in,
   input vec3 point_in,
   output fp sdf_out
 );
@@ -49,11 +58,12 @@ endmodule // sdf_query_sponge
 */
 
 module sdf_query_sponge_inf (
+  input logic clk_in, rst_in,
   input vec3 point_in,
   output fp sdf_out
 );
   vec3 p1, p2, p3, p4;
-  fp d1, d2, d3;
+  fp d1, d2, d3, sdf_out_;
   
   // Layer one. The ".05" on the end varies the hole size.
   assign p1 = vec3_abs(vec3_sub(vec3_sl(vec3_fract(vec3_sr(point_in, 1)), 1), make_vec3(`FP_ONE, `FP_ONE, `FP_ONE)));
@@ -69,7 +79,12 @@ module sdf_query_sponge_inf (
 
   // Layer four. The little holes, for fine detailing.
   assign p4 = vec3_abs(vec3_sub(vec3_sr(vec3_fract(vec3_sl(point_in, 3)), 3), make_vec3(`FP_ONE_SIXTEENTHS, `FP_ONE_SIXTEENTHS, `FP_ONE_SIXTEENTHS)));
-  assign sdf_out = fp_max(d3, fp_add(fp_min(fp_max(p4.x, p4.y), fp_min(fp_max(p4.y, p4.z), fp_max(p4.x, p4.z))), `FP_MAGIC_NUMBER_D));
+  assign sdf_out_ = fp_max(d3, fp_add(fp_min(fp_max(p4.x, p4.y), fp_min(fp_max(p4.y, p4.z), fp_max(p4.x, p4.z))), `FP_MAGIC_NUMBER_D));
+
+  always_ff @(posedge clk_in) begin
+    sdf_out <= sdf_out_;
+  end
+
 endmodule // sdf_query_sponge_inf
 
 `default_nettype wire

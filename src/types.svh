@@ -172,7 +172,8 @@ typedef struct packed { fp x, y, z; } vec3;
 typedef enum logic [3:0] {
     RU_Ready                = 4'd0,
     RU_Setup                = 4'd1,
-    RU_Busy                 = 4'd2
+    RU_Busy_1               = 4'd2,
+    RU_Busy_2               = 4'd3
 } RayUnitState;
 
 // constants in Q12.20 format

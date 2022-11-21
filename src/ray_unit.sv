@@ -57,6 +57,15 @@ module ray_unit #(
   fp sdf_queries [3];
   fp sdf_dist;
   assign sdf_dist = sdf_queries[current_fractal];
+  logic [5:0] sdf_wait_max, sdf_wait;
+  always_comb begin
+    case (current_fractal)
+      0: sdf_wait_max = 1;
+      1: sdf_wait_max = 1;
+      2: sdf_wait_max = 1;
+      default: sdf_wait_max = 1;
+    endcase
+  end
 
   // Output of Ray March
   vec3 next_pos_vec;
@@ -98,10 +107,17 @@ module ray_unit #(
           gen_valid_in <= 0;
           if (gen_valid_out) begin
             ray_direction <= ray_direction_out;
-            state <= RU_Busy;
+            state <= RU_Busy_1;
+            sdf_wait <= 0;
           end
         end
-        RU_Busy: begin
+        RU_Busy_1: begin
+          // waiting for sdf_dist to complete
+          sdf_wait <= sdf_wait+1;
+          state <= (sdf_wait+1 == sdf_wait_max) ? RU_Busy_2 : RU_Busy_1;
+        end
+        RU_Busy_2: begin
+          // sdf_dist completed. use it to make decision / fill the next iteration's input.
           ray_origin <= next_pos_vec;
           
           if (fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) || fp_gt(sdf_dist, `FP_FIVE) || ray_depth == MAX_RAY_DEPTH) begin
@@ -111,6 +127,8 @@ module ray_unit #(
             state <= RU_Ready;
           end else begin
             ray_depth <= ray_depth + 1;
+            state <= RU_Busy_1;
+            sdf_wait <= 0;
           end
         end
       endcase
@@ -136,26 +154,35 @@ module ray_unit #(
     .ready_out(gen_ready_out)
   );
 
+  // latency: 1 cycle
+  sdf_query_sponge_inf sdf_menger (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[0])
+  );
+
+  // latency: 1 cycle
+  sdf_query_cube_infinite sdf_cubes (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[1])
+  );
+
+  // latency: 1 cycle
+  sdf_query_cube sdf_cube (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(ray_origin),
+    .sdf_out(sdf_queries[2])
+  );
+
   march_ray marcher (
     .ray_origin_in(ray_origin),
     .ray_direction_in(ray_direction),
     .t_in(sdf_dist),
     .ray_origin_out(next_pos_vec)
-  );
-
-  sdf_query_sponge_inf sdf_menger (
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[0])
-  );
-
-  sdf_query_cube_infinite sdf_cubes (
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[1])
-  );
-
-  sdf_query_cube sdf_cube (
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[2])
   );
 
   assign ready_out = (state == RU_Ready);
