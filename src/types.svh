@@ -16,7 +16,7 @@
 `define MAX_RAY_DEPTH       31
 `define MAX_RAY_DEPTH_SIZE  ($clog2(`MAX_RAY_DEPTH))
 
-`define NUM_CORES           2
+`define NUM_CORES           4
 
 
 // for rendering

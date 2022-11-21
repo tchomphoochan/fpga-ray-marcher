@@ -2,7 +2,9 @@
 `timescale 1ns / 1ps
 
 module fps_counter #(
-  parameter WIDTH = 32
+  parameter WIDTH = 32,
+  ONE_SECOND_CYCLES = 'd4_000_000,
+  WAIT_SECONDS = 'd5
 ) (
   input wire clk_in,
   input wire rst_in,
@@ -10,13 +12,11 @@ module fps_counter #(
   output logic [WIDTH-1:0] fps_out
 );
 
-  parameter ONE_SECOND_CYCLES = 'd4_000_000;
-  parameter WAIT_SECONDS = 'd5;
-
   logic [WIDTH-1:0] frame_cnt, snd_cnt, cycle_cnt, assigned_frame_cnt, assigned_snd_cnt, quotient, remainder;
   logic valid_in, valid_out, error_out, busy_out;
 
   divider #(.WIDTH(WIDTH)) divider_inst(
+    .clk_in(clk_in),
     .rst_in(rst_in),
     .dividend_in(assigned_frame_cnt),
     .divisor_in(assigned_snd_cnt),
@@ -39,7 +39,7 @@ module fps_counter #(
       if (valid_out && !error_out) begin
         fps_out <= quotient;
       end
-      if (!busy_out && snd_cnt >= WAIT_SECONDS) begin
+      if (!busy_out && snd_cnt >= WAIT_SECONDS && cycle_cnt == 0) begin
         assigned_frame_cnt <= frame_cnt;
         assigned_snd_cnt <= snd_cnt;
         frame_cnt <= 0;
