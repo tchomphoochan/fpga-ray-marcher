@@ -49,7 +49,7 @@ module top_level_main(
     .clean_out(down)
   );
 
-  vec3 pos_vec;
+  vec3 pos_vec, dir_vec;
   logic [2:0] fractal_sel;
   logic toggle_hue, toggle_color;
   user_control user_control_inst(
@@ -61,6 +61,7 @@ module top_level_main(
     .btnd(down),
     .sw(sw),
     .pos_out(pos_vec),
+    .dir_out(dir_vec),
     .fractal_sel_out(fractal_sel),
     .toggle_hue_out(toggle_hue),
     .toggle_color_out(toggle_color)
@@ -92,17 +93,11 @@ module top_level_main(
   logic [31:0] fps;
   assign led = fps[15:0];
 
-  // default values for testing
-  vec3 dir_vec_def;
-  assign dir_vec_def.x = `FP_ZERO;
-  assign dir_vec_def.y = `FP_ZERO;
-  assign dir_vec_def.z = `FP_ONE;
-
   ray_marcher ray_marcher_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
     .pos_vec_in(pos_vec),
-    .dir_vec_in(dir_vec_def),
+    .dir_vec_in(dir_vec),
     .fractal_sel_in(fractal_sel),
     .hcount_out(ray_marcher_hcount),
     .vcount_out(ray_marcher_vcount),

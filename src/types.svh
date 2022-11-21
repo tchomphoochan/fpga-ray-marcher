@@ -139,6 +139,8 @@ typedef enum logic [3:0] {
 `define FP_MAGIC_NUMBER_B   (32'hfffb7777 >> (20 - `NUM_FRAC_DIGITS))
 `define FP_MAGIC_NUMBER_C   (32'hfffd17e4 >> (20 - `NUM_FRAC_DIGITS))
 `define FP_MAGIC_NUMBER_D   (32'hffff3333 >> (20 - `NUM_FRAC_DIGITS))
+`define FP_COS_HUNDREDTH    (32'h000fffcb >> (20 - `NUM_FRAC_DIGITS))
+`define FP_SIN_HUNDREDTH    (32'h000028f5 >> (20 - `NUM_FRAC_DIGITS))
 `define FP_SQRT_TWO         (32'h0016a09e >> (20 - `NUM_FRAC_DIGITS))
 `define FP_INV_SQRT_TWO     (32'h000b504f >> (20 - `NUM_FRAC_DIGITS))
 `define FP_TENTH            (32'h00019999 >> (20 - `NUM_FRAC_DIGITS))
