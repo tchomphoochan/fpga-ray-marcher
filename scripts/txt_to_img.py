@@ -5,16 +5,16 @@ import numpy as np
 from PIL import Image, ImageOps
 
 def main(argv):
-  if len(sys.argv) < 2:
-    print("Usage: {0} <text file>".format(sys.argv[0]))
+  if len(sys.argv) < 4:
+    print("Usage: {0} <text file> <width> <height>".format(sys.argv[0]))
     sys.exit(1)
   path = sys.argv[1]
   with open(path, "r") as f:
     text = f.read()
   raw_lines = text.split('\n')
   new_cnt = 0
-  W = 400
-  H = 300
+  W = int(sys.argv[2])
+  H = int(sys.argv[3])
   pixels = [[0 for _ in range(W)] for _ in range(H)]
   for line in raw_lines:
     elems = line.split()
