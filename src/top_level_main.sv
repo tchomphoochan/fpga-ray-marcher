@@ -38,8 +38,8 @@ module top_level_main(
   ps2_decoder ps2_decoder_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
-    .ps2_data_in(ps2_data),
-    .ps2_clk_in(ps2_clk),
+    .ps_data_in(ps2_data),
+    .ps_clk_in(ps2_clk),
     .code_out(ps2_code),
     .code_valid_out(ps2_code_valid)
   );
