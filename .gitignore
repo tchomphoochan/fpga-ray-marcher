@@ -9,3 +9,4 @@ obj/*
 .mypy_cache
 .DS_Store
 for-lab-bc
+.vscode/*
