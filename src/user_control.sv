@@ -76,8 +76,8 @@ module user_control #(
             pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.z, fp_epsilon) : pos_out.z;
           end
           MODE_WALK: begin
-            pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, ($signed(dir.x) >> $signed(eps_bits))) : (btnu && !btnd) ? fp_add(pos_out.x, ($signed(dir.x) >> $signed(eps_bits))) : pos_out.x;
-            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, ($signed(dir.z) >> $signed(eps_bits))) : (btnu && !btnd) ? fp_add(pos_out.z, ($signed(dir.z) >> $signed(eps_bits))) : pos_out.z;
+            pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.x;
+            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.z;
 
             if(btnl || btnr) begin
               fp m00 = `FP_COS_HUNDREDTH;
