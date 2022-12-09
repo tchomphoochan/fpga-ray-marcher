@@ -31,8 +31,7 @@ module user_control #(
 
   
   localparam MODE_WALK = 0;
-  localparam MODE_TRANS_XY = 1;
-  localparam MODE_TRANS_XZ = 2;
+  localparam MODE_TRANS_YZ = 1;
 
   vec3 dir;
   assign dir_out = dir;
@@ -67,13 +66,10 @@ module user_control #(
         cycle_counter <= 0;
 
         case(control_mode) 
-          MODE_TRANS_XY: begin
-            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_epsilon) : (btnr && !btnl) ? fp_add(pos_out.x, fp_epsilon) : pos_out.x;
+          MODE_TRANS_YZ: begin
             pos_out.y <= (btnd && !btnu) ? fp_sub(pos_out.y, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.y, fp_epsilon) : pos_out.y;
-          end
-          MODE_TRANS_XZ: begin
-            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_epsilon) : (btnr && !btnl) ? fp_add(pos_out.x, fp_epsilon) : pos_out.x;
-            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.z, fp_epsilon) : pos_out.z;
+            pos_out.z <= (btnl && !btnr) ? fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnr && !btnl) ? fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.z;
+            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnr && !btnl) ? fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.x;
           end
           MODE_WALK: begin
             pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.x;

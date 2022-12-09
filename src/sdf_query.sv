@@ -30,6 +30,19 @@ module sdf_query_cube_infinite (
   end
 endmodule // sdf_cube_infinite
 
+// // latency: 1 clock cycle
+// module sdf_query_cube_noise (
+//   input logic clk_in, rst_in,
+//   input vec3 point_in,
+//   output fp sdf_out
+// );
+//   vec3 hhh;
+//   assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
+//   always_ff @(posedge clk_in) begin
+//     sdf_out <= sd_box_fast(vec3_sub(vec3_fract(vec3_add(point_in, hhh)), hhh), `FP_QUARTER);
+//   end
+// endmodule // sdf_cube_infinite
+
 // latency: 6 clock cycle
 // module sdf_query_sponge #(
 //   parameter ITERATIONS = 3
