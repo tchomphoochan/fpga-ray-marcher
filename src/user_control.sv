@@ -101,12 +101,12 @@ module user_control #(
         end else begin
           // walk forward/backward
           if (kb[`KB_FORWARD] && !kb[`KB_BACKWARD])begin
-            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
-            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
-          end
-          if (kb[`KB_BACKWARD] && !kb[`KB_FORWARD])begin
             pos_out.x <= fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
             pos_out.z <= fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+          end
+          if (kb[`KB_BACKWARD] && !kb[`KB_FORWARD])begin
+            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
+            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
           end
         end
 
