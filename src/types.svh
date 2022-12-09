@@ -4,6 +4,14 @@
 `ifndef TYPES_SVH
 `define TYPES_SVH
 
+`define KB_FORWARD 7
+`define KB_BACKWARD 6
+`define KB_TURN_LEFT 5
+`define KB_TURN_RIGHT 4
+`define KB_TRANS_UP 3
+`define KB_TRANS_DOWN 2
+`define KB_TRANS_LEFT 1
+`define KB_TRANS_RIGHT 0
 
 `define ADDR_BITS           (`H_BITS+`V_BITS)
 `define COLOR_BITS          4

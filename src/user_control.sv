@@ -14,8 +14,11 @@ module user_control #(
 ) (
   input wire clk_in,
   input wire rst_in,
+
   input wire btnl, btnr, btnu, btnd,
+  input wire [7:0] kb_in,
   input wire [15:0] sw,
+
   output vec3 pos_out,
   output vec3 dir_out,
   output logic [2:0] fractal_sel_out,
@@ -24,21 +27,19 @@ module user_control #(
   output logic toggle_checker_out,
   output logic toggle_dither_out
 );
+
   localparam CLK_PERIOD_NS = 20;
   localparam DELTA_TIME_MS = 1;
   localparam COUNTER_SIZE = int'($ceil(DELTA_TIME_MS*1_000_000/CLK_PERIOD_NS));
   localparam COUNTER_WIDTH = $clog2(COUNTER_SIZE);
 
-  
   localparam MODE_WALK = 0;
   localparam MODE_TRANS_YZ = 1;
 
   vec3 dir;
   assign dir_out = dir;
 
-  logic [1:0] control_mode;
   logic [2:0] move_speed;
-  assign control_mode = sw[1:0];
   assign move_speed = sw[3:2];
 
   assign fractal_sel_out = sw[15:13];
@@ -48,6 +49,18 @@ module user_control #(
   assign toggle_dither_out = sw[11];
 
   logic [COUNTER_WIDTH+2:0] cycle_counter;
+  logic parity;
+
+  // integrate inputs from fpga and keyboard
+  logic control_mode;
+  assign control_mode = sw[0];
+  logic [7:0] kb;
+  always_comb begin
+    if (control_mode == MODE_WALK)
+      kb = kb_in | {btnu, btnd, btnl, btnr, 4'd0};
+    else
+      kb = kb_in | {4'd0, btnu, btnd, btnl, btnr};
+  end
 
   parameter eps_bits = 7;
   parameter fp_epsilon = (`FP_ONE >> eps_bits);
@@ -61,30 +74,49 @@ module user_control #(
       dir.y <= `FP_ZERO;
       dir.z <= `FP_ONE;
       cycle_counter <= 0;
+      parity <= 0;
     end else begin
       if(cycle_counter >> COUNTER_WIDTH == move_speed + 1) begin
         cycle_counter <= 0;
+        parity <= !parity;
 
-        case(control_mode) 
-          MODE_TRANS_YZ: begin
-            pos_out.y <= (btnd && !btnu) ? fp_sub(pos_out.y, fp_epsilon) : (btnu && !btnd) ? fp_add(pos_out.y, fp_epsilon) : pos_out.y;
-            pos_out.z <= (btnl && !btnr) ? fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnr && !btnl) ? fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.z;
-            pos_out.x <= (btnl && !btnr) ? fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnr && !btnl) ? fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.x;
-          end
-          MODE_WALK: begin
-            pos_out.x <= (btnd && !btnu) ? fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH)) : pos_out.x;
-            pos_out.z <= (btnd && !btnu) ? fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : (btnu && !btnd) ? fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH)) : pos_out.z;
+        // translation up/down
+        if (kb[`KB_TRANS_UP] && !kb[`KB_TRANS_DOWN]) begin
+          pos_out.y <= fp_add(pos_out.y, fp_epsilon);
+        end
+        if (kb[`KB_TRANS_DOWN] && !kb[`KB_TRANS_UP]) begin
+          pos_out.y <= fp_sub(pos_out.y, fp_epsilon);
+        end
 
-            if(btnl || btnr) begin
-              fp m00 = `FP_COS_HUNDREDTH;
-              fp m01 = btnl ? fp_neg(`FP_SIN_HUNDREDTH) : `FP_SIN_HUNDREDTH;
-              dir.x <= fp_add(fp_mul(dir.x, m00), fp_mul(dir.z, m01));
-              dir.z <= fp_add(fp_mul(dir.x, fp_neg(m01)), fp_mul(dir.z, m00));
-            end
+        if (parity) begin
+          // translation left/right
+          if (kb[`KB_TRANS_LEFT] && !kb[`KB_TRANS_RIGHT]) begin
+            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
+            pos_out.z <= fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
           end
-          default: begin
+          if (kb[`KB_TRANS_RIGHT] && !kb[`KB_TRANS_LEFT]) begin
+            pos_out.x <= fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
+            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
           end
-        endcase
+        end else begin
+          // walk forward/backward
+          if (kb[`KB_FORWARD] && !kb[`KB_BACKWARD])begin
+            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
+            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+          end
+          if (kb[`KB_BACKWARD] && !kb[`KB_FORWARD])begin
+            pos_out.x <= fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
+            pos_out.z <= fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+          end
+        end
+
+        // turn left/right
+        if (kb[`KB_TURN_LEFT] || kb[`KB_TURN_RIGHT])begin
+          fp m00 = `FP_COS_HUNDREDTH;
+          fp m01 = kb[`KB_TURN_LEFT] ? fp_neg(`FP_SIN_HUNDREDTH) : `FP_SIN_HUNDREDTH;
+          dir.x <= fp_add(fp_mul(dir.x, m00), fp_mul(dir.z, m01));
+          dir.z <= fp_add(fp_mul(dir.x, fp_neg(m01)), fp_mul(dir.z, m00));
+        end
       end else begin
         cycle_counter <= cycle_counter + 1;
       end

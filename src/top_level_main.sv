@@ -8,6 +8,8 @@ module top_level_main(
   input wire btnc,
   input wire btnl, btnr, btnu, btnd,
   input wire [15:0] sw,
+  input wire ps2_clk,
+  input wire ps2_data,
   output logic [15:0] led,
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs
@@ -23,30 +25,30 @@ module top_level_main(
     .reset(sys_rst)
   );
 
+  // fpga buttons stuff
   logic up, down, left, right;
-  debouncer dbncr(
+  debouncer dbncr(.clk_in(sys_clk), .rst_in(sys_rst), .dirty_in(btnr), .clean_out(right));
+  debouncer dbncl(.clk_in(sys_clk), .rst_in(sys_rst), .dirty_in(btnl), .clean_out(left));
+  debouncer dbncu(.clk_in(sys_clk), .rst_in(sys_rst), .dirty_in(btnu), .clean_out(up));
+  debouncer dbncd(.clk_in(sys_clk), .rst_in(sys_rst), .dirty_in(btnd), .clean_out(down));
+
+  // keyboard stuff
+  logic [7:0] ps2_code, kb;
+  logic ps2_code_valid;
+  ps2_decoder ps2_decoder_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
-    .dirty_in(btnr),
-    .clean_out(right)
+    .ps2_data_in(ps2_data),
+    .ps2_clk_in(ps2_clk),
+    .code_out(ps2_code),
+    .code_valid_out(ps2_code_valid)
   );
-  debouncer dbncl(
+  keyboard_decoder keyboard_decoder_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
-    .dirty_in(btnl),
-    .clean_out(left)
-  );
-  debouncer dbncu(
-    .clk_in(sys_clk),
-    .rst_in(sys_rst),
-    .dirty_in(btnu),
-    .clean_out(up)
-  );
-  debouncer dbncd(
-    .clk_in(sys_clk),
-    .rst_in(sys_rst),
-    .dirty_in(btnd),
-    .clean_out(down)
+    .code_in(ps2_code),
+    .code_valid_in(ps2_code_valid),
+    .kb_out(kb)
   );
 
   vec3 pos_vec, dir_vec;
@@ -60,6 +62,7 @@ module top_level_main(
     .btnu(up),
     .btnd(down),
     .sw(sw),
+    .kb_in(kb),
     .pos_out(pos_vec),
     .dir_out(dir_vec),
     .fractal_sel_out(fractal_sel),
