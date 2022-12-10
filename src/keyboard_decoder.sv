@@ -28,6 +28,10 @@ module keyboard_decoder (
               8'h1B: kb_out[`KB_BACKWARD] <= 1; // S pressed
               8'h1C: kb_out[`KB_TURN_LEFT] <= 1; // A pressed
               8'h23: kb_out[`KB_TURN_RIGHT] <= 1; // D pressed
+              8'h75: kb_out[`KB_TRANS_UP] <= 1;
+              8'h72: kb_out[`KB_TRANS_DOWN] <= 1;
+              8'h6B: kb_out[`KB_TRANS_LEFT] <= 1;
+              8'h74: kb_out[`KB_TRANS_RIGHT] <= 1;
               default: begin end
             endcase
             case (code_in)
@@ -55,6 +59,10 @@ module keyboard_decoder (
               8'h1B: kb_out[`KB_BACKWARD] <= 0; // S released
               8'h1C: kb_out[`KB_TURN_LEFT] <= 0; // A released
               8'h23: kb_out[`KB_TURN_RIGHT] <= 0; // D released
+              8'h75: kb_out[`KB_TRANS_UP] <= 0;
+              8'h72: kb_out[`KB_TRANS_DOWN] <= 0;
+              8'h6B: kb_out[`KB_TRANS_LEFT] <= 0;
+              8'h74: kb_out[`KB_TRANS_RIGHT] <= 0;
               default: begin end
             endcase
             state <= READY;
