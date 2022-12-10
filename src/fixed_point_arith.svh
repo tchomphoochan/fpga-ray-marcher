@@ -39,6 +39,12 @@ endfunction
 function automatic fp fp_abs(input fp a);
   return a < 0 ? fp_neg(a) : a;
 endfunction
+function automatic fp fp_apply_sign(input fp a, input fp b);
+  return b < 0 ? fp_neg(a) : a;
+endfunction
+function automatic fp fp_sign(input fp a);
+  return fp_apply_sign(`FP_ONE, a);
+endfunction
 
 function automatic fp fp_mul_half(input fp a);
   return a >> 1;

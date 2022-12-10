@@ -100,6 +100,16 @@ function automatic vec3 vec3_step(input vec3 a, input vec3 b);
   vec3_step.y = fp_lt(a.y, b.y) ? `FP_ZERO : `FP_ONE;
   vec3_step.z = fp_lt(a.z, b.z) ? `FP_ZERO : `FP_ONE;
 endfunction
+function automatic vec3 vec3_sign(input vec3 a);
+  vec3_sign.x = fp_sign(a.x);
+  vec3_sign.y = fp_sign(a.y);
+  vec3_sign.z = fp_sign(a.z);
+endfunction
+function automatic vec3 vec3_apply_sign(input vec3 a, input vec3 b);
+  vec3_apply_sign.x = fp_apply_sign(a.x, b.x);
+  vec3_apply_sign.y = fp_apply_sign(a.y, b.y);
+  vec3_apply_sign.z = fp_apply_sign(a.z, b.z);
+endfunction
 function automatic vec3 vec3_sr(input vec3 a, input integer b);
   vec3_sr.x = a.x >> b;
   vec3_sr.y = a.y >> b;
