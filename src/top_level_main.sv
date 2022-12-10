@@ -12,7 +12,9 @@ module top_level_main(
   input wire ps2_data,
   output logic [15:0] led,
   output logic [3:0] vga_r, vga_g, vga_b,
-  output logic vga_hs, vga_vs
+  output logic vga_hs, vga_vs,
+  output logic ca, cb, cc, cd, ce, cf, cg,
+  output logic [7:0] an
 );
 
   logic sys_clk;
@@ -33,16 +35,28 @@ module top_level_main(
   debouncer dbncd(.clk_in(sys_clk), .rst_in(sys_rst), .dirty_in(btnd), .clean_out(down));
 
   // keyboard stuff
+  // ps2 synchronizer
+  logic [1:0] ps2b_c;
+  logic [1:0] ps2b_d;
+  always_ff @(posedge sys_clk)begin
+    ps2b_c[0] <= ps2_clk;
+    ps2b_d[0] <= ps2_data;
+    ps2b_c[1] <= ps2b_c[0];
+    ps2b_d[1] <= ps2b_d[0];
+  end
+  // ps2
   logic [7:0] ps2_code, kb;
   logic ps2_code_valid;
   ps2_decoder ps2_decoder_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
-    .ps_data_in(ps2_data),
-    .ps_clk_in(ps2_clk),
+    .ps_data_in(ps2b_d[1]),
+    .ps_clk_in(ps2b_c[1]),
     .code_out(ps2_code),
     .code_valid_out(ps2_code_valid)
   );
+  logic [7:0] ps2_buffer [3:0];
+  // keyboard
   keyboard_decoder keyboard_decoder_inst(
     .clk_in(sys_clk),
     .rst_in(sys_rst),
@@ -50,6 +64,12 @@ module top_level_main(
     .code_valid_in(ps2_code_valid),
     .kb_out(kb)
   );
+  // 7seg
+  seven_segment_controller mssc(.clk_in(sys_clk),
+                              .rst_in(sys_rst),
+                              .val_in({ps2_buffer[3], ps2_buffer[2], ps2_buffer[1], ps2_buffer[0]}),
+                              .cat_out({cg, cf, ce, cd, cc, cb, ca}),
+                              .an_out(an));
 
   vec3 pos_vec, dir_vec;
   logic [2:0] fractal_sel;
@@ -135,6 +155,20 @@ module top_level_main(
     .new_frame_in(ray_marcher_new_frame),
     .fps_out(fps)
   );
+
+  always_ff @(posedge sys_clk) begin
+    if (sys_rst) begin
+      ps2_buffer[0] <= 0;
+      ps2_buffer[1] <= 0;
+      ps2_buffer[2] <= 0;
+      ps2_buffer[3] <= 0;
+    end else if (ps2_code_valid) begin
+      ps2_buffer[0] <= ps2_code;
+      ps2_buffer[1] <= ps2_buffer[0];
+      ps2_buffer[2] <= ps2_buffer[1];
+      ps2_buffer[3] <= ps2_buffer[2];
+    end
+  end
 
 endmodule // top_level_main
 

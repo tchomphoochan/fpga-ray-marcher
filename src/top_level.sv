@@ -17,7 +17,9 @@ module top_level(
   output logic led17_r,
   output logic led16_b,
   output logic [3:0] vga_r, vga_g, vga_b,
-  output logic vga_hs, vga_vs
+  output logic vga_hs, vga_vs,
+  output logic ca, cb, cc, cd, ce, cf, cg,
+  output logic [7:0] an
 );
 
   // top_level_fixed_point_tester top_level_fixed_point_tester_inst(
@@ -60,7 +62,9 @@ module top_level(
     .vga_b(vga_b),
     .vga_hs(vga_hs),
     .vga_vs(vga_vs),
-    .led(led)
+    .led(led),
+    .ca(ca), .cb(cb), .cc(cc), .cd(cd), .ce(ce), .cf(cf), .cg(cg),
+    .an(an)
   );
 
 
