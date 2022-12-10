@@ -60,7 +60,7 @@ module sdf_query_cube_noise (
     poke <= _poke;
     octa3 <= _octa3;
     id <= _id;
-    sdf_out <= fp_sub(fp_max(x, y), `FP_QUARTER);
+    sdf_out <= fp_sub(fp_max(x, y), `FP_TENTH);
   end
 endmodule // sdf_query_cube_noise
 

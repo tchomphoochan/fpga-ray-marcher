@@ -181,7 +181,7 @@ module ray_unit #(
   );
 
   // latency: 4 cycle
-  sdf_query_cube_noise sdf_cubes (
+  sdf_query_cube_noise sdf_maze (
     .clk_in(clk_in),
     .rst_in(rst_in),
     .point_in(ray_origin),
