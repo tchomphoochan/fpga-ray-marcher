@@ -1,10 +1,18 @@
 `default_nettype none
 `timescale 1ns / 1ps
 
-module dummy_ether_tx(
+module ether_tx(
   input wire clk_in,
   input wire rst_in,
+
+  // for module driving it
   input logic trigger_in,
+  input logic [1:0] data_in, // MSB MSb
+  input logic last_dibit_in,
+  output logic ready_out,
+  output logic data_ready_out,
+
+  // for ethernet
   output logic axiov,
   output logic [1:0] axiod
 );
@@ -25,6 +33,8 @@ module dummy_ether_tx(
     if (rst_in) begin
       datav <= 0;
       datad <= 0;
+      data_ready_out <= 0;
+      ready_out <= 1;
       state <= ready;
     end else begin
       if (state == ready) begin
@@ -32,6 +42,7 @@ module dummy_ether_tx(
           state <= preamble;
           datav <= 1;
           datad <= 2'b01;
+          ready_out <= 0;
           cnt <= 1;
         end
       end else if (state == preamble) begin
@@ -65,15 +76,17 @@ module dummy_ether_tx(
         datad <= 0;
         if (cnt == 7) begin
           state <= data;
+          data_ready_out <= 1;
           cnt <= 0;
           $display("goto data");
         end else begin
           cnt <= cnt+1;
         end
       end else if (state == data) begin
-        datad <= 2'b11;
-        if (cnt == 4*30-1) begin
+        datad <= data_in;
+        if (last_dibit_in) begin
           state <= crc_wait;
+          data_ready_out <= 0;
           cnt <= 0;
           $display("goto crc_wait");
         end else begin
@@ -101,6 +114,7 @@ module dummy_ether_tx(
         end
       end else if (state == finish) begin
         state <= ready;
+        ready_out <= 1;
       end
     end
   end
@@ -140,6 +154,6 @@ module dummy_ether_tx(
     .axiod(crc32_axiod)
   );
 
-endmodule // dummy_ether_tx
+endmodule // ether_tx
 
 `default_nettype wire
