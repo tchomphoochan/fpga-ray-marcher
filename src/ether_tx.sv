@@ -6,9 +6,9 @@ module ether_tx(
   input wire rst_in,
 
   // for module driving it
-  input logic trigger_in,
-  input logic [1:0] data_in, // MSB MSb
-  input logic last_dibit_in,
+  input wire trigger_in,
+  input wire [1:0] data_in, // MSB MSb
+  input wire last_dibit_in,
   output logic ready_out,
   output logic data_ready_out,
 

@@ -128,7 +128,7 @@ module top_level_main(
   logic [`H_BITS-1:0] ray_marcher_hcount;
   logic [`V_BITS-1:0] ray_marcher_vcount;
   logic [`ADDR_BITS-1:0] ray_marcher_addr;
-  assign ray_marcher_addr = ray_marcher_vcount * `DISPLAY_WIDTH + ray_marcher_hcount;
+  assign ray_marcher_addr = (ray_marcher_vcount << `H_BITS) + ray_marcher_hcount;
   logic [3:0] ray_marcher_color;
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;

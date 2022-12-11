@@ -23,7 +23,7 @@ module ether_export(
   logic [14:0] cnt;
 
   logic [15:0] read_row, read_col;
-  assign read_addr_out = read_row * `DISPLAY_WIDTH + read_col;
+  assign read_addr_out = (read_row << `H_BITS) + read_col;
 
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
