@@ -9,7 +9,7 @@
 module top_level(
   input wire clk_100mhz,
   input wire btnc,
-  input wire btnl, btnr, btnu, btnd,
+  input wire btnl, btnr, btnu, btnd, cpu_resetn,
   input wire [15:0] sw,
   input wire ps2_clk,
   input wire ps2_data,
@@ -19,7 +19,9 @@ module top_level(
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs,
   output logic ca, cb, cc, cd, ce, cf, cg,
-  output logic [7:0] an
+  output logic [7:0] an,
+  output logic eth_rstn, eth_txen, eth_refclk,
+  output logic [1:0] eth_txd
 );
 
   // top_level_fixed_point_tester top_level_fixed_point_tester_inst(
@@ -54,6 +56,7 @@ module top_level(
     .btnr(btnr),
     .btnu(btnu),
     .btnd(btnd),
+    .cpu_resetn(cpu_resetn),
     .sw(sw),
     .ps2_clk(ps2_clk),
     .ps2_data(ps2_data),
@@ -64,7 +67,9 @@ module top_level(
     .vga_vs(vga_vs),
     .led(led),
     .ca(ca), .cb(cb), .cc(cc), .cd(cd), .ce(ce), .cf(cf), .cg(cg),
-    .an(an)
+    .an(an),
+    .eth_rstn(eth_rstn), .eth_txen(eth_txen), .eth_refclk(eth_refclk),
+    .eth_txd(eth_txd)
   );
 
 

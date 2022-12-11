@@ -5,7 +5,7 @@
 
 module top_level_main(
   input wire clk_100mhz,
-  input wire btnc,
+  input wire btnc, cpu_resetn,
   input wire btnl, btnr, btnu, btnd,
   input wire [15:0] sw,
   input wire ps2_clk,
@@ -14,13 +14,18 @@ module top_level_main(
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs,
   output logic ca, cb, cc, cd, ce, cf, cg,
-  output logic [7:0] an
+  output logic [7:0] an,
+  output logic eth_rstn, eth_txen, eth_refclk,
+  output logic [1:0] eth_txd
 );
 
   logic sys_clk;
   logic vga_clk;
   assign vga_clk = sys_clk;
-  logic sys_rst = btnc;
+  logic sys_rst = !cpu_resetn;
+  assign eth_rst_n = !sys_rst;
+  assign eth_refclk = sys_clk;
+
   `CLK_CONVERTER_TYPE clk_converter(
     .clk_in1(clk_100mhz),
     .clk_out1(sys_clk),
@@ -93,12 +98,13 @@ module top_level_main(
   );
 
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
-  logic [3:0] vga_display_read_data;
+  logic [`ADDR_BITS-1:0] ether_read_addr;
+  logic [3:0] bram_read_data;
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
     .rst_in(sys_rst),
-    .read_data_in(vga_display_read_data),
+    .read_data_in(eth_txen ? 4'b0 : bram_read_data),
     .read_addr_out(vga_display_read_addr),
     .toggle_hue(toggle_hue),
     .toggle_color(toggle_color),
@@ -107,6 +113,16 @@ module top_level_main(
     .vga_b(vga_b),
     .vga_hs(vga_hs),
     .vga_vs(vga_vs)
+  );
+
+  ether_export ether_export_inst(
+    .clk_in(sys_clk),
+    .rst_in(rst_in),
+    .trigger_in(btnc),
+    .read_data_in(bram_read_data),
+    .read_addr_out(ether_read_addr),
+    .eth_txen(eth_txen),
+    .eth_txd(eth_txd)
   );
 
   logic [`H_BITS-1:0] ray_marcher_hcount;
@@ -142,11 +158,11 @@ module top_level_main(
     .clk(sys_clk),
     .rst(sys_rst),
     .swap_buffers(ray_marcher_new_frame),
-    .read_addr(vga_display_read_addr),
+    .read_addr(eth_txen ? ether_read_addr : vga_display_read_addr),
     .write_enable(ray_marcher_valid),
     .write_addr(ray_marcher_addr),
     .write_data(ray_marcher_color),
-    .read_data_out(vga_display_read_data),
+    .read_data_out(bram_read_data),
     .which_bram_out(out)
   );
 
