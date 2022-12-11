@@ -17,8 +17,8 @@ module ether_tx(
   output logic [1:0] axiod
 );
 
-  logic [47:0] FPGA_MAC_ADDR = 48'h69_2C_08_30_75_FD;
-  logic [47:0] LAPTOP_MAC_ADDR = 48'h88_66_5a_03_48_b0;
+  parameter FPGA_MAC_ADDR = 48'h69_2C_08_30_75_FD;
+  parameter LAPTOP_MAC_ADDR = 48'h88_66_5a_03_48_b0;
 
   typedef enum { ready, preamble, dest, src, ethertype, data, crc_wait, crc, finish } state_t;
   logic [10:0] cnt;
