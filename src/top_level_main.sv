@@ -97,6 +97,7 @@ module top_level_main(
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
+    .rst_in(sys_rst),
     .read_data_in(vga_display_read_data),
     .read_addr_out(vga_display_read_addr),
     .toggle_hue(toggle_hue),
