@@ -64,7 +64,7 @@ module ray_unit #(
       0: sdf_wait_max = 4;
       1: sdf_wait_max = 1;
       2: sdf_wait_max = 1;
-      3: sdf_wait_max = 4;
+      3: sdf_wait_max = 3;
       default: sdf_wait_max = 1;
     endcase
   end
@@ -180,7 +180,7 @@ module ray_unit #(
     .sdf_out(sdf_queries[2])
   );
 
-  // latency: 4 cycle
+  // latency: 3 cycle
   sdf_query_cube_noise sdf_maze (
     .clk_in(clk_in),
     .rst_in(rst_in),

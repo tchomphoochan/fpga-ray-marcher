@@ -95,7 +95,7 @@ function automatic vec3 vec3_floor(input vec3 a);
   vec3_floor.y = fp_floor(a.y);
   vec3_floor.z = fp_floor(a.z);
 endfunction
-function automatic vec3 vec3_step(input vec3 a, input vec3 b);
+function automatic vec3 vec3_step(input vec3 b, input vec3 a);
   vec3_step.x = fp_lt(a.x, b.x) ? `FP_ZERO : `FP_ONE;
   vec3_step.y = fp_lt(a.y, b.y) ? `FP_ZERO : `FP_ONE;
   vec3_step.z = fp_lt(a.z, b.z) ? `FP_ZERO : `FP_ONE;

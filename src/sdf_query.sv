@@ -30,37 +30,36 @@ module sdf_query_cube_infinite (
   end
 endmodule // sdf_cube_infinite
 
-// latency: 4 clock cycle
+// latency: 3 clock cycle
 module sdf_query_cube_noise (
   input logic clk_in, rst_in,
   input vec3 point_in,
   output fp sdf_out
 );
-  vec3 hhh, cube, _poke, poke, octa1, octa2, _octa3, octa3, octa4, octa5, _id, id;
+  vec3 hhh, cube, poke, octa1, octa2, octa3, _octa4, octa4, _id, id;
   fp box, hash, x, y;
 
   assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
 
   assign cube = vec3_add(vec3_floor(point_in), hhh); // get cube id (vec3)
-  assign _poke = vec3_sub(point_in, cube); // divide space into cubes, same as vec3_fract(point_in) - .5
+  assign poke = vec3_sub(point_in, cube); // divide space into cubes, same as vec3_fract(point_in) - .5
 
   assign octa1 = vec3_abs(poke);  // get octahedron id (vec3)
   assign octa2 = vec3_step(make_vec3(octa1.y, octa1.z, octa1.x), octa1);
-  assign _octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
-  assign octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
-  assign octa5 = vec3_apply_sign(octa4, poke);
+  assign octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
+  
+  assign _octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
 
-  assign _id = vec3_add(octa5, cube);
+  assign _id = vec3_add(cube, vec3_apply_sign(vec3_scaled_half(octa4), poke));
   assign hash = fp_fract(vec3_dot(id, make_vec3(`FP_THREE_HALFS, `FP_THIRD, `FP_QUARTER)));
 
   assign x = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.x : poke.y : poke.x);
   assign y = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.z : poke.z : poke.y);
 
   always_ff @(posedge clk_in) begin
-    poke <= _poke;
-    octa3 <= _octa3;
+    octa4 <= _octa4;
     id <= _id;
-    sdf_out <= fp_sub(fp_max(x, y), `FP_TENTH);
+    sdf_out <= fp_sub(fp_max(x, y), `FP_ONE_SIXTEENTHS);
   end
 endmodule // sdf_query_cube_noise
 

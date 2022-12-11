@@ -32,7 +32,7 @@ module full_ray_marcher_sim;
   assign toggle_dither_in = 1;
   assign pos_vec_in = pos_vec_def;
   assign dir_vec_in = dir_vec_def;
-  assign fractal_sel_in = 0;
+  assign fractal_sel_in = 3;
 
   ray_marcher #(
     .DISPLAY_WIDTH(`DISPLAY_WIDTH),
