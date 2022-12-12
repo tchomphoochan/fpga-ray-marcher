@@ -16,8 +16,8 @@
 `define ADDR_BITS           (`H_BITS+`V_BITS)
 `define COLOR_BITS          4
 
-`define NUM_WHOLE_DIGITS    12 // including the sign bit
-`define NUM_FRAC_DIGITS     18
+`define NUM_WHOLE_DIGITS    6 // including the sign bit
+`define NUM_FRAC_DIGITS     16
 `define NUM_ALL_DIGITS      (`NUM_WHOLE_DIGITS+`NUM_FRAC_DIGITS)
 `define SCALING_FACTOR      (2.0 ** (-`NUM_FRAC_DIGITS))
 
