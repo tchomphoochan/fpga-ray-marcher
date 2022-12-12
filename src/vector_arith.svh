@@ -111,14 +111,14 @@ function automatic vec3 vec3_apply_sign(input vec3 a, input vec3 b);
   vec3_apply_sign.z = fp_apply_sign(a.z, b.z);
 endfunction
 function automatic vec3 vec3_sr(input vec3 a, input integer b);
-  vec3_sr.x = a.x >> b;
-  vec3_sr.y = a.y >> b;
-  vec3_sr.z = a.z >> b;
+  vec3_sr.x = $signed(a.x) >> $signed(b);
+  vec3_sr.y = $signed(a.y) >> $signed(b);
+  vec3_sr.z = $signed(a.z) >> $signed(b);
 endfunction
 function automatic vec3 vec3_sl(input vec3 a, input integer b);
-  vec3_sl.x = a.x << b;
-  vec3_sl.y = a.y << b;
-  vec3_sl.z = a.z << b;
+  vec3_sl.x = $signed(a.x) << $signed(b);
+  vec3_sl.y = $signed(a.y) << $signed(b);
+  vec3_sl.z = $signed(a.z) << $signed(b);
 endfunction
 
 // not synthesizable!

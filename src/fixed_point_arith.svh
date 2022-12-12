@@ -47,7 +47,7 @@ function automatic fp fp_sign(input fp a);
 endfunction
 
 function automatic fp fp_mul_half(input fp a);
-  return a >> 1;
+  return $signed(a) >> $signed(1);
 endfunction
 function automatic fp fp_mul_2(input fp a);
   return a << 1;
