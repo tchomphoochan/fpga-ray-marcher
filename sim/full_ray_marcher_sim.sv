@@ -20,6 +20,7 @@ module full_ray_marcher_sim;
   vec3 dir_vec_in;
   logic [2:0] fractal_sel_in;
   logic toggle_checker_in;
+  logic toggle_texture_in;
 
   // rendered output
   logic [`H_BITS-1:0] hcount_out;
@@ -30,6 +31,7 @@ module full_ray_marcher_sim;
 
   assign toggle_checker_in = 0;
   assign toggle_dither_in = 1;
+  assign toggle_texture_in = 0;
   assign pos_vec_in = pos_vec_def;
   assign dir_vec_in = dir_vec_def;
   assign fractal_sel_in = 3;
@@ -48,6 +50,7 @@ module full_ray_marcher_sim;
     .dir_vec_in(dir_vec_in),
     .toggle_checker_in(toggle_checker_in),
     .toggle_dither_in(toggle_dither_in),
+    .toggle_texture_in(toggle_texture_in),
     .fractal_sel_in(fractal_sel_in),
     .hcount_out(hcount_out),
     .vcount_out(vcount_out),

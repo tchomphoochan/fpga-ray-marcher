@@ -145,7 +145,7 @@ module ray_generator_folded #(
       // cam_forward.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z));
       cam_up.x <= mult1_res;
       cam_up.y <= fp_add(mult2_res, mult3_res);
-      cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO, put this into another stage?
+      cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO: another stage
       // stage <= 2;
       stage <= 4;
     end else if (stage == 2) begin
@@ -165,7 +165,7 @@ module ray_generator_folded #(
       scaled_right.x <= mult1_res;
       scaled_right.y <= mult2_res;
       scaled_right.z <= mult3_res;
-      scaled_up <= vec3_scaled(cam_up, py);
+      scaled_up <= vec3_scaled(cam_up, py); // TODO: another stage
       stage <= 5;
     end else if (stage == 5 && fisf_ready_out) begin
       // stage 5: add then norm
