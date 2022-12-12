@@ -84,6 +84,9 @@ module ray_generator_folded #(
       mult2_b = cam_forward.z;
       mult3_a = cam_forward.x;
       mult3_b = cam_forward.x;
+    end else if (stage == 2) begin
+      mult1_a = cam_forward.y;
+      mult1_b = cam_forward.z;
     // end else if (stage == 3) begin
     //   mult1_a = fp_sub(hcount_fp, `FP_DISPLAY_WIDTH);
     //   mult1_b = `FP_INV_DISPLAY_HEIGHT;
@@ -97,6 +100,13 @@ module ray_generator_folded #(
       mult2_b = px;
       mult3_a = cam_right.z;
       mult3_b = px;
+    end else if (stage == 7) begin
+      mult1_a = cam_up.x;
+      mult1_b = py;
+      mult2_a = cam_up.y;
+      mult2_b = py;
+      mult3_a = cam_up.z;
+      mult3_b = py;
     end else if (stage == 6) begin
       // ray_direction_out <= vec3_scaled(rd1, fisf_res_out);
       mult1_a = rd1.x;
@@ -145,10 +155,13 @@ module ray_generator_folded #(
       // cam_forward.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z));
       cam_up.x <= mult1_res;
       cam_up.y <= fp_add(mult2_res, mult3_res);
-      cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO: another stage
+      // cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO: another stage
       // stage <= 2;
-      stage <= 4;
+      stage <= 2;
     end else if (stage == 2) begin
+      // cam_up.z <= fp_neg(fp_mul(cam_forward.y, cam_forward.z)); // TODO: another stage
+      cam_up.z <= fp_neg(mult1_res); // TODO: another stage
+      stage <= 4;
       // stage 2: cam up
       // cam_up <= vec3_cross(cam_forward, cam_right);
       // stage <= 3;
@@ -165,7 +178,12 @@ module ray_generator_folded #(
       scaled_right.x <= mult1_res;
       scaled_right.y <= mult2_res;
       scaled_right.z <= mult3_res;
-      scaled_up <= vec3_scaled(cam_up, py); // TODO: another stage
+      // scaled_up <= vec3_scaled(cam_up, py); // TODO: another stage
+      stage <= 7;
+    end else if (stage == 7) begin
+      scaled_up.x = mult1_res;
+      scaled_up.y = mult2_res;
+      scaled_up.z = mult3_res;
       stage <= 5;
     end else if (stage == 5 && fisf_ready_out) begin
       // stage 5: add then norm
