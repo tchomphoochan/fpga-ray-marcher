@@ -1,7 +1,12 @@
 
+FROM_MAC_ADDR = "11:11:11:11:11:11"
 MY_MAC_ADDR = "88:66:5a:03:48:b0"
 
 def handle_packet(src, dest, packet):
+  if src != FROM_MAC_ADDR:
+    return
+  # if dest != MY_MAC_ADDR:
+  #   return
   print(src, dest, packet)
 
 if __name__ == "__main__":

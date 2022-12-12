@@ -10,6 +10,7 @@ module ether_export_test;
   logic [1:0] eth_txd;
   logic [`ADDR_BITS-1:0] ether_read_addr;
   logic [3:0] bram_read_data;
+  // assign bram_read_data = 4'b1111;
 
   always begin
     #10;
@@ -63,7 +64,7 @@ module ether_export_test;
     trigger_in = 0;
     #10;
 
-    for (int i = 0; i < 10000; ++i) begin
+    for (int i = 0; i < 400*300; ++i) begin
       #10;
     end
 

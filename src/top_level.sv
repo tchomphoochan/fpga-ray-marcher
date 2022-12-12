@@ -69,7 +69,9 @@ module top_level(
     .ca(ca), .cb(cb), .cc(cc), .cd(cd), .ce(ce), .cf(cf), .cg(cg),
     .an(an),
     .eth_rstn(eth_rstn), .eth_txen(eth_txen), .eth_refclk(eth_refclk),
-    .eth_txd(eth_txd)
+    .eth_txd(eth_txd),
+    .led16_b(led16_b),
+    .led17_r(led17_r)
   );
 
 

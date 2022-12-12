@@ -16,15 +16,19 @@ module top_level_main(
   output logic ca, cb, cc, cd, ce, cf, cg,
   output logic [7:0] an,
   output logic eth_rstn, eth_txen, eth_refclk,
-  output logic [1:0] eth_txd
+  output logic [1:0] eth_txd,
+  output logic led16_b, led17_r
 );
 
   logic sys_clk;
   logic vga_clk;
   assign vga_clk = sys_clk;
   logic sys_rst = !cpu_resetn;
-  assign eth_rst_n = !sys_rst;
+  assign eth_rstn = !sys_rst;
   assign eth_refclk = sys_clk;
+
+  assign led16_b = eth_txen;
+  assign led17_r = btnc;
 
   `CLK_CONVERTER_TYPE clk_converter(
     .clk_in1(clk_100mhz),

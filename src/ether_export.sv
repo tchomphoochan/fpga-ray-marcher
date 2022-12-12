@@ -20,7 +20,7 @@ module ether_export(
 
   logic eth_trigger_in, eth_last_dibit_in, eth_data_ready, eth_ready;
   logic [1:0] eth_data_in;
-  logic [14:0] cnt;
+  logic [15:0] cnt;
 
   logic [15:0] read_row, read_col;
   assign read_addr_out = (read_row << `H_BITS) + read_col;
@@ -63,7 +63,7 @@ module ether_export(
             if (read_row == `DISPLAY_HEIGHT) begin
               state <= ready;
             end else begin
-              // eth_trigger_in = 1;
+              eth_trigger_in <= 1;
               state <= start_row;
               cnt <= 0;
             end
@@ -83,7 +83,7 @@ module ether_export(
             // end
             // row number done
             if (cnt == 7) begin
-              cnt <= 0;
+              cnt <= 2;
               state <= pixels;
             end else begin
               cnt <= cnt+1;
@@ -100,7 +100,7 @@ module ether_export(
           // put in another two bits. request address col=2
           // ...
           if ((cnt>>1) < `DISPLAY_WIDTH) begin
-            if (cnt & 1'b0) begin
+            if ((cnt & 1'b1) == 0) begin
               // eth_data_in = read_data_in[3:2];
             end else begin
               // eth_data_in = read_data_in[1:0];
@@ -130,6 +130,9 @@ module ether_export(
   end
 
   always_comb begin
+    eth_last_dibit_in = 0;
+    read_col = 0;
+    eth_data_in = 0;
     if (rst_in) begin
       eth_last_dibit_in = 0;
     end else begin
@@ -154,7 +157,6 @@ module ether_export(
           if (eth_ready) begin
             if (read_row == `DISPLAY_HEIGHT) begin
             end else begin
-              eth_trigger_in = 1;
             end
           end
         end
@@ -185,7 +187,7 @@ module ether_export(
           // put in another two bits. request address col=2
           // ...
           if ((cnt>>1) < `DISPLAY_WIDTH) begin
-            if (cnt & 1'b0) begin
+            if ((cnt & 1'b1) == 0) begin
               eth_data_in = read_data_in[3:2];
             end else begin
               eth_data_in = read_data_in[1:0];
