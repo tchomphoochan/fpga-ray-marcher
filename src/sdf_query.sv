@@ -264,7 +264,7 @@ module sdf_query_cube_noise (
   vec3 cube_s2, poke_s2;
   assign octa2 = vec3_step(make_vec3(octa1.y, octa1.z, octa1.x), octa1);
   assign octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
-  assign _octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
+  assign _octa4 = octa2 & octa3; //vec3_scaled(octa2, octa3); // && instead maybe?
 
   // stage 3
   vec3 cube_s3, poke_s3;
