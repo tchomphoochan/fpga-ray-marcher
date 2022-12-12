@@ -16,6 +16,25 @@ module march_ray (
   assign ray_origin_out = vec3_add(ray_origin_in, scaled_dir);
 endmodule // march_ray
 
+module brick_texture (
+  input vec3 point_in,
+  input wire [$clog2(`MAX_RAY_DEPTH)-1:0] ray_depth_in,
+  output logic [$clog2(`MAX_RAY_DEPTH)-1:0] color_out
+);
+  vec3 scaled_point;
+  fp u, v, o, ex, ey;
+  assign scaled_point = vec3_sl(point_in, 4);
+
+  assign o = fp_fract(fp_mul_half(fp_floor(fp_sub(scaled_point.y, `FP_HALF))));
+  assign u = fp_add(fp_fract(fp_add(fp_mul_half(scaled_point.x), fp_mul_half(scaled_point.z))), o);
+  assign v = fp_fract(scaled_point.y);
+
+  assign ex = fp_sub(fp_abs(fp_sub(u, `FP_HALF)), `FP_TENTH);
+  assign ey = fp_sub(fp_abs(fp_sub(v, `FP_HALF)), `FP_TENTH);
+
+  assign color_out = fp_gt(fp_min(ex, ey), `FP_ZERO) ? ray_depth_in >> 1 : ray_depth_in;
+endmodule
+
 module ray_unit #(
   parameter DISPLAY_WIDTH = `DISPLAY_WIDTH,
   DISPLAY_HEIGHT = `DISPLAY_HEIGHT,
@@ -33,6 +52,7 @@ module ray_unit #(
   input fp hcount_fp_in,
   input fp vcount_fp_in,
   input wire toggle_dither_in,
+  input wire toggle_texture_in,
   input wire valid_in,
 
   // rendered output
@@ -57,6 +77,10 @@ module ray_unit #(
   // Output of SDF Query
   fp sdf_dist;
   logic [5:0] sdf_wait_max, sdf_wait;
+
+  logic [$clog2(MAX_RAY_DEPTH)-1:0] current_color;
+  logic [$clog2(MAX_RAY_DEPTH)-1:0] texture_out;
+  assign current_color = toggle_texture_in ? texture_out : ray_depth;
 
   // Output of Ray March
   vec3 next_pos_vec;
@@ -112,7 +136,7 @@ module ray_unit #(
           ray_origin <= next_pos_vec;
           
           if (fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) || fp_gt(sdf_dist, `FP_FIVE) || ray_depth == MAX_RAY_DEPTH) begin
-            color_out <= fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) ? (4'hF - (ray_depth >> 1) - ((ray_depth >> 1) != 4'hF & toggle_dither_in & ray_depth[0] & (hcount[0] ^ vcount[0]))) : 4'd0;
+            color_out <= fp_lt(sdf_dist, (`FP_HUNDREDTH>>1)) ? (4'hF - (current_color >> 1) - ((current_color >> 1) != 4'hF & toggle_dither_in & current_color[0] & (hcount[0] ^ vcount[0]))) : 4'd0;
             hcount_out <= hcount;
             vcount_out <= vcount;
             state <= RU_Ready;
@@ -152,6 +176,12 @@ module ray_unit #(
     .fractal_sel_in(current_fractal),
     .sdf_out(sdf_dist),
     .sdf_wait_max_out(sdf_wait_max)
+  );
+
+  brick_texture texture (
+    .point_in(ray_origin),
+    .ray_depth_in(ray_depth),
+    .color_out(texture_out)
   );
 
   march_ray marcher (

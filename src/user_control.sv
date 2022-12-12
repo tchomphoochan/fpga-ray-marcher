@@ -25,7 +25,8 @@ module user_control #(
   output logic toggle_hue_out,
   output logic toggle_color_out,
   output logic toggle_checker_out,
-  output logic toggle_dither_out
+  output logic toggle_dither_out,
+  output logic toggle_texture_out
 );
 
   localparam CLK_PERIOD_NS = 20;
@@ -47,6 +48,7 @@ module user_control #(
   assign toggle_color_out = sw[5];
   assign toggle_checker_out = sw[12];
   assign toggle_dither_out = sw[11];
+  assign toggle_texture_out = sw[10];
 
   logic [COUNTER_WIDTH+2:0] cycle_counter;
   logic parity;

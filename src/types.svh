@@ -181,7 +181,8 @@ typedef enum logic [3:0] {
     RU_Ready                = 4'd0,
     RU_Setup                = 4'd1,
     RU_Busy_1               = 4'd2,
-    RU_Busy_2               = 4'd3
+    RU_Busy_2               = 4'd3,
+    RU_Shading              = 4'd4
 } RayUnitState;
 
 // constants in Q12.20 format
