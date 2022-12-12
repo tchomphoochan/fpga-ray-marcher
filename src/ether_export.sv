@@ -28,6 +28,9 @@ module ether_export(
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
       state <= ready;
+      eth_trigger_in <= 0;
+      // eth_last_dibit_in = 0;
+      cnt <= 0;
     end else begin
       case (state)
         ready: begin
@@ -43,9 +46,9 @@ module ether_export(
           eth_trigger_in <= 0;
           if (eth_data_ready) begin
             // send 50 bytes of 1s (100 dibits)
-            eth_data_in <= 2'b11;
+            // eth_data_in = 2'b11;
             if (cnt == 99) begin
-              eth_last_dibit_in <= 1;
+              // eth_last_dibit_in = 1;
               state <= frame_check;
               cnt <= 0;
             end else begin
@@ -55,11 +58,12 @@ module ether_export(
         end
         frame_check: begin
           // wait until ethernet is done sending frame-start message - start sending preamble
+          // eth_last_dibit_in = 0;
           if (eth_ready) begin
             if (read_row == `DISPLAY_HEIGHT) begin
               state <= ready;
             end else begin
-              eth_trigger_in <= 1;
+              // eth_trigger_in = 1;
               state <= start_row;
               cnt <= 0;
             end
@@ -71,12 +75,12 @@ module ether_export(
           if (eth_data_ready) begin
             // send row number as two bytes (8 dibits)
             if (cnt < 8) begin
-              eth_data_in <= {read_row[2*cnt+1], read_row[2*cnt]};
+              // eth_data_in = {read_row[2*cnt+1], read_row[2*cnt]};
             end
             // start requesting data
-            if (cnt == 6 || cnt == 7) begin
-              read_col <= 0;
-            end
+            // if (cnt == 6 || cnt == 7) begin
+            //   read_col <= 0;
+            // end
             // row number done
             if (cnt == 7) begin
               cnt <= 0;
@@ -97,11 +101,11 @@ module ether_export(
           // ...
           if ((cnt>>1) < `DISPLAY_WIDTH) begin
             if (cnt & 1'b0) begin
-              eth_data_in <= read_data_in[3:2];
+              // eth_data_in = read_data_in[3:2];
             end else begin
-              eth_data_in <= read_data_in[1:0];
+              // eth_data_in = read_data_in[1:0];
             end
-            read_col <= cnt>>1;
+            // read_col <= cnt>>1;
             cnt <= cnt+1;
           end else begin
             cnt <= 0;
@@ -111,14 +115,92 @@ module ether_export(
         end_row: begin
           // send the last two dibits of the row
           if (cnt == 0) begin
-            eth_data_in <= read_data_in[3:2];
+            // eth_data_in = read_data_in[3:2];
             cnt <= cnt+1;
           end else begin
-            eth_data_in <= read_data_in[1:0];
-            eth_last_dibit_in <= 1;
+            // eth_data_in = read_data_in[1:0];
+            // eth_last_dibit_in = 1;
             cnt <= cnt+1;
             read_row <= read_row+1;
             state <= frame_check;
+          end
+        end
+      endcase
+    end
+  end
+
+  always_comb begin
+    if (rst_in) begin
+      eth_last_dibit_in = 0;
+    end else begin
+      case (state)
+        ready: begin
+          if (trigger_in && eth_ready) begin
+          end
+        end
+        start_frame: begin
+          // wait for premable to be done
+          if (eth_data_ready) begin
+            // send 50 bytes of 1s (100 dibits)
+            eth_data_in = 2'b11;
+            if (cnt == 99) begin
+              eth_last_dibit_in = 1;
+            end else begin
+            end
+          end
+        end
+        frame_check: begin
+          eth_last_dibit_in = 0;
+          if (eth_ready) begin
+            if (read_row == `DISPLAY_HEIGHT) begin
+            end else begin
+              eth_trigger_in = 1;
+            end
+          end
+        end
+        start_row: begin
+          // wait for premable to be done
+          if (eth_data_ready) begin
+            // send row number as two bytes (8 dibits)
+            if (cnt < 8) begin
+              eth_data_in = {read_row[2*cnt+1], read_row[2*cnt]};
+            end
+            // start requesting data
+            if (cnt == 6 || cnt == 7) begin
+              read_col = 0;
+            end
+            // row number done
+            if (cnt == 7) begin
+            end else begin
+            end
+          end
+        end
+        pixels: begin
+          // scheme:
+          // request address col=0 (already done)
+          // request address col=0 (already done)
+          // col=0 answer came back (4 bits). put in two bits. request address col=1
+          // put in another two bits. request address col=1
+          // col=1 answer came back (4 bits). put in two bits. request address col=2
+          // put in another two bits. request address col=2
+          // ...
+          if ((cnt>>1) < `DISPLAY_WIDTH) begin
+            if (cnt & 1'b0) begin
+              eth_data_in = read_data_in[3:2];
+            end else begin
+              eth_data_in = read_data_in[1:0];
+            end
+            read_col = cnt>>1;
+          end else begin
+          end
+        end
+        end_row: begin
+          // send the last two dibits of the row
+          if (cnt == 0) begin
+            eth_data_in = read_data_in[3:2];
+          end else begin
+            eth_data_in = read_data_in[1:0];
+            eth_last_dibit_in = 1;
           end
         end
       endcase

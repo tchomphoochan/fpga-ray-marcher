@@ -46,7 +46,7 @@ module bram_manager #(
   xilinx_true_dual_port_read_first_1_clock_ram #(
     .RAM_WIDTH(WIDTH),
     .RAM_DEPTH(DEPTH)
-    // , .INIT_FILE(`FPATH(pop_cat.mem))
+    , .INIT_FILE(`FPATH(pop_cat.mem))
   ) bram0(
     .addra(write_addr),
     .addrb(read_addr),
@@ -68,6 +68,7 @@ module bram_manager #(
     .RAM_WIDTH(WIDTH),
     .RAM_DEPTH(DEPTH)
     // , .INIT_FILE(`FPATH(pleading_face.mem))
+    , .INIT_FILE(`FPATH(pop_cat.mem))
   ) bram1(
     .addra(write_addr),
     .addrb(read_addr),
