@@ -6,6 +6,70 @@
 `include "vector_arith.svh"
 `include "sdf_primitives.svh"
 
+module sdf_query (
+  input logic clk_in, rst_in,
+  input vec3 point_in,
+  input wire [2:0] fractal_sel_in,
+  output fp sdf_out,
+  output logic [5:0] sdf_wait_max_out
+);
+  logic [5:0] sdf_wait_max;
+  fp sdf_queries [4];
+  fp sdf_dist;
+  assign sdf_out = sdf_queries[fractal_sel_in];
+  assign sdf_wait_max_out = sdf_wait_max;
+
+  always_comb begin
+    case (fractal_sel_in)
+      0: sdf_wait_max = 4;
+      1: sdf_wait_max = 1;
+      2: sdf_wait_max = 1;
+      3: sdf_wait_max = 5;
+      default: sdf_wait_max = 1;
+    endcase
+  end
+
+  // latency: 4 cycle
+  sdf_query_sponge_inf sdf_menger (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(point_in),
+    .sdf_out(sdf_queries[0])
+  );
+
+  // latency: 1 cycle
+  sdf_query_cube_infinite sdf_cubes (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(point_in),
+    .sdf_out(sdf_queries[1])
+  );
+
+  // latency: 1 cycle
+  sdf_query_cube sdf_cube (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(point_in),
+    .sdf_out(sdf_queries[2])
+  );
+
+  // latency: 5 cycle
+  sdf_query_cube_noise sdf_maze (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(point_in),
+    .sdf_out(sdf_queries[3])
+  );
+
+  // latency: 6 cycle
+  // sdf_query_sponge sdf_menger_bounded (
+  //   .clk_in(clk_in),
+  //   .rst_in(rst_in),
+  //   .point_in(point_in),
+  //   .sdf_out(sdf_queries[3])
+  // );
+endmodule // sdf_query
+
 // latency: 1 clock cycle
 module sdf_query_cube (
   input logic clk_in, rst_in,
@@ -29,39 +93,6 @@ module sdf_query_cube_infinite (
     sdf_out <= sd_box_fast(vec3_sub(vec3_fract(vec3_add(point_in, hhh)), hhh), `FP_QUARTER);
   end
 endmodule // sdf_cube_infinite
-
-// latency: 3 clock cycle
-module sdf_query_cube_noise (
-  input logic clk_in, rst_in,
-  input vec3 point_in,
-  output fp sdf_out
-);
-  vec3 hhh, cube, poke, octa1, octa2, octa3, _octa4, octa4, _id, id;
-  fp box, hash, x, y;
-
-  assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
-
-  assign cube = vec3_add(vec3_floor(point_in), hhh); // get cube id (vec3)
-  assign poke = vec3_sub(point_in, cube); // divide space into cubes, same as vec3_fract(point_in) - .5
-
-  assign octa1 = vec3_abs(poke);  // get octahedron id (vec3)
-  assign octa2 = vec3_step(make_vec3(octa1.y, octa1.z, octa1.x), octa1);
-  assign octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
-  
-  assign _octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
-
-  assign _id = vec3_add(cube, vec3_apply_sign(vec3_scaled_half(octa4), poke));
-  assign hash = fp_fract(vec3_dot(id, make_vec3(`FP_THREE_HALFS, `FP_THIRD, `FP_QUARTER)));
-
-  assign x = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.x : poke.y : poke.x);
-  assign y = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.z : poke.z : poke.y);
-
-  always_ff @(posedge clk_in) begin
-    octa4 <= _octa4;
-    id <= _id;
-    sdf_out <= fp_sub(fp_max(x, y), `FP_ONE_SIXTEENTHS);
-  end
-endmodule // sdf_query_cube_noise
 
 // latency: 6 clock cycle
 // module sdf_query_sponge #(
@@ -212,5 +243,41 @@ module sdf_query_sponge_inf (
   end
 
 endmodule // sdf_query_sponge_inf
+
+// latency: 5 clock cycle
+module sdf_query_cube_noise (
+  input logic clk_in, rst_in,
+  input vec3 point_in,
+  output fp sdf_out
+);
+  vec3 hhh, cube, poke, _octa1, octa1, octa2, octa3, _octa4, octa4, _id, id;
+  fp box, _hash, hash, x, y, _sdf_out;
+
+  assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
+
+  assign cube = vec3_add(vec3_floor(point_in), hhh); // get cube id (vec3)
+  assign poke = vec3_sub(point_in, cube); // divide space into cubes, same as vec3_fract(point_in) - .5
+
+  assign _octa1 = vec3_abs(poke);  // get octahedron id (vec3)
+  assign octa2 = vec3_step(make_vec3(octa1.y, octa1.z, octa1.x), octa1);
+  assign octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
+  assign _octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
+
+  assign _id = vec3_add(cube, vec3_apply_sign(vec3_scaled_half(octa4), poke));
+  assign _hash = fp_fract(vec3_dot(id, make_vec3(`FP_THREE_HALFS, `FP_THIRD, `FP_QUARTER)));
+
+  assign x = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.x : poke.y : poke.x);
+  assign y = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.z : poke.z : poke.y);
+
+  assign _sdf_out = fp_sub(fp_max(x, y), `FP_ONE_SIXTEENTHS);
+
+  always_ff @(posedge clk_in) begin
+    octa1 <= _octa1;
+    octa4 <= _octa4;
+    id <= _id;
+    hash <= _hash;
+    sdf_out <=_sdf_out;
+  end
+endmodule // sdf_query_cube_noise
 
 `default_nettype wire

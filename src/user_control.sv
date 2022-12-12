@@ -62,6 +62,13 @@ module user_control #(
       kb = kb_in | {4'd0, btnu, btnd, btnl, btnr};
   end
 
+  // Output of SDF Query
+  fp sdf_dist;
+  logic [5:0] sdf_wait_max;
+  logic in_wall;
+
+  vec3 next_pos;
+
   parameter eps_bits = 7;
   parameter fp_epsilon = (`FP_ONE >> eps_bits);
   
@@ -70,11 +77,15 @@ module user_control #(
       pos_out.x <= `FP_ZERO;
       pos_out.y <= `FP_ONE;
       pos_out.z <= fp_neg(`FP_THREE_HALFS);
+      next_pos.x <= `FP_ZERO;
+      next_pos.y <= `FP_ONE;
+      next_pos.z <= fp_neg(`FP_THREE_HALFS);
       dir.x <= `FP_ZERO;
       dir.y <= `FP_ZERO;
       dir.z <= `FP_ONE;
       cycle_counter <= 0;
       parity <= 0;
+      in_wall <= 0;
     end else begin
       if(cycle_counter >> COUNTER_WIDTH == move_speed + 1) begin
         cycle_counter <= 0;
@@ -82,31 +93,31 @@ module user_control #(
 
         // translation up/down
         if (kb[`KB_TRANS_UP] && !kb[`KB_TRANS_DOWN]) begin
-          pos_out.y <= fp_add(pos_out.y, fp_epsilon);
+          next_pos.y <= fp_add(pos_out.y, fp_epsilon);
         end
         if (kb[`KB_TRANS_DOWN] && !kb[`KB_TRANS_UP]) begin
-          pos_out.y <= fp_sub(pos_out.y, fp_epsilon);
+          next_pos.y <= fp_sub(pos_out.y, fp_epsilon);
         end
 
         if (parity) begin
           // translation left/right
           if (kb[`KB_TRANS_LEFT] && !kb[`KB_TRANS_RIGHT]) begin
-            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
-            pos_out.z <= fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.x <= fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.z <= fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
           end
           if (kb[`KB_TRANS_RIGHT] && !kb[`KB_TRANS_LEFT]) begin
-            pos_out.x <= fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
-            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.x <= fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.z <= fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
           end
         end else begin
           // walk forward/backward
           if (kb[`KB_FORWARD] && !kb[`KB_BACKWARD])begin
-            pos_out.x <= fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
-            pos_out.z <= fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.x <= fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.z <= fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
           end
           if (kb[`KB_BACKWARD] && !kb[`KB_FORWARD])begin
-            pos_out.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
-            pos_out.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
           end
         end
 
@@ -118,11 +129,29 @@ module user_control #(
           dir.z <= fp_add(fp_mul(dir.x, fp_neg(m01)), fp_mul(dir.z, m00));
         end
       end else begin
+        if(cycle_counter == sdf_wait_max) begin
+          in_wall <= fp_lt(sdf_dist, `FP_HUNDREDTH);
+          
+          if(fp_gt(sdf_dist, `FP_HUNDREDTH) || in_wall)  begin
+            pos_out <= next_pos;
+          end else begin
+            next_pos <= pos_out;
+          end
+        end
+
         cycle_counter <= cycle_counter + 1;
       end
     end
   end
   
+  sdf_query scene (
+    .clk_in(clk_in),
+    .rst_in(rst_in),
+    .point_in(next_pos),
+    .fractal_sel_in(fractal_sel_out),
+    .sdf_out(sdf_dist),
+    .sdf_wait_max_out(sdf_wait_max)
+  );
 endmodule // user_control
 
 `default_nettype wire

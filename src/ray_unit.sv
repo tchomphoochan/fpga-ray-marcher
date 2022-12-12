@@ -55,19 +55,8 @@ module ray_unit #(
   vec3 cam_forward_in, ray_direction_out;
 
   // Output of SDF Query
-  fp sdf_queries [4];
   fp sdf_dist;
-  assign sdf_dist = sdf_queries[current_fractal];
   logic [5:0] sdf_wait_max, sdf_wait;
-  always_comb begin
-    case (current_fractal)
-      0: sdf_wait_max = 4;
-      1: sdf_wait_max = 1;
-      2: sdf_wait_max = 1;
-      3: sdf_wait_max = 3;
-      default: sdf_wait_max = 1;
-    endcase
-  end
 
   // Output of Ray March
   vec3 next_pos_vec;
@@ -156,45 +145,14 @@ module ray_unit #(
     .ready_out(gen_ready_out)
   );
 
-  // latency: 4 cycle
-  sdf_query_sponge_inf sdf_menger (
+  sdf_query scene (
     .clk_in(clk_in),
     .rst_in(rst_in),
     .point_in(ray_origin),
-    .sdf_out(sdf_queries[0])
+    .fractal_sel_in(current_fractal),
+    .sdf_out(sdf_dist),
+    .sdf_wait_max_out(sdf_wait_max)
   );
-
-  // latency: 1 cycle
-  sdf_query_cube_infinite sdf_cubes (
-    .clk_in(clk_in),
-    .rst_in(rst_in),
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[1])
-  );
-
-  // latency: 1 cycle
-  sdf_query_cube sdf_cube (
-    .clk_in(clk_in),
-    .rst_in(rst_in),
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[2])
-  );
-
-  // latency: 3 cycle
-  sdf_query_cube_noise sdf_maze (
-    .clk_in(clk_in),
-    .rst_in(rst_in),
-    .point_in(ray_origin),
-    .sdf_out(sdf_queries[3])
-  );
-
-  // latency: 6 cycle
-  // sdf_query_sponge sdf_menger_bounded (
-  //   .clk_in(clk_in),
-  //   .rst_in(rst_in),
-  //   .point_in(ray_origin),
-  //   .sdf_out(sdf_queries[3])
-  // );
 
   march_ray marcher (
     .ray_origin_in(ray_origin),
