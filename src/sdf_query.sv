@@ -255,19 +255,29 @@ module sdf_query_cube_noise (
 
   assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
 
+  // stage 1
   assign cube = vec3_add(vec3_floor(point_in), hhh); // get cube id (vec3)
   assign poke = vec3_sub(point_in, cube); // divide space into cubes, same as vec3_fract(point_in) - .5
-
   assign _octa1 = vec3_abs(poke);  // get octahedron id (vec3)
+
+  // stage 2
+  vec3 cube_s2, poke_s2;
   assign octa2 = vec3_step(make_vec3(octa1.y, octa1.z, octa1.x), octa1);
   assign octa3 = vec3_step(make_vec3(octa1.z, octa1.x, octa1.y), octa1);
   assign _octa4 = vec3_scaled(octa2, octa3); // && instead maybe?
 
-  assign _id = vec3_add(cube, vec3_apply_sign(vec3_scaled_half(octa4), poke));
+  // stage 3
+  vec3 cube_s3, poke_s3;
+  assign _id = vec3_add(cube_s3, vec3_apply_sign(vec3_scaled_half(octa4), poke_s3));
+
+  // stage 4
+  vec3 poke_s4;
   assign _hash = fp_fract(vec3_dot(id, make_vec3(`FP_THREE_HALFS, `FP_THIRD, `FP_QUARTER)));
 
-  assign x = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.x : poke.y : poke.x);
-  assign y = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke.z : poke.z : poke.y);
+  // stage 5
+  vec3 poke_s5;
+  assign x = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke_s5.x : poke_s5.y : poke_s5.x);
+  assign y = fp_abs(fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_HALF) ? poke_s5.z : poke_s5.z : poke_s5.y);
 
   assign _sdf_out = fp_sub(fp_max(x, y), `FP_ONE_SIXTEENTHS);
 
@@ -277,6 +287,14 @@ module sdf_query_cube_noise (
     id <= _id;
     hash <= _hash;
     sdf_out <=_sdf_out;
+
+    poke_s2 <= poke;
+    poke_s3 <= poke_s2;
+    poke_s4 <= poke_s3;
+    poke_s5 <= poke_s4;
+
+    cube_s2 <= cube;
+    cube_s3 <= cube_s2;
   end
 endmodule // sdf_query_cube_noise
 
