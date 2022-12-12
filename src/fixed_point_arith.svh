@@ -40,7 +40,7 @@ function automatic fp fp_abs(input fp a);
   return $signed(a) < $signed(0) ? fp_neg(a) : a;
 endfunction
 function automatic fp fp_apply_sign(input fp a, input fp b);
-  return $signed(b) < $signed(0) ? fp_neg(a) : a;
+  return $signed(b) < $signed(0) ? fp_neg(a) : (b == `FP_ZERO ? `FP_ZERO : a);
 endfunction
 function automatic fp fp_sign(input fp a);
   return fp_apply_sign(`FP_ONE, a);
