@@ -15,6 +15,7 @@ module top_level(
   input wire ps2_data,
   output logic [15:0] led,
   output logic led17_r,
+  output logic led17_g,
   output logic led16_b,
   output logic [3:0] vga_r, vga_g, vga_b,
   output logic vga_hs, vga_vs,
@@ -71,7 +72,8 @@ module top_level(
     .eth_rstn(eth_rstn), .eth_txen(eth_txen), .eth_refclk(eth_refclk),
     .eth_txd(eth_txd),
     .led16_b(led16_b),
-    .led17_r(led17_r)
+    .led17_r(led17_r),
+    .led17_g(led17_g)
   );
 
 

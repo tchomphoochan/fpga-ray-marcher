@@ -17,7 +17,7 @@ module top_level_main(
   output logic [7:0] an,
   output logic eth_rstn, eth_txen, eth_refclk,
   output logic [1:0] eth_txd,
-  output logic led16_b, led17_r
+  output logic led16_b, led17_r, led17_g
 );
 
   logic sys_clk;
@@ -27,8 +27,9 @@ module top_level_main(
   assign eth_rstn = !sys_rst;
   assign eth_refclk = sys_clk;
 
-  assign led16_b = eth_txen;
-  assign led17_r = btnc;
+  assign led17_r = eth_txen;
+  assign led17_g = eth_running;
+  assign led16_b = btnc;
 
   `CLK_CONVERTER_TYPE clk_converter(
     .clk_in1(clk_100mhz),
@@ -106,6 +107,7 @@ module top_level_main(
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [`ADDR_BITS-1:0] ether_read_addr;
   logic [3:0] bram_read_data;
+  logic eth_running;
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
@@ -128,6 +130,7 @@ module top_level_main(
     .read_data_in(bram_read_data),
     .read_addr_out(ether_read_addr),
     .eth_txen(eth_txen),
+    .running(eth_running),
     .eth_txd(eth_txd)
   );
 

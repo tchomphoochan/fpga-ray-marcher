@@ -11,6 +11,7 @@ module ether_export(
   input wire [3:0] read_data_in, // 4-bit grayscale
   output logic [`ADDR_BITS-1:0] read_addr_out,
   // connect to ethernet pins
+  output logic running,
   output logic eth_txen,
   output logic [1:0] eth_txd
 );
@@ -29,12 +30,15 @@ module ether_export(
     if (rst_in) begin
       state <= ready;
       eth_trigger_in <= 0;
+      running <= 0;
       // eth_last_dibit_in = 0;
       cnt <= 0;
     end else begin
       case (state)
         ready: begin
+          running <= 0;
           if (trigger_in && eth_ready) begin
+            running <= 1;
             eth_trigger_in <= 1; // start sending preamble
             state <= start_frame;
             read_row <= 0;
