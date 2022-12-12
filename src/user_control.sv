@@ -104,22 +104,22 @@ module user_control #(
         if (parity) begin
           // translation left/right
           if (kb[`KB_TRANS_LEFT] && !kb[`KB_TRANS_RIGHT]) begin
-            next_pos.x <= fp_sub(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
-            next_pos.z <= fp_add(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.x <= fp_sub(pos_out.x, fp_sr(dir.z, 7));
+            next_pos.z <= fp_add(pos_out.z, fp_sr(dir.x, 7));
           end
           if (kb[`KB_TRANS_RIGHT] && !kb[`KB_TRANS_LEFT]) begin
-            next_pos.x <= fp_add(pos_out.x, fp_mul(dir.z, `FP_HUNDREDTH));
-            next_pos.z <= fp_sub(pos_out.z, fp_mul(dir.x, `FP_HUNDREDTH));
+            next_pos.x <= fp_add(pos_out.x, fp_sr(dir.z, 7));
+            next_pos.z <= fp_sub(pos_out.z, fp_sr(dir.x, 7));
           end
         end else begin
           // walk forward/backward
           if (kb[`KB_FORWARD] && !kb[`KB_BACKWARD])begin
-            next_pos.x <= fp_add(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
-            next_pos.z <= fp_add(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.x <= fp_add(pos_out.x, fp_sr(dir.x, 7));
+            next_pos.z <= fp_add(pos_out.z, fp_sr(dir.z, 7));
           end
           if (kb[`KB_BACKWARD] && !kb[`KB_FORWARD])begin
-            next_pos.x <= fp_sub(pos_out.x, fp_mul(dir.x, `FP_HUNDREDTH));
-            next_pos.z <= fp_sub(pos_out.z, fp_mul(dir.z, `FP_HUNDREDTH));
+            next_pos.x <= fp_sub(pos_out.x, fp_sr(dir.x, 7));
+            next_pos.z <= fp_sub(pos_out.z, fp_sr(dir.z, 7));
           end
         end
 
@@ -132,9 +132,9 @@ module user_control #(
         end
       end else begin
         if(cycle_counter == sdf_wait_max) begin
-          in_wall <= fp_lt(sdf_dist, `FP_HUNDREDTH);
+          in_wall <= fp_lt(sdf_dist, fp_sr(`FP_ONE, 7));
           
-          if(fp_gt(sdf_dist, `FP_HUNDREDTH) || in_wall)  begin
+          if(fp_gt(sdf_dist, fp_sr(`FP_ONE, 7)) || in_wall)  begin
             pos_out <= next_pos;
           end else begin
             next_pos <= pos_out;
