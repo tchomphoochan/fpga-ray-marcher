@@ -20,7 +20,7 @@ function automatic fp fp_mul(input fp a, input fp b);
   // TODO probably stress test signed multiplication carefully
   logic signed [2*`NUM_ALL_DIGITS-1:0] result;
   result = $signed(a)*$signed(b);
-  return $signed(result >> `NUM_FRAC_DIGITS);
+  return $signed(result >> $signed(`NUM_FRAC_DIGITS));
 endfunction
 
 // comparison
@@ -125,7 +125,7 @@ function automatic fp fp_mod(input fp a, input fp b);
   return a;
 endfunction
 function automatic fp fp_floor(input fp a);
-  return (a >> `NUM_FRAC_DIGITS) << `NUM_FRAC_DIGITS;
+  return ($signed(a) >> $signed(`NUM_FRAC_DIGITS)) << `NUM_FRAC_DIGITS;
 endfunction
 function automatic fp fp_fract(input fp a);
   return fp_sub(a, fp_floor(a));
