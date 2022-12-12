@@ -53,6 +53,14 @@ module sdf_query (
     .sdf_out(sdf_queries[2])
   );
 
+  // latency: 2 cycle
+  // sdf_query_maze sdf_maze (
+  //   .clk_in(clk_in),
+  //   .rst_in(rst_in),
+  //   .point_in(point_in),
+  //   .sdf_out(sdf_queries[3])
+  // );
+
   // latency: 5 cycle
   sdf_query_cube_noise sdf_maze (
     .clk_in(clk_in),
@@ -243,6 +251,40 @@ module sdf_query_sponge_inf (
   end
 
 endmodule // sdf_query_sponge_inf
+
+
+        // Vec3Fixed cp = fract(p) - new Vec3Fixed(.5, .5, .5);
+        // Vec3Fixed acp = abs(cp);
+        // Vec3Fixed ofs = step(new Vec3Fixed(acp.y, acp.z, acp.x), new Vec3Fixed(acp.x, acp.y, acp.z)).scaleByVector(step(new Vec3Fixed(acp.z, acp.x, acp.y), new Vec3Fixed(acp.x, acp.y, acp.z))).scaleByVector(sign(cp));
+        // Vec3Fixed op = floor(p) + new Vec3Fixed(.5, .5, .5) + ofs.scaleByConst(.5);
+        // FixedPoint32 f = fract_fp(op.dotWith(new Vec3Fixed(3.0 / 2.0, 1.0 / 3.0, 0.25)));
+        // Vec3Fixed cp2 = abs(f > new FixedPoint32(1.0 / 3.0) ? f > new FixedPoint32(2.0 / 3.0) ? new Vec3Fixed(cp.x.getValue(), cp.z.getValue(), 0) : new Vec3Fixed(cp.y.getValue(), cp.z.getValue(), 0) : new Vec3Fixed(cp.x.getValue(), cp.y.getValue(), 0));
+        // return cp2.x.maxWith(cp2.y) - new FixedPoint32(1.0/16.0);
+       
+
+// module sdf_query_maze ( // latency: 2 clock cycle
+//   input logic clk_in, rst_in,
+//   input vec3 point_in,
+//   output fp sdf_out
+// );
+//   vec3 hhh, cp, acp, ofs, id, _hash, hash;
+//   fp x, y, _sdf_out;
+
+//   assign hhh = make_vec3(`FP_HALF, `FP_HALF, `FP_HALF);
+//   assign cp = vec3_sub(vec3_fract(point_in), hhh);
+//   assign acp = vec3_abs(cp);
+//   assign ofs = vec3_apply_sign(vec3_step(make_vec3(acp.y, acp.z, acp.x), make_vec3(acp.x, acp.y, acp.z)) & vec3_step(make_vec3(acp.z, acp.x, acp.y), make_vec3(acp.x, acp.y, acp.z)), cp);
+//   assign id = vec3_add(vec3_floor(point_in), vec3_add(hhh, vec3_scaled_half(ofs)));
+//   assign _hash = fp_fract(vec3_dot(id, make_vec3(`FP_THREE_HALFS, `FP_THIRD, `FP_QUARTER)));
+//   assign x = fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_THIRD << 1) ? cp.x : cp.y : cp.x;
+//   assign y = fp_gt(hash, `FP_THIRD) ? fp_gt(hash, `FP_THIRD << 1) ? cp.z : cp.z : cp.y;
+//   assign _sdf_out = fp_sub(fp_max(fp_abs(x), fp_abs(y)), `FP_TENTH);
+
+//   always_ff @(posedge clk_in) begin
+//     hash <= _hash;
+//     sdf_out <= _sdf_out;
+//   end
+// endmodule // sdf_query_maze
 
 // latency: 5 clock cycle
 module sdf_query_cube_noise (

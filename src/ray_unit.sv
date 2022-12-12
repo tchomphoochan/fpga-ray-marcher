@@ -32,7 +32,7 @@ module brick_texture (
   assign ex = fp_sub(fp_abs(fp_sub(u, `FP_HALF)), `FP_TENTH);
   assign ey = fp_sub(fp_abs(fp_sub(v, `FP_HALF)), `FP_TENTH);
 
-  assign color_out = fp_gt(fp_min(ex, ey), `FP_ZERO) ? ray_depth_in - 1 : ray_depth_in;
+  assign color_out = fp_gt(fp_min(ex, ey), `FP_ZERO) ? ray_depth_in - 2 : ray_depth_in;
 endmodule
 
 module ray_unit #(
