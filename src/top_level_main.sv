@@ -72,7 +72,8 @@ module top_level_main(
   // 7seg
   seven_segment_controller mssc(.clk_in(sys_clk),
                               .rst_in(sys_rst),
-                              .val_in({ps2_buffer[3], ps2_buffer[2], ps2_buffer[1], ps2_buffer[0]}),
+                              // .val_in({ps2_buffer[3], ps2_buffer[2], ps2_buffer[1], ps2_buffer[0]}),
+                              .val_in(fps_bcd),
                               .cat_out({cg, cf, ce, cd, cc, cb, ca}),
                               .an_out(an));
 
@@ -133,7 +134,7 @@ module top_level_main(
   logic [3:0] ray_marcher_color;
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;
-  logic [31:0] fps;
+  logic [31:0] fps, fps_bcd;
   assign led = fps[15:0];
 
   ray_marcher ray_marcher_inst(
@@ -173,6 +174,11 @@ module top_level_main(
     .rst_in(sys_rst),
     .new_frame_in(ray_marcher_new_frame),
     .fps_out(fps)
+  );
+  bin2bcd #(.W(10)) bin2bcd_inst(
+    .clk_in(sys_clk),
+    .bin(fps),
+    .bcd(fps_bcd)
   );
 
   always_ff @(posedge sys_clk) begin

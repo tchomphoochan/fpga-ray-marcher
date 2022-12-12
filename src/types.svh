@@ -16,7 +16,7 @@
 `define ADDR_BITS           (`H_BITS+`V_BITS)
 `define COLOR_BITS          4
 
-`define NUM_WHOLE_DIGITS    8 // including the sign bit
+`define NUM_WHOLE_DIGITS    6 // including the sign bit
 `define NUM_FRAC_DIGITS     16
 `define NUM_ALL_DIGITS      (`NUM_WHOLE_DIGITS+`NUM_FRAC_DIGITS)
 `define SCALING_FACTOR      (2.0 ** (-`NUM_FRAC_DIGITS))
@@ -24,7 +24,7 @@
 `define MAX_RAY_DEPTH       31
 `define MAX_RAY_DEPTH_SIZE  ($clog2(`MAX_RAY_DEPTH))
 
-`define NUM_CORES           4
+`define NUM_CORES           12
 
 
 // for rendering
