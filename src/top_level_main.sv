@@ -176,7 +176,6 @@ module top_level_main(
     .fps_out(fps)
   );
   bin2bcd #(.W(10)) bin2bcd_inst(
-    .clk_in(sys_clk),
     .bin(fps),
     .bcd(fps_bcd)
   );
