@@ -39,7 +39,7 @@ module top_level_vga_bram_tester(
 
   bram_manager #(
     .WIDTH(4),
-    .DEPTH(`DISPLAY_WIDTH*`DISPLAY_HEIGHT),
+    .DEPTH(1<<`ADDR_BITS),
     .ADDR_LEN(`ADDR_BITS)
   ) bram_manager_inst(
     .clk(sys_clk),

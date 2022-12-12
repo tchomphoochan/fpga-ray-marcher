@@ -6,7 +6,7 @@
 
 module bram_manager #(
   parameter WIDTH = `COLOR_BITS,
-  DEPTH = `DISPLAY_WIDTH*`DISPLAY_HEIGHT,
+  DEPTH = 1<<`ADDR_BITS,
   ADDR_LEN = `ADDR_BITS
 ) (
   input wire clk,
