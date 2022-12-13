@@ -30,15 +30,15 @@ module ether_export(
     if (rst_in) begin
       state <= ready;
       eth_trigger_in <= 0;
-      running <= 0;
+      // running <= 0;
       // eth_last_dibit_in = 0;
       cnt <= 0;
     end else begin
       case (state)
         ready: begin
-          running <= 0;
+          // running <= 0;
           if (trigger_in && eth_ready) begin
-            running <= 1;
+            // running <= 1;
             eth_trigger_in <= 1; // start sending preamble
             state <= start_frame;
             read_row <= 0;

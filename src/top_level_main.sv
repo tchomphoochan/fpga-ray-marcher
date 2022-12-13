@@ -28,7 +28,7 @@ module top_level_main(
   assign eth_refclk = sys_clk;
 
   assign led17_r = eth_txen;
-  assign led17_g = eth_running;
+  assign led17_g = 1'b0;
   assign led16_b = btnc;
 
   `CLK_CONVERTER_TYPE clk_converter(
@@ -74,11 +74,11 @@ module top_level_main(
     .code_valid_in(ps2_code_valid),
     .kb_out(kb)
   );
+  logic [31:0] current_state;
   // 7seg
   seven_segment_controller mssc(.clk_in(sys_clk),
                               .rst_in(sys_rst),
-                              // .val_in({ps2_buffer[3], ps2_buffer[2], ps2_buffer[1], ps2_buffer[0]}),
-                              .val_in(fps_bcd),
+                              // .val_in(fps_bcd),
                               .cat_out({cg, cf, ce, cd, cc, cb, ca}),
                               .an_out(an));
 
@@ -107,7 +107,6 @@ module top_level_main(
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [`ADDR_BITS-1:0] ether_read_addr;
   logic [3:0] bram_read_data;
-  logic eth_running;
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
@@ -125,12 +124,11 @@ module top_level_main(
 
   ether_export ether_export_inst(
     .clk_in(sys_clk),
-    .rst_in(rst_in),
+    .rst_in(sys_rst),
     .trigger_in(btnc),
     .read_data_in(bram_read_data),
     .read_addr_out(ether_read_addr),
     .eth_txen(eth_txen),
-    .running(eth_running),
     .eth_txd(eth_txd)
   );
 
