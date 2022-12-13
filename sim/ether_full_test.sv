@@ -46,8 +46,8 @@ module ether_full_test;
   );
 
   // 80 bits = 10 bytes = 40 dibits
-  // logic [79:0] data = 80'hFFFFFFFFFF_1111111111;
-  logic [79:0] data = 80'd0;
+  logic [79:0] data = 80'h1234ABCDEF_1234ABCDEF;
+  // logic [79:0] data = 80'd0;
 
   initial begin
     $dumpfile("ether_full_test.vcd");

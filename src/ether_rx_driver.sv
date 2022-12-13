@@ -76,7 +76,7 @@ module ether_rx_driver(
       is_okay <= 0;
     end else begin
       if (done && !prev_done) begin
-        is_okay <= !kill;
+        is_okay <= fw_axiov && !kill;
       end
       prev_done <= done;
     end

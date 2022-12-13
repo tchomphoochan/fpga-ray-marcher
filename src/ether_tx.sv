@@ -143,7 +143,7 @@ module ether_tx(
       end
       crc: begin
         eth_txen = crc32_valid_out;
-        eth_txd = crc32_data_out[cnt];
+        {eth_txd[0], eth_txd[1]} = crc32_data_out[cnt];
       end
       finish: begin
         eth_txen = 0;
