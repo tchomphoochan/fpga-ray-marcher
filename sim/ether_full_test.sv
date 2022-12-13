@@ -18,10 +18,9 @@ module ether_full_test;
 
   always begin
     #10;
-    if (started)
-      $display("[%4d] ready_out=%d, data_ready_out=%d, axiov=%d, axiod=%b", $time, ready_out, data_ready_out, axiov, axiod);
-    if (eth_axiov)
-      $display("[%4d] OUTPUT eth_axiov=%d, eth_axiod=%h", $time, eth_axiov, eth_axiod);
+    // if (started)
+    //   $display("[%4d] ready_out=%d, data_ready_out=%d, axiov=%d, axiod=%b", $time, ready_out, data_ready_out, axiov, axiod);
+    $display("[%4d] OUTPUT eth_axiov=%d, eth_axiod=%h", $time, eth_axiov, eth_axiod);
   end
 
   ether_tx tx_uut(

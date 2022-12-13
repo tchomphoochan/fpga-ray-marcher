@@ -126,6 +126,38 @@ module ether_tx(
   end
 
   always_comb begin
+    datav = 0;
+    datad = 0;
+    if (rst_in) begin
+    end else begin
+      if (state == ready) begin
+        if (trigger_in) begin
+          datav = 1;
+          datad = 2'b01;
+        end
+      end else if (state == preamble) begin
+        datav = 1;
+        datad = cnt == 28 ? 2'b11 : 2'b01;
+      end else if (state == dest) begin
+        datav = 1;
+        datad = {LAPTOP_MAC_ADDR[cnt+1], LAPTOP_MAC_ADDR[cnt]};
+      end else if (state == src) begin
+        datav = 1;
+        datad = {FPGA_MAC_ADDR[cnt+1], FPGA_MAC_ADDR[cnt]};
+      end else if (state == ethertype) begin
+        datav = 1;
+        datad = 0;
+      end else if (state == data) begin
+        datav = 1;
+        datad = data_in;
+      end else if (state == crc_wait) begin
+      end else if (state == crc) begin
+      end else if (state == finish) begin
+      end
+    end
+  end
+
+  always_comb begin
     if (state == crc) begin
       outcrcd = {crc32_axiod[2*cnt+1], crc32_axiod[2*cnt]};
       outcrcv = 1;

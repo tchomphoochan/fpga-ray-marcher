@@ -68,7 +68,21 @@ module ether_rx_driver(
     .axiod(agg_axiod)
   );
 
-  assign axiov = agg_axiov;
+  logic prev_done;
+  logic is_okay;
+  always_ff @(posedge clk) begin
+    if (rst) begin
+      prev_done <= 0;
+      is_okay <= 0;
+    end else begin
+      if (done && !prev_done) begin
+        is_okay <= !kill;
+      end
+      prev_done <= done;
+    end
+  end
+
+  assign axiov = is_okay;
   assign axiod = agg_axiod;
 
 endmodule
