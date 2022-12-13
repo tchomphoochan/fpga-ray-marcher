@@ -22,7 +22,7 @@ module ether_tx(
   parameter LAPTOP_MAC_ADDR = 48'h88_66_5a_03_48_b0;
 
   typedef enum { ready, preamble, dest, src, ethertype, data, crc_wait, crc, finish } state_t;
-  logic [10:0] cnt;
+  logic [20:0] cnt;
   state_t state;
 
   logic datav;
@@ -114,8 +114,13 @@ module ether_tx(
           cnt <= cnt-1;
         end
       end else if (state == finish) begin
-        state <= ready;
-        ready_out <= 1;
+        // intraframe waiting stuff
+        if (cnt == 60) begin
+          state <= ready;
+          ready_out <= 1;
+        end else begin
+          cnt <= cnt+1;
+        end
       end
     end
   end
@@ -132,7 +137,7 @@ module ether_tx(
 
   bitorder bitorder_inst(
     .clk(clk_in),
-    .rst(rst_in),
+    .rst(rst_in || (state == ready && !trigger_in) || state == finish),
     .axiiv(datav),
     .axiid(datad),
     .axiov(crc32_axiiv),

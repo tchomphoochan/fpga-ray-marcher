@@ -79,7 +79,7 @@ module ether_full_test;
     end
     last_dibit_in = 0;
 
-    for (int i = 0; i < 40; ++i) begin
+    for (int i = 0; i < 100; ++i) begin
       #10;
     end
 
