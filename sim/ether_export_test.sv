@@ -25,7 +25,7 @@ module ether_export_test;
   ether_export ether_export_uut(
     .clk_in(clk_in),
     .rst_in(rst_in),
-    .trigger_in(trigger_in),
+    .export_trigger_in(trigger_in),
     .read_data_in(bram_read_data),
     .read_addr_out(ether_read_addr),
     .eth_txen(eth_txen),
@@ -64,7 +64,7 @@ module ether_export_test;
     trigger_in = 0;
     #10;
 
-    for (int i = 0; i < 400*300; ++i) begin
+    for (int i = 0; i < 1000; ++i) begin
       #10;
     end
 

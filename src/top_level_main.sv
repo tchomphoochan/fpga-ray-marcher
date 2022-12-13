@@ -189,7 +189,7 @@ module top_level_main(
   ether_export ether_export_inst(
     .clk_in(eth_refclk),
     .rst_in(sys_rst),
-    .trigger_in(btnc),
+    .export_trigger_in(btnc),
     .read_data_in(ether_read_data),
     .read_addr_out(ether_read_addr),
     .eth_txen(eth_txen),
