@@ -126,7 +126,7 @@ module top_level_main(
   logic [`H_BITS-1:0] ray_marcher_hcount;
   logic [`V_BITS-1:0] ray_marcher_vcount;
   logic [`ADDR_BITS-1:0] ray_marcher_addr;
-  assign ray_marcher_addr = (ray_marcher_vcount << `H_BITS) + ray_marcher_hcount;
+  assign ray_marcher_addr = (ray_marcher_vcount * `DISPLAY_WIDTH) + ray_marcher_hcount;
   logic [3:0] ray_marcher_color;
   logic ray_marcher_valid;
   logic ray_marcher_new_frame;
@@ -151,7 +151,7 @@ module top_level_main(
 
   bram_manager #(
     .WIDTH(4),
-    .DEPTH(1<<`ADDR_BITS),
+    .DEPTH(`BRAM_SIZE),
     .ADDR_LEN(`ADDR_BITS)
   ) bram_manager_inst(
     .clk(sys_clk),
@@ -166,7 +166,7 @@ module top_level_main(
   );
   xilinx_true_dual_port_read_first_2_clock_ram #(
     .RAM_WIDTH(4),
-    .RAM_DEPTH(1<<`ADDR_BITS)
+    .RAM_DEPTH(`BRAM_SIZE)
   ) bram0(
     .clka(sys_clk),
     .addra(ray_marcher_addr),

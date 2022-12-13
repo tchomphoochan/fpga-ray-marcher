@@ -26,6 +26,8 @@
 
 `define NUM_CORES           8
 
+`define BRAM_SIZE           (`DISPLAY_WIDTH * `DISPLAY_HEIGHT)
+
 
 // for rendering
 `ifndef OVERRIDE_SIZE

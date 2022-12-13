@@ -58,7 +58,7 @@ module vga_display(
 
   always_ff @(posedge vga_clk_in) begin
     // request read
-    read_addr_out <= ((vcount >> `DISPLAY_SHIFT_SIZE) << `H_BITS) + (hcount >> `DISPLAY_SHIFT_SIZE);
+    read_addr_out <= ((vcount >> `DISPLAY_SHIFT_SIZE) * `DISPLAY_WIDTH) + (hcount >> `DISPLAY_SHIFT_SIZE);
 
     // output read data to screen
     vga_r <= blank_out ? 0 : (hsl[0] >> 4); // the board is very strict here for some stupid reason

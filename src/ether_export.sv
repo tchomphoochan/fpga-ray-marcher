@@ -21,8 +21,8 @@ module ether_export(
   typedef enum { ready, start_frame, frame_check, start_row, pixels } state_t;
   state_t state;
 
-  logic [20:0] row, col;
-  logic [20:0] cnt;
+  logic [31:0] row, col;
+  logic [31:0] cnt;
   logic parity;
 
   logic [1:0] eth_data_in;
@@ -113,14 +113,14 @@ module ether_export(
           eth_data_in = {row[2*cnt+1], row[2*cnt]};
         end
         if (cnt <= 1) begin
-          read_addr_out = row<<`H_BITS + 0;
+          read_addr_out = row*`DISPLAY_WIDTH + 0;
         end
       end
       pixels: begin
         col = cnt>>1;
         parity = cnt&1;
         eth_data_in = parity == 0 ? read_data_in[3:2] : read_data_in[1:0];
-        read_addr_out = row<<`H_BITS + (col+1);
+        read_addr_out = row*`DISPLAY_WIDTH + (col+1);
         if (cnt+1 == `DISPLAY_WIDTH*2) begin
           eth_last_dibit_in = 1;
         end

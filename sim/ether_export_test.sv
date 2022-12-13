@@ -34,7 +34,7 @@ module ether_export_test;
 
   bram_manager #(
     .WIDTH(4),
-    .DEPTH(1<<`ADDR_BITS),
+    .DEPTH(`BRAM_SIZE),
     .ADDR_LEN(`ADDR_BITS)
   ) bram_manager_inst(
     .clk(clk_in),
