@@ -25,6 +25,7 @@ module ether_tx(
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
       state <= ready;
+      data_ready_out <= 0;
     end else begin
       case (state)
         ready: begin
@@ -63,6 +64,7 @@ module ether_tx(
         ethertype: begin
           if (cnt == 0) begin
             state <= data;
+            data_ready_out <= 1;
           end else begin
             cnt <= cnt-1;
           end
@@ -72,6 +74,7 @@ module ether_tx(
           if (last_dibit_in) begin
             state <= crc_wait;
             cnt <= 3;
+            data_ready_out <= 0;
           end
         end
 
@@ -109,7 +112,6 @@ module ether_tx(
     ready_out = 0;
     bitorder_data_in = 0;
     bitorder_valid_in = 0;
-    data_ready_out = 0;
     eth_txen = bitorder_valid_out;
     eth_txd = bitorder_data_out;
     case (state)
@@ -133,12 +135,10 @@ module ether_tx(
         bitorder_data_in = 2'b00;
       end
       data: begin
-        data_ready_out = 1;
         bitorder_valid_in = 1;
         bitorder_data_in = data_in;
       end
       crc_wait: begin
-        data_ready_out = 0;
         bitorder_valid_in = 0;
       end
       crc: begin

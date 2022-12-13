@@ -21,8 +21,8 @@ module ether_export(
   typedef enum { ready, start_frame, frame_check, start_row, pixels } state_t;
   state_t state;
 
-  logic [`ADDR_BITS:0] row, col;
-  logic [`ADDR_BITS:0] cnt;
+  logic [20:0] row, col;
+  logic [20:0] cnt;
   logic parity;
 
   logic [1:0] eth_data_in;
@@ -44,15 +44,17 @@ module ether_export(
           end
         end
         start_frame: begin
-          if (cnt == 0) begin
-            state <= frame_check;
-          end else begin
-            cnt <= cnt-1;
+          if (eth_data_ready_out) begin
+            if (cnt == 0) begin
+              state <= frame_check;
+            end else begin
+              cnt <= cnt-1;
+            end
           end
         end
         frame_check: begin
           if (eth_ready_out) begin
-            state <= row;
+            state <= start_row;
             cnt <= 15; // send 4 bytes of row, i.e. 16 dibits
           end
         end
@@ -86,16 +88,20 @@ module ether_export(
     eth_trigger_in = 0;
     eth_data_in = 0;
     eth_last_dibit_in = 0;
+    read_addr_out = 0;
+    parity = 0;
 
     case (state)
       ready: begin
-        if (export_trigger_in) begin
+        if (eth_ready_out && export_trigger_in) begin
           eth_trigger_in = 1;
         end
       end
       start_frame: begin
-        eth_data_in = 2'b11;
-        if (cnt == 0) eth_last_dibit_in = 1;
+        if (eth_data_ready_out) begin
+          eth_data_in = 2'b11;
+          if (cnt == 0) eth_last_dibit_in = 1;
+        end
       end
       frame_check: begin
         if (eth_ready_out) begin
@@ -111,9 +117,9 @@ module ether_export(
         end
       end
       pixels: begin
-        eth_data_in = parity == 0 ? read_data_in[3:2] : read_data_in[1:0];
         col = cnt>>1;
         parity = cnt&1;
+        eth_data_in = parity == 0 ? read_data_in[3:2] : read_data_in[1:0];
         read_addr_out = row<<`H_BITS + (col+1);
         if (cnt+1 == `DISPLAY_WIDTH*2) begin
           eth_last_dibit_in = 1;
