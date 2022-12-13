@@ -123,7 +123,8 @@
     `define VGA_H_BITS                  10
     `define VGA_V_BITS                  10
     `define VGA_GEN_TYPE                vga_gen_800x600
-    `define CLK_CONVERTER_TYPE          clk_100_to_40_mhz_clk_wiz
+    // `define CLK_CONVERTER_TYPE          clk_100_to_40_mhz_clk_wiz
+    `define CLK_CONVERTER_TYPE          clk_100_to_40_and_50_mhz_clk_wiz
     `define FP_VGA_DISPLAY_WIDTH        (32'sh32000000 >> (20 - `NUM_FRAC_DIGITS))
     `define FP_INV_VGA_DISPLAY_WIDTH    (32'sh0000051e >> (20 - `NUM_FRAC_DIGITS))
     `define FP_VGA_DISPLAY_HEIGHT       (32'sh25800000 >> (20 - `NUM_FRAC_DIGITS))

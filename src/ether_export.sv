@@ -11,7 +11,6 @@ module ether_export(
   input wire [3:0] read_data_in, // 4-bit grayscale
   output logic [`ADDR_BITS-1:0] read_addr_out,
   // connect to ethernet pins
-  output logic running,
   output logic eth_txen,
   output logic [1:0] eth_txd
 );

@@ -25,15 +25,15 @@ module top_level_main(
   assign vga_clk = sys_clk;
   logic sys_rst = !cpu_resetn;
   assign eth_rstn = !sys_rst;
-  assign eth_refclk = sys_clk;
 
   assign led17_r = eth_txen;
   assign led17_g = 1'b0;
   assign led16_b = btnc;
 
   `CLK_CONVERTER_TYPE clk_converter(
-    .clk_in1(clk_100mhz),
-    .clk_out1(sys_clk),
+    .clk_100mhz_in(clk_100mhz),
+    .clk_50mhz_out(eth_refclk),
+    .clk_40mhz_out(sys_clk),
     .reset(sys_rst)
   );
 
@@ -78,7 +78,7 @@ module top_level_main(
   // 7seg
   seven_segment_controller mssc(.clk_in(sys_clk),
                               .rst_in(sys_rst),
-                              // .val_in(fps_bcd),
+                              .val_in(fps_bcd),
                               .cat_out({cg, cf, ce, cd, cc, cb, ca}),
                               .an_out(an));
 
@@ -106,12 +106,12 @@ module top_level_main(
 
   logic [`ADDR_BITS-1:0] vga_display_read_addr;
   logic [`ADDR_BITS-1:0] ether_read_addr;
-  logic [3:0] bram_read_data;
+  logic [3:0] bram_read_data, ether_read_data;
 
   vga_display vga_display_inst(
     .vga_clk_in(vga_clk),
     .rst_in(sys_rst),
-    .read_data_in(eth_txen ? 4'b0 : bram_read_data),
+    .read_data_in(bram_read_data),
     .read_addr_out(vga_display_read_addr),
     .toggle_hue(toggle_hue),
     .toggle_color(toggle_color),
@@ -122,15 +122,6 @@ module top_level_main(
     .vga_vs(vga_vs)
   );
 
-  ether_export ether_export_inst(
-    .clk_in(sys_clk),
-    .rst_in(sys_rst),
-    .trigger_in(btnc),
-    .read_data_in(bram_read_data),
-    .read_addr_out(ether_read_addr),
-    .eth_txen(eth_txen),
-    .eth_txd(eth_txd)
-  );
 
   logic [`H_BITS-1:0] ray_marcher_hcount;
   logic [`V_BITS-1:0] ray_marcher_vcount;
@@ -166,12 +157,43 @@ module top_level_main(
     .clk(sys_clk),
     .rst(sys_rst),
     .swap_buffers(ray_marcher_new_frame),
-    .read_addr(eth_txen ? ether_read_addr : vga_display_read_addr),
+    .read_addr(vga_display_read_addr),
     .write_enable(ray_marcher_valid),
     .write_addr(ray_marcher_addr),
     .write_data(ray_marcher_color),
     .read_data_out(bram_read_data),
     .which_bram_out(out)
+  );
+  xilinx_true_dual_port_read_first_2_clock_ram #(
+    .RAM_WIDTH(4),
+    .RAM_DEPTH(1<<`ADDR_BITS)
+  ) bram0(
+    .clka(sys_clk),
+    .addra(ray_marcher_addr),
+    .dina(ray_marcher_color),
+    .wea(ray_marcher_valid),
+    .ena(1'b1),
+    .rsta(sys_rst),
+    .regcea(1'b1),
+    // .douta(),
+
+    .clkb(eth_refclk),
+    .addrb(ether_read_addr),
+    .dinb(4'b0),
+    .web(1'b0),
+    .enb(1'b1),
+    .rstb(sys_rst),
+    .regceb(1'b1),
+    .doutb(ether_read_data)
+  );
+  ether_export ether_export_inst(
+    .clk_in(eth_refclk),
+    .rst_in(sys_rst),
+    .trigger_in(btnc),
+    .read_data_in(ether_read_data),
+    .read_addr_out(ether_read_addr),
+    .eth_txen(eth_txen),
+    .eth_txd(eth_txd)
   );
 
   fps_counter fps_counter_inst(
