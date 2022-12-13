@@ -4,7 +4,7 @@
 // adapted from lab 05 top_level.sv
 module ether_rx_driver(
   input wire clk,
-  input wire rst, // used for reset
+  input wire rst,
   input wire eth_crsdv,
   input wire [1:0] eth_rxd,
   output logic axiov,

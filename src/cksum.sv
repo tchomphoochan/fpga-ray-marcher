@@ -12,6 +12,7 @@ module cksum(
 );
 
   localparam MAGIC_CHECK = 32'h38_fb_22_84;
+  // localparam MAGIC_CHECK = 32'd0;
 
   logic crc32_axiov;
   logic [31:0] crc32_axiod;

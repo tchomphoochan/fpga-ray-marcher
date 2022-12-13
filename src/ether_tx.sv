@@ -5,191 +5,173 @@ module ether_tx(
   input wire clk_in,
   input wire rst_in,
 
-  // for module driving it
   input wire trigger_in,
   input wire [1:0] data_in, // MSB MSb
-  input wire last_dibit_in,
+  input wire last_dibit_in, // should come with last dibit
+
   output logic ready_out,
   output logic data_ready_out,
-
-  // for ethernet
-  output logic axiov,
-  output logic [1:0] axiod
+  output logic eth_txen,
+  output logic [1:0] eth_txd
 );
 
-  // parameter FPGA_MAC_ADDR = 48'h69_2C_08_30_75_FD;
-  parameter FPGA_MAC_ADDR = 48'h11_11_11_11_11_11;
-  parameter LAPTOP_MAC_ADDR = 48'h88_66_5a_03_48_b0;
+  logic [23:0][1:0] FPGA_MAC_ADDR = 48'h11_11_11_11_11_11;
+  logic [23:0][1:0] LAPTOP_MAC_ADDR = 48'h88_66_5a_03_48_b0;
 
   typedef enum { ready, preamble, dest, src, ethertype, data, crc_wait, crc, finish } state_t;
   logic [20:0] cnt;
   state_t state;
 
-  logic datav;
-  logic [1:0] datad;
-  logic outcrcv;
-  logic [1:0] outcrcd;
-
   always_ff @(posedge clk_in) begin
     if (rst_in) begin
-      datav <= 0;
-      datad <= 0;
-      data_ready_out <= 0;
-      ready_out <= 1;
       state <= ready;
     end else begin
-      if (state == ready) begin
-        if (trigger_in) begin
-          state <= preamble;
-          datav <= 1;
-          datad <= 2'b01;
-          ready_out <= 0;
-          cnt <= 1;
+      case (state)
+        ready: begin
+          if (trigger_in) begin
+            state <= preamble;
+            cnt <= 0;
+          end
         end
-      end else if (state == preamble) begin
-        datad <= cnt == 28 ? 2'b11 : 2'b01;
-        if (cnt == 31) begin
-          state <= dest;
-          cnt <= 46;
-          $display("goto dest");
-        end else begin
-          cnt <= cnt+1;
+
+        preamble: begin
+          if (cnt == 31) begin
+            state <= dest;
+            cnt <= 23;
+          end else begin
+            cnt <= cnt+1;
+          end
         end
-      end else if (state == dest) begin
-        datad <= {LAPTOP_MAC_ADDR[cnt+1], LAPTOP_MAC_ADDR[cnt]};
-        if (cnt == 0) begin
-          state <= src;
-          cnt <= 46;
-          $display("goto src");
-        end else begin
-          cnt <= cnt-2;
+
+        dest: begin
+          if (cnt == 0) begin
+            state <= src;
+            cnt <= 23;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end else if (state == src) begin
-        datad <= {FPGA_MAC_ADDR[cnt+1], FPGA_MAC_ADDR[cnt]};
-        if (cnt == 0) begin
-          state <= ethertype;
-          cnt <= 0;
-          $display("goto ethertype");
-        end else begin
-          cnt <= cnt-2;
+        src: begin
+          if (cnt == 0) begin
+            state <= ethertype;
+            cnt <= 3;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end else if (state == ethertype) begin
-        datad <= 0;
-        if (cnt == 7) begin
-          state <= data;
-          data_ready_out <= 1;
-          cnt <= 0;
-          $display("goto data");
-        end else begin
-          cnt <= cnt+1;
+
+        ethertype: begin
+          if (cnt == 0) begin
+            state <= data;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end else if (state == data) begin
-        datad <= data_in;
-        if (last_dibit_in) begin
-          state <= crc_wait;
-          data_ready_out <= 0;
-          cnt <= 0;
-          $display("goto crc_wait");
-        end else begin
-          cnt <= cnt+1;
+
+        data: begin
+          if (last_dibit_in) begin
+            state <= crc_wait;
+            cnt <= 3;
+          end
         end
-      end else if (state == crc_wait) begin
-        // need to wait for bitorder to output stuff and feed things into crc
-        datav <= 0;
-        datad <= 0;
-        if (cnt == 3) begin
-          state <= crc;
-          cnt <= 15;
-          $display("goto crc");
-        end else begin
-          cnt <= cnt+1;
+
+        crc_wait: begin
+          if (cnt == 0) begin
+            state <= crc;
+            cnt <= 15;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end else if (state == crc) begin
-        // crc is now ready, so we output it directly (see assign axiov/axiod)
-        if (cnt == 0) begin
-          state <= finish;
-          cnt <= 0;
-          $display("goto finish");
-        end else begin
-          cnt <= cnt-1;
+
+        crc: begin
+          if (cnt == 0) begin
+            state <= finish;
+            cnt <= 59;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end else if (state == finish) begin
-        // intraframe waiting stuff
-        if (cnt == 60) begin
-          state <= ready;
-          ready_out <= 1;
-        end else begin
-          cnt <= cnt+1;
+
+        finish: begin
+          if (cnt == 0) begin
+            state <= ready;
+          end else begin
+            cnt <= cnt-1;
+          end
         end
-      end
+
+      endcase
     end
   end
 
   always_comb begin
-    datav = 0;
-    datad = 0;
-    if (rst_in) begin
-    end else begin
-      if (state == ready) begin
-        if (trigger_in) begin
-          datav = 1;
-          datad = 2'b01;
-        end
-      end else if (state == preamble) begin
-        datav = 1;
-        datad = cnt == 28 ? 2'b11 : 2'b01;
-      end else if (state == dest) begin
-        datav = 1;
-        datad = {LAPTOP_MAC_ADDR[cnt+1], LAPTOP_MAC_ADDR[cnt]};
-      end else if (state == src) begin
-        datav = 1;
-        datad = {FPGA_MAC_ADDR[cnt+1], FPGA_MAC_ADDR[cnt]};
-      end else if (state == ethertype) begin
-        datav = 1;
-        datad = 0;
-      end else if (state == data) begin
-        datav = 1;
-        datad = data_in;
-      end else if (state == crc_wait) begin
-      end else if (state == crc) begin
-      end else if (state == finish) begin
+    ready_out = 0;
+    bitorder_data_in = 0;
+    bitorder_valid_in = 0;
+    data_ready_out = 0;
+    eth_txen = bitorder_valid_out;
+    eth_txd = bitorder_data_out;
+    case (state)
+      ready: begin
+        ready_out = 1;
       end
-    end
+      preamble: begin
+        bitorder_valid_in = 1;
+        bitorder_data_in = cnt == 28 ? 2'b11 : 2'b01;
+      end
+      dest: begin
+        bitorder_valid_in = 1;
+        bitorder_data_in = LAPTOP_MAC_ADDR[cnt];
+      end
+      src: begin
+        bitorder_valid_in = 1;
+        bitorder_data_in = FPGA_MAC_ADDR[cnt];
+      end
+      ethertype: begin
+        bitorder_valid_in = 1;
+        bitorder_data_in = 2'b00;
+      end
+      data: begin
+        data_ready_out = 1;
+        bitorder_valid_in = 1;
+        bitorder_data_in = data_in;
+      end
+      crc_wait: begin
+        data_ready_out = 0;
+        bitorder_valid_in = 0;
+      end
+      crc: begin
+        eth_txen = crc32_valid_out;
+        eth_txd = crc32_data_out[cnt];
+      end
+      finish: begin
+        eth_txen = 0;
+      end
+
+    endcase
   end
 
-  always_comb begin
-    if (state == crc) begin
-      outcrcd = {crc32_axiod[2*cnt+1], crc32_axiod[2*cnt]};
-      outcrcv = 1;
-    end else begin
-      outcrcd = 0;
-      outcrcv = 0;
-    end
-  end
-
+  logic bitorder_valid_in, bitorder_valid_out;
+  logic [1:0] bitorder_data_in, bitorder_data_out;
   bitorder bitorder_inst(
     .clk(clk_in),
-    .rst(rst_in || (state == ready && !trigger_in) || state == finish),
-    .axiiv(datav),
-    .axiid(datad),
-    .axiov(crc32_axiiv),
-    .axiod(crc32_axiid)
+    .rst(rst_in),
+    .axiiv(bitorder_valid_in),
+    .axiid(bitorder_data_in),
+    .axiov(bitorder_valid_out),
+    .axiod(bitorder_data_out)
   );
 
-  assign axiov = state != crc ? crc32_axiiv : outcrcv;
-  assign axiod = state != crc ? crc32_axiid : outcrcd;
-
-  logic crc32_axiiv;
-  logic [1:0] crc32_axiid;
-  logic crc32_axiov;
-  logic [31:0] crc32_axiod;
+  logic crc32_valid_out;
+  logic [15:0][1:0] crc32_data_out;
   crc32 crc32_inst(
     .clk(clk_in),
-    .rst(rst_in || (state == ready && !trigger_in) || state == finish),
-    .axiiv(crc32_axiiv),
-    .axiid(crc32_axiid),
-    .axiov(crc32_axiov),
-    .axiod(crc32_axiod)
+    .rst(rst_in || state == ready), // TODO
+    .axiiv(bitorder_valid_out && state != ready && state != preamble && (state != dest || cnt < 20)),
+    .axiid(bitorder_data_out),
+    .axiov(crc32_valid_out),
+    .axiod(crc32_data_out)
   );
 
 endmodule // ether_tx

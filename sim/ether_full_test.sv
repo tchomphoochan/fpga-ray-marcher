@@ -6,9 +6,9 @@
 module ether_full_test;
 
   logic clk_in, rst_in, trigger_in, axiov, ready_out, data_ready_out, started, last_dibit_in;
-  logic [1:0] axiod, data_in;
+  logic [1:0] eth_txd, data_in;
 
-  logic eth_axiov;
+  logic eth_axiov, eth_txen;
   logic [31:0] eth_axiod;
 
   always begin
@@ -32,21 +32,22 @@ module ether_full_test;
     .ready_out(ready_out),
     .data_ready_out(data_ready_out),
 
-    .axiov(axiov),
-    .axiod(axiod)
+    .eth_txd(eth_txd),
+    .eth_txen(eth_txen)
   );
 
   ether_rx_driver rx_uut(
     .clk(clk_in),
     .rst(rst_in),
-    .eth_crsdv(axiov),
-    .eth_rxd(axiod),
+    .eth_crsdv(eth_txen),
+    .eth_rxd(eth_txd),
     .axiod(eth_axiod),
     .axiov(eth_axiov)
   );
 
   // 80 bits = 10 bytes = 40 dibits
-  logic [79:0] data = 80'hFFFFFFFFFF_1111111111;
+  // logic [79:0] data = 80'hFFFFFFFFFF_1111111111;
+  logic [79:0] data = 80'd0;
 
   initial begin
     $dumpfile("ether_full_test.vcd");
@@ -71,6 +72,7 @@ module ether_full_test;
     trigger_in = 0;
 
     wait(data_ready_out);
+    #5;
     for (int i = 39; i >= 0; --i) begin
       data_in = {data[2*i+1], data[2*i]};
       if (i == 0) last_dibit_in = 1;
