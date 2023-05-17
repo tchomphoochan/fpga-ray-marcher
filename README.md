@@ -4,9 +4,10 @@ Final project for 6.2050 Fall 2022 by Pleng Chomphoochan (<tcpc@mit.edu>) and Di
 
 ## Writeup
 
-The writeup can be accessed at `writeup/fpga_final_writeup.pdf` ([link][writeup]).
+The writeup can be accessed at `writeup/fpga_final_writeup.pdf` ([view on Github][writeup] or [download][download]).
 
 [writeup]: https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/fpga_final_writeup.pdf
+[download]: https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/fpga_final_writeup.pdf?raw=true
 
 ## Abstract
 
