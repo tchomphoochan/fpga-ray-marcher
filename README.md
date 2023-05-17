@@ -14,5 +14,5 @@ The writeup can be accessed at `writeup/fpga_final_writeup.pdf` ([link][writeup]
 
 <img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result1.png?raw=true" width="270" height="150" />
 <img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result2.png?raw=true" width="270" height="150" />
-<img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result3.png?raw=true" width="270" height="150" />
-<img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result4.png?raw=true" width="270" height="150" />
+<img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result3.jpg?raw=true" width="270" height="150" />
+<img src="https://github.com/tchomphoochan/fpga-ray-marcher/blob/main/writeup/result4.jpg?raw=true" width="270" height="150" />
