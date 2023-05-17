@@ -191,7 +191,7 @@ Note that the submodule receives data in Most Significant Byte, Most Significant
 
 \section{Results}
 
-Our system can display a 12-bit RGB 400x300 image of four scenes: a cube, a box lattice, a Menger sponge tunnel, and a maze. We were able to successfully synthesize the system with up to 12 Ray Units, using 35.56\% of the available BRAMs (400 $\times$ 300 $\times$ 4 bits each $\times$ 3 buffers). The limiting factor was the number of slice LUTs and registers available, as shown in Table~\ref{table-resource}. This is surprising, as we expected to run out of DSPs first due to the large number of multiplications needed to calculate the SDFs. \footnote{The preliminary report used up to 98\% of the DSPs for a Ray Marcher with 8 Ray Units because of a bug in the previous limitation, which required us to use Q12.18 number representation rather than Q6.16.}
+Our system can display a 12-bit RGB 400x300 image of four scenes: a cube, a box lattice, a Menger sponge tunnel, and a maze. We were able to successfully synthesize the system with up to 12 Ray Units, using 35.56\% of the available BRAMs (400 $\times$ 300 $\times$ 4 bits each $\times$ 3 buffers). The limiting factor was the number of slice LUTs and registers available, as shown in Table~\ref{table-resource}. This is surprising, as we expected to run out of DSPs first due to the large number of multiplications needed to calculate the SDFs. \footnote{The preliminary report used up to 98\% of the DSPs for a Ray Marcher with 8 Ray Units because of a bug in the previous implementation, which required us to use Q12.18 number representation rather than Q6.16.}
 
 
 \begin{table}[!t]
